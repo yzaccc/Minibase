@@ -2,6 +2,7 @@ package iterator;
 
 import heap.*;
 import global.*;
+
 import java.io.*;
 
 public class PredEval
@@ -57,6 +58,16 @@ public class PredEval
 	      fld1        = 1;
 	      switch (temp_ptr.type1.attrType)
 		{
+	      /**
+	       * Zongkun
+	       */
+	      case AttrType.attrVector100D:
+	    	  value.setHdr((short)1, val_type, null);
+	    	  value.set100DVectFld(1, temp_ptr.operand1.vector);
+	    	  tuple1 = value;
+	    	  comparison_type.attrType = AttrType.attrVector100D;
+	    	  break;
+	      //End
 		case AttrType.attrInteger:
 		  value.setHdr((short)1, val_type, null);
 		  value.setIntFld(1, temp_ptr.operand1.integer);
@@ -98,6 +109,15 @@ public class PredEval
 	      fld2        = 1;
 	      switch (temp_ptr.type2.attrType)
 		{
+	      /**
+	       * Zongkun
+	       */
+	      case AttrType.attrVector100D:
+	    	  value.setHdr((short)1, val_type, null);
+	    	  value.set100DVectFld(1, temp_ptr.operand2.vector);
+	    	  tuple2 = value;
+	    	  break;
+	      //End
 		case AttrType.attrInteger:
 		  value.setHdr((short)1, val_type, null);
 		  value.setIntFld(1, temp_ptr.operand2.integer);
@@ -133,7 +153,13 @@ public class PredEval
 		throw new PredEvalException (e,"TupleUtilsException is caught by PredEval.java");
 	      }
 	      op_res = false;
-	      
+	      /**
+	       * Zongkun
+	       * Phrase 2 task 3
+	       */
+	      if(comparison_type.attrType == AttrType.attrVector100D){
+	    	  comp_res = comp_res - temp_ptr.distance;
+	      }
 	      switch (temp_ptr.op.attrOperator)
 		{
 		case AttrOperator.aopEQ:
