@@ -4,6 +4,7 @@ package heap;
 
 import java.io.*;
 import java.lang.*;
+
 import global.*;
 
 
@@ -185,16 +186,29 @@ public class Tuple implements GlobalConst{
     * Zongkun
     * Task2
     */
-   public int get100DVectFld(int fldNo) throws IOException, FieldNumberOutOfBoundException{
-	   int val;
+   public Vector100Dtype get100DVectFld(int fldNo) throws IOException, FieldNumberOutOfBoundException{
+	   Vector100Dtype val;
 	    if ( (fldNo > 0) && (fldNo <= fldCnt))
 	     {
-	      val = Convert.getIntValue(fldOffset[fldNo -1], data);
+	      val = Convert.get100DVectorValue(fldOffset[fldNo -1], data);
 	      return val;
 	     }
 	    else 
 	     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
    }
+   public Tuple set100DVectFld(int fldNo, Vector100Dtype val) throws IOException, FieldNumberOutOfBoundException
+		  { 
+		   if ( (fldNo > 0) && (fldNo <= fldCnt))
+		    {
+		     Convert.set100DVectorValue(val, fldOffset[fldNo -1], data);
+		     return this;
+		    }
+		    else  
+		     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND"); 
+		     
+		  }
+   //End
+   
    /**
     * Convert this field into integer 
     * 

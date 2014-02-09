@@ -7,10 +7,56 @@ import java.lang.*;
 
 public class Convert{
  /**
-  * 
+  * Zongkun
+  * Task 2
+  * read from given byte array at the specified position convert it to a Vector100Dtype
+  * @param position
+  * @param data
+  * @return
+ * @throws IOException 
   */
-	
-	
+public static Vector100Dtype get100DVectorValue(int position, byte[] data) throws IOException{
+	  InputStream in;
+      DataInputStream instr;
+      Vector100Dtype value;
+      byte tmp[] = new byte[200];
+      
+      // copy the value from data array out to a tmp byte array
+      System.arraycopy (data, position, tmp, 0, 200);
+      value=new Vector100Dtype(data);
+      /* creates a new data input stream to read data from the
+       * specified input stream
+       */
+//      in = new ByteArrayInputStream(tmp);
+//      instr = new DataInputStream(in);
+//      value = instr.readInt();  
+    
+      
+      return value;
+}
+ /**
+  * Zongkun 
+  * Task 2
+  * update a Vector100Dtype in the given byte array at the specified position
+  * @param value
+  * @param position
+  * @param data
+  * @return
+ * @throws IOException 
+  */
+public static void set100DVectorValue(Vector100Dtype value, int position, byte[] data) throws IOException{
+
+//   Vector100Dtype v=new Vector100Dtype(data);
+//    
+//    // creates a byte array with this output stream size and the
+//    // valid contents of the buffer have been copied into it
+//    byte []B = ((ByteArrayOutputStream) out).toByteArray();
+//    
+//    // copies the first 2 bytes of this byte array into data[] 
+//    System.arraycopy (B, 0, data, position, 2);
+	data = Vector100Dtype.Vector100DtoByte(value);
+}
+//End
  /**
  * read 4 bytes from given byte array at the specified position
  * convert it to an integer
