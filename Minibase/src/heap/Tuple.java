@@ -182,6 +182,20 @@ public class Tuple implements GlobalConst{
    }
    
    /**
+    * Zongkun
+    * Task2
+    */
+   public int get100DVectFld(int fldNo) throws IOException, FieldNumberOutOfBoundException{
+	   int val;
+	    if ( (fldNo > 0) && (fldNo <= fldCnt))
+	     {
+	      val = Convert.getIntValue(fldOffset[fldNo -1], data);
+	      return val;
+	     }
+	    else 
+	     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+   }
+   /**
     * Convert this field into integer 
     * 
     * @param	fldNo	the field number
