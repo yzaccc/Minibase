@@ -42,9 +42,21 @@ public class TupleUtils
       int   t1_i,  t2_i;
       float t1_r,  t2_r;
       String t1_s, t2_s;
+      Vector100Dtype d1;
+      Vector100Dtype d2;
       
       switch (fldType.attrType) 
 	{
+    case AttrType.attrVector100D:
+    	int distance = 0;
+    	try{
+    	  d1 = t1.get100DVectFld(t1_fld_no);
+    	  d2 = t2.get100DVectFld(t2_fld_no);
+    	}  catch (FieldNumberOutOfBoundException e){
+    	    throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+  	  }
+    	  distance = Vector100Dtype.distance(d1, d2);
+    	  return distance;
 	case AttrType.attrInteger:                // Compare two integers.
 	  try {
 	    t1_i = t1.getIntFld(t1_fld_no);
