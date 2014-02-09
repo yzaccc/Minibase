@@ -12,8 +12,12 @@ public class AttrType {
   public static final int attrReal    = 2;
   public static final int attrSymbol  = 3;
   public static final int attrNull    = 4;
-  public static final int attrVector100D = 5;
-  	
+  /**
+   * Meng Yang
+   */
+  public static final int Vector100Dtype  = 5;
+  
+  
   public int attrType;
 
   /** 
