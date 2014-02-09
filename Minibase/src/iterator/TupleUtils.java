@@ -3,6 +3,7 @@ package iterator;
 
 import heap.*;
 import global.*;
+
 import java.io.*;
 import java.lang.*;
 
@@ -45,6 +46,23 @@ public class TupleUtils
       
       switch (fldType.attrType) 
 	{
+    /**
+     * Zongkun
+     * Phrase 2 task3
+     */
+    case AttrType.attrVector100D:
+    	int distance = 0;
+    	Vector100Dtype d1;
+    	Vector100Dtype d2;
+		try {
+			d1 = t1.get100DVectFld(t1_fld_no);
+			d2 = t2.get100DVectFld(t2_fld_no);
+		} catch (FieldNumberOutOfBoundException e) {
+			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+		  }
+		distance = Vector100Dtype.distance(d1, d2);
+		return distance;
+	
 	case AttrType.attrInteger:                // Compare two integers.
 	  try {
 	    t1_i = t1.getIntFld(t1_fld_no);
@@ -57,7 +75,7 @@ public class TupleUtils
 	  if (t1_i >  t2_i) return  1;
 	  
 	case AttrType.attrReal:                // Compare two floats
-	  try {
+	  try {	
 	    t1_r = t1.getFloFld(t1_fld_no);
 	    t2_r = t2.getFloFld(t2_fld_no);
 	  }catch (FieldNumberOutOfBoundException e){
