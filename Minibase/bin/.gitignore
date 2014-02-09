@@ -12,3 +12,7 @@
 /javadoc
 /tests
 /typescript
+/global
+/heap
+/iterator
+
