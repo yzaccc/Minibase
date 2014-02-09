@@ -15,6 +15,7 @@ import chainexception.*;
 /**
  * This class provides the functions to test the buffer manager
  */
+// This is a test by jinxuanw
 class BMDriver extends TestDriver implements GlobalConst {
 
 	private int TRUE = 1;
