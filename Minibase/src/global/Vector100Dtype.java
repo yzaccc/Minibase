@@ -67,7 +67,7 @@ public class Vector100Dtype {
 		double s = 0;
 		int distance = 0;
 		for(int i = 0;i< 100;i++){
-			s = Math.pow(d1short[i]-d2short[i],2);
+			s += Math.pow(d1short[i]-d2short[i],2);
 		}
 		distance = (int)Math.sqrt(s);
 		return distance;

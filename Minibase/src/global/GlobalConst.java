@@ -24,8 +24,8 @@ public interface GlobalConst {
   /**
    * Zongkun
    */
-  //public static final int MAX_SPACE = 1024;   // in Frames
-  public static final int MAX_SPACE = 4096;
+  public static final int MAX_SPACE = 1024;   // in Frames
+//  public static final int MAX_SPACE = 4096;
    
   /**
    * in Pages => the DBMS Manager tells the DB how much disk 
