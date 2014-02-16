@@ -11,6 +11,7 @@ import java.io.OutputStream;
 /**
  * Zongkun
  * task 1
+ * phrase 2
  * @author akun1012
  *
  */
@@ -30,7 +31,6 @@ public class Vector100Dtype {
 	    	  instr = new DataInputStream(in);
 	    	  value = instr.readShort();
 	    		  
-	    	  
 	      }
 		
 	}
