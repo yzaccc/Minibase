@@ -889,7 +889,7 @@ class SORTDriver extends TestDriver implements GlobalConst {
 
 	protected boolean test5() {
 		System.out
-		.println("------------------------ TEST 5 test--------------------------");
+		.println("------------------------ TEST 5555 test--------------------------");
 
 boolean status = OK;
 
@@ -1024,7 +1024,7 @@ try {
 System.out.println("Sort added");
 Sort sort = null;
 try {
-	sort = new Sort(attrType, (short) 1, attrSize, fscan, 1, order[0],
+	sort = new Sort(attrType, (short) 1, attrSize, fscan, 1, order[1],
 			Vector100Dtype.Max*2, SORTPGNUM, tar, 2 );// new sort constructor
 } catch (Exception e) {
 	status = FAIL;

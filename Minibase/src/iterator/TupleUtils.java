@@ -198,6 +198,14 @@ public class TupleUtils
       
       switch (fldType.attrType)
 	{
+      case AttrType.attrVector100D:
+    	  try {
+    		  value.set100DVectFld(fld_no, tuple.get100DVectFld(fld_no));
+    		   
+    		  }catch (FieldNumberOutOfBoundException e){
+    		    throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+    		  }
+    	break;
 	case AttrType.attrInteger:
 	  try {
 	    value.setIntFld(fld_no, tuple.getIntFld(fld_no));

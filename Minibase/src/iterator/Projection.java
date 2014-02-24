@@ -36,7 +36,7 @@ public class Projection
 	   IOException
     {
       
-      
+	  //System.out.println("in Project2");//debug
       for (int i = 0; i < nOutFlds; i++)
 	{
 	  switch (perm_mat[i].relation.key)
@@ -116,12 +116,12 @@ public class Projection
 	   FieldNumberOutOfBoundException,
 	   IOException
     {
-	  System.out.println("in Project");
+	  //System.out.println("in Project");//debug
 
       
       for (int i = 0; i < nOutFlds; i++)
 	{
-    	  System.out.println("in Project");
+    	  //System.out.println("in Project1");//debug
 	  switch (perm_mat[i].relation.key)
 	    {
 	    case RelSpec.outer:      // Field of outer (t1)
