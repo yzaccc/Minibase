@@ -889,7 +889,7 @@ class SORTDriver extends TestDriver implements GlobalConst {
 
 	protected boolean test5() {
 		System.out
-		.println("------------------------ TEST 5 --------------------------");
+		.println("------------------------ TEST 5 test--------------------------");
 
 boolean status = OK;
 
@@ -906,8 +906,9 @@ Vector100Dtype target = new Vector100Dtype(Targetarray);
 for (short i=1;i<=100;i++){
 	Targetarray1[i-1] = i;
 }
-Vector100Dtype vector1 = new Vector100Dtype(Targetarray1);
-Vector100Dtype vector2 = new Vector100Dtype(Targetarray2);
+Vector100Dtype vector1 = new Vector100Dtype(Targetarray1);//data
+Vector100Dtype vector2 = new Vector100Dtype(Targetarray2);//data
+Vector100Dtype tar = new Vector100Dtype(Targetarray);//target
 Vector100Dtype[] vectorObject = new Vector100Dtype[2];
 vectorObject[0] = vector1;
 vectorObject[1] = vector2;
@@ -960,10 +961,8 @@ for (int i = 0; i < 2; i++) {
 	}
 }
 
-// create an iterator by open a file scan
-FldSpec[] projlist = new FldSpec[1];
-RelSpec rel = new RelSpec(RelSpec.outer);
-projlist[0] = new FldSpec(rel, 1);
+
+
 
 //FileScan fscan = null;
 Scan scan = null;
@@ -1002,76 +1001,68 @@ while (temp != null) {
 		e.printStackTrace();
 	}
 }
+
+
+System.out.println("FileScan added");
+//create an iterator by open a file scan
+FldSpec[] projlist = new FldSpec[2];
+RelSpec rel = new RelSpec(RelSpec.outer);
+projlist[0] = new FldSpec(rel, 1);
+projlist[1] = new FldSpec(rel, 2);
+
+FileScan fscan = null;
+
+try {
+	fscan = new FileScan("test5.in", attrType, attrSize, (short) 1, 1,
+			projlist, null);
+} catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+}
+
+
+System.out.println("Sort added");
+Sort sort = null;
+try {
+	sort = new Sort(attrType, (short) 1, attrSize, fscan, 1, order[0],
+			Vector100Dtype.Max*2, SORTPGNUM, tar, 2 );// new sort constructor
+} catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+}
+
+
+
+int count = 0;
+t = null;//??? no header
+Vector100Dtype outval = null;
+
+try {
+	t = sort.get_next();
+} catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+}
+
+while (t != null){
+	try {
+		outval = t.get100DVectFld(1);
+	} catch (Exception e) {
+		status = FAIL;
+		e.printStackTrace();
+	}
+	System.out.println("outval ");
+	outval.printVector();
+	try {
+		t = sort.get_next();
+	} catch (Exception e) {
+		status = FAIL;
+		e.printStackTrace();
+	}
 	
 	
+}
 
-// Sort "test2.in"
-//Sort sort = null;
-//try {
-//	sort = new Sort(attrType, (short) 1, attrSize, fscan, 1, order[1],
-//			REC_LEN1, SORTPGNUM);
-//} catch (Exception e) {
-//	status = FAIL;
-//	e.printStackTrace();
-//}
-//
-//int count = 0;
-//t = null;
-//String outval = null;
-//
-//try {
-//	t = sort.get_next();
-//} catch (Exception e) {
-//	status = FAIL;
-//	e.printStackTrace();
-//}
-//
-//boolean flag = true;
-//
-//while (t != null) {
-//	if (count >= NUM_RECORDS) {
-//		System.err.println("Test2 -- OOPS! too many records");
-//		status = FAIL;
-//		flag = false;
-//		break;
-//	}
-//
-//	try {
-//		outval = t.getStrFld(1);
-//	} catch (Exception e) {
-//		status = FAIL;
-//		e.printStackTrace();
-//	}
-//
-//	if (outval.compareTo(data2[NUM_RECORDS - count - 1]) != 0) {
-//		System.err.println("Test2 -- OOPS! test2.out not sorted");
-//		status = FAIL;
-//	}
-//	count++;
-//
-//	try {
-//		t = sort.get_next();
-//	} catch (Exception e) {
-//		status = FAIL;
-//		e.printStackTrace();
-//	}
-//}
-//if (count < NUM_RECORDS) {
-//	System.err.println("Test2 -- OOPS! too few records");
-//	status = FAIL;
-//} else if (flag && status) {
-//	System.err.println("Test2 -- Sorting OK");
-//}
-//
-//// clean up
-//try {
-//	sort.close();
-//} catch (Exception e) {
-//	status = FAIL;
-//	e.printStackTrace();
-//}
-
-//System.err.println("------------------- TEST 2 completed ---------------------\n");
 
 return status;
 	}
