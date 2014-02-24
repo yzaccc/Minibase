@@ -191,7 +191,7 @@ public class Tuple implements GlobalConst{
 	   
 	    if ( (fldNo > 0) && (fldNo <= fldCnt))
 	     {
-	    	System.out.println("offset in  get100DVectFld "+fldOffset[fldNo -1]);//debug
+	    	//System.out.println("offset in  get100DVectFld "+fldOffset[fldNo -1]);//debug
 	      val = Convert.get100DVectorValue(fldOffset[fldNo -1], data);
 	      //val.printVector();//debug
 	      return val;

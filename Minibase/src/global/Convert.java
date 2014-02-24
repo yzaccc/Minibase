@@ -35,7 +35,7 @@ public static Vector100Dtype get100DVectorValue(int position, byte[] data) throw
 //      instr = new DataInputStream(in);
 //      value = instr.readInt();  
       //System.out.println("in get100DVectorValue");
-      value.printVector();//debug
+      //value.printVector();//debug
       return value;
 }
  /**
