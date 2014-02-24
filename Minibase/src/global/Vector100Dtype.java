@@ -53,7 +53,7 @@ public class Vector100Dtype {
 	}
 	public void printVector(){
 		for (int i=0;i<Max;i++){
-			System.out.print(VectorValue[i]);
+			System.out.println(i+" "+VectorValue[i]+" ");
 			
 		}
 		System.out.println();

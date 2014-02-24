@@ -903,6 +903,9 @@ order[1] = new TupleOrder(TupleOrder.Descending);
 
 Vector100Dtype target = new Vector100Dtype(Targetarray);
 
+for (short i=1;i<=100;i++){
+	Targetarray1[i-1] = i;
+}
 Vector100Dtype vector1 = new Vector100Dtype(Targetarray1);
 Vector100Dtype vector2 = new Vector100Dtype(Targetarray2);
 Vector100Dtype[] vectorObject = new Vector100Dtype[2];
@@ -940,6 +943,7 @@ try {
 for (int i = 0; i < 2; i++) {
 	try {
 		t.set100DVectFld(1, vectorObject[i]);
+		//System.out.println("offset "+t.getOffset());
 	} catch (Exception e) {
 		status = FAIL;
 		e.printStackTrace();
@@ -972,7 +976,7 @@ try {
 	status = FAIL;
 	e.printStackTrace();
 }
-
+//System.out.println("hello2");
 try {
 	temp = scan.getNext(rid);
 	t.tupleCopy(temp);
@@ -988,9 +992,10 @@ while (temp != null) {
 	try {
 		//System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
 		t.tupleCopy(temp);// temp do not have header !!!
+		
 		tmpVec = t.get100DVectFld(1);
 		//System.out.println("after "+Arrays.toString(t.returnTupleByteArray()));
-		tmpVec.printVector();
+		//tmpVec.printVector();
 		temp = scan.getNext(rid);
 	}catch (Exception e) {
 		status = FAIL;

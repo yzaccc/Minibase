@@ -20,12 +20,14 @@ public static Vector100Dtype get100DVectorValue(int position, byte[] data) throw
 	  //InputStream in;
       //DataInputStream instr;
       Vector100Dtype value;
-      //byte tmp[] = new byte[200];
+      byte tmp[] = new byte[200];
       
       // copy the value from data array out to a tmp byte array
-      //System.arraycopy (data, position, tmp, 0, 200);
+      System.arraycopy (data, position, tmp, 0, 200);
       //System.out.println("data in get100DVectorValue\n"+Arrays.toString(data));//debug
-      value=new Vector100Dtype(data);
+      //System.out.println("hello4");
+      
+      value=new Vector100Dtype(tmp);
       /* creates a new data input stream to read data from the
        * specified input stream
        */
@@ -33,7 +35,7 @@ public static Vector100Dtype get100DVectorValue(int position, byte[] data) throw
 //      instr = new DataInputStream(in);
 //      value = instr.readInt();  
       //System.out.println("in get100DVectorValue");
-      //value.printVector();//debug
+      value.printVector();//debug
       return value;
 }
  /**
