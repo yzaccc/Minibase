@@ -12,7 +12,7 @@ import java.lang.*;
  */
 public class TupleUtils
 {
-  
+	public static Vector100Dtype target;
   /**
    * This function compares a tuple with another tuple in respective field, and
    *  returns:
@@ -51,17 +51,20 @@ public class TupleUtils
      * Phrase 2 task3
      */
     case AttrType.attrVector100D:
-    	int distance = 0;
+    	int distance1 = 0;
+    	int distance2 = 0;
     	Vector100Dtype d1;
     	Vector100Dtype d2;
+    	Vector100Dtype tar = TupleUtils.target;
 		try {
 			d1 = t1.get100DVectFld(t1_fld_no);
 			d2 = t2.get100DVectFld(t2_fld_no);
 		} catch (FieldNumberOutOfBoundException e) {
 			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
 		  }
-		distance = Vector100Dtype.distance(d1, d2);
-		return distance;
+		distance1 = Vector100Dtype.distance(d1, tar);
+		distance2 = Vector100Dtype.distance(d2, tar);
+		return distance1 - distance2;
 	
 	case AttrType.attrInteger:                // Compare two integers.
 	  try {

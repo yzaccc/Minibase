@@ -1,3 +1,4 @@
+/.DS_Store
 /META-INF
 /Makefile
 /btree
@@ -12,4 +13,3 @@
 /javadoc
 /tests
 /typescript
-/.DS_Store

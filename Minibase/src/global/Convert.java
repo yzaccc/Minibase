@@ -4,6 +4,7 @@ package global;
 
 import java.io.*;
 import java.lang.*;
+import java.util.Arrays;
 
 public class Convert{
  /**
@@ -16,13 +17,14 @@ public class Convert{
  * @throws IOException 
   */
 public static Vector100Dtype get100DVectorValue(int position, byte[] data) throws IOException{
-	  InputStream in;
-      DataInputStream instr;
+	  //InputStream in;
+      //DataInputStream instr;
       Vector100Dtype value;
-      byte tmp[] = new byte[200];
+      //byte tmp[] = new byte[200];
       
       // copy the value from data array out to a tmp byte array
-      System.arraycopy (data, position, tmp, 0, 200);
+      //System.arraycopy (data, position, tmp, 0, 200);
+      //System.out.println("data in get100DVectorValue\n"+Arrays.toString(data));//debug
       value=new Vector100Dtype(data);
       /* creates a new data input stream to read data from the
        * specified input stream
@@ -30,8 +32,8 @@ public static Vector100Dtype get100DVectorValue(int position, byte[] data) throw
 //      in = new ByteArrayInputStream(tmp);
 //      instr = new DataInputStream(in);
 //      value = instr.readInt();  
-    
-      
+      //System.out.println("in get100DVectorValue");
+      //value.printVector();//debug
       return value;
 }
  /**
@@ -53,8 +55,9 @@ public static void set100DVectorValue(Vector100Dtype value, int position, byte[]
 //    byte []B = ((ByteArrayOutputStream) out).toByteArray();
 //    
 //    // copies the first 2 bytes of this byte array into data[] 
-//    System.arraycopy (B, 0, data, position, 2);
-	data = Vector100Dtype.Vector100DtoByte(value);
+
+	System.arraycopy (Vector100Dtype.Vector100DtoByte(value), 0, data, position, 200);
+
 }
 //End
  /**

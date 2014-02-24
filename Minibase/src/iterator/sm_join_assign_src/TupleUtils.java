@@ -11,7 +11,6 @@ import java.lang.*;
  */
 public class TupleUtils
 {
-  
   /**
    * This function compares a tuple with another tuple in respective field, and
    *  returns:

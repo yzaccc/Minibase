@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * Zongkun
@@ -16,24 +17,49 @@ import java.io.OutputStream;
  *
  */
 public class Vector100Dtype {
-	int  Max = 100;
+	public static int  Max = 100;
 	private short[] VectorValue = new short[Max];
 	
 	public Vector100Dtype(byte[] data) throws IOException {
 		  InputStream in;
 	      DataInputStream instr;
 	      short value;
-	      
 	      for(int i =0;i<Max;i++){
 	    	  byte tmp[] = new byte[2];
 	    	  System.arraycopy (data, i*2, tmp, 0, 2);
 	    	  in = new ByteArrayInputStream(tmp);
 	    	  instr = new DataInputStream(in);
 	    	  value = instr.readShort();
-	    		  
+	    	  VectorValue[i] = value;
 	      }
 		
 	}
+	public Vector100Dtype(short[] vectorValue){
+		VectorValue = vectorValue;
+	}
+	public static Vector100Dtype getMaxVector100D(Vector100Dtype v){
+		short [] maxarray= {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		
+		
+		short []  targetValue = v.getVectorValue();
+		for(int i =0;i<Max;i++){
+			if (targetValue[i] >0 )
+				maxarray[i] = -10000;
+			else
+				maxarray[i] = 10000;
+		}
+		Vector100Dtype maxv = new Vector100Dtype(maxarray);
+		return maxv;
+	}
+	public void printVector(){
+		for (int i=0;i<Max;i++){
+			System.out.print(VectorValue[i]);
+			
+		}
+		System.out.println();
+	}
+	
+	
 	
 	/**
 	 * Zongkun

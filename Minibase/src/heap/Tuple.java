@@ -188,8 +188,10 @@ public class Tuple implements GlobalConst{
     */
    public Vector100Dtype get100DVectFld(int fldNo) throws IOException, FieldNumberOutOfBoundException{
 	   Vector100Dtype val;
+	   
 	    if ( (fldNo > 0) && (fldNo <= fldCnt))
 	     {
+	    	//System.out.println("fldcnt in  get100DVectFld"+fldCnt);//debug
 	      val = Convert.get100DVectorValue(fldOffset[fldNo -1], data);
 	      return val;
 	     }
@@ -200,6 +202,7 @@ public class Tuple implements GlobalConst{
 		  { 
 		   if ( (fldNo > 0) && (fldNo <= fldCnt))
 		    {
+
 		     Convert.set100DVectorValue(val, fldOffset[fldNo -1], data);
 		     return this;
 		    }
@@ -406,6 +409,9 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
   for (i=1; i<numFlds; i++)
   {
     switch(types[i-1].attrType) {
+    case AttrType.attrVector100D:
+    	incr = 200;
+    	break;
     
    case AttrType.attrInteger:
      incr = 4;
@@ -429,6 +435,10 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
  
 }
  switch(types[numFlds -1].attrType) {
+ 
+ 	case AttrType.attrVector100D:
+ 		incr = 200;
+ 		break;
 
    case AttrType.attrInteger:
      incr = 4;

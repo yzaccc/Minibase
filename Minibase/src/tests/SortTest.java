@@ -1,12 +1,15 @@
 package tests;
 
 import java.io.*;
+
 import global.*;
 import bufmgr.*;
 import diskmgr.*;
 import heap.*;
 import iterator.*;
 import index.*;
+
+import java.util.Arrays;
 import java.util.Random;
 
 class SORTDriver extends TestDriver implements GlobalConst {
@@ -44,7 +47,16 @@ class SORTDriver extends TestDriver implements GlobalConst {
 			"ulloa", "vharvey", "waic", "wan", "wawrzon", "wenchao", "wlau",
 			"xbao", "xiaoming", "xin", "yi-chun", "yiching", "yuc", "yung",
 			"yuvadee", "zmudzin" };
+	private static short [] Targetarray= {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	private static short [] Targetarray1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	private static short [] Targetarray2 = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+	private static short [][] Target2Darray =new short [][]{
+	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+	{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}	
+	};
+	//Target2Darray[0] = new short [100]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
+	//Target2Darray[1] = Targetarray2;
 	private static int NUM_RECORDS = data2.length;
 	private static int LARGE = 1000;
 	private static short REC_LEN1 = 32;
@@ -876,7 +888,187 @@ class SORTDriver extends TestDriver implements GlobalConst {
 	}
 
 	protected boolean test5() {
-		return true;
+		System.out
+		.println("------------------------ TEST 5 --------------------------");
+
+boolean status = OK;
+
+AttrType[] attrType = new AttrType[1];
+attrType[0] = new AttrType(AttrType.attrVector100D);
+short[] attrSize = new short[1];
+attrSize[0] = 200;
+TupleOrder[] order = new TupleOrder[2];
+order[0] = new TupleOrder(TupleOrder.Ascending);
+order[1] = new TupleOrder(TupleOrder.Descending);
+
+Vector100Dtype target = new Vector100Dtype(Targetarray);
+
+Vector100Dtype vector1 = new Vector100Dtype(Targetarray1);
+Vector100Dtype vector2 = new Vector100Dtype(Targetarray2);
+Vector100Dtype[] vectorObject = new Vector100Dtype[2];
+vectorObject[0] = vector1;
+vectorObject[1] = vector2;
+
+// create a tuple of appropriate size
+Tuple t = new Tuple();
+try {
+	t.setHdr((short) 1, attrType, attrSize);
+} catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+}
+int size = t.size();
+
+// Create unsorted data file "test2.in"
+RID rid;
+Heapfile f = null;
+try {
+	f = new Heapfile("test5.in");
+} catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+}
+
+t = new Tuple(size);
+try {
+	t.setHdr((short) 1, attrType, attrSize);
+} catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+}
+
+for (int i = 0; i < 2; i++) {
+	try {
+		t.set100DVectFld(1, vectorObject[i]);
+	} catch (Exception e) {
+		status = FAIL;
+		e.printStackTrace();
+	}
+
+	try {
+		//System.out.println("fldCnt in test5 "+t.getLength());
+		//System.out.println("before ");
+		//System.out.println("before "+ Arrays.toString(t.returnTupleByteArray()));
+		rid = f.insertRecord(t.returnTupleByteArray());
+	} catch (Exception e) {
+		status = FAIL;
+		e.printStackTrace();
+	}
+}
+
+// create an iterator by open a file scan
+FldSpec[] projlist = new FldSpec[1];
+RelSpec rel = new RelSpec(RelSpec.outer);
+projlist[0] = new FldSpec(rel, 1);
+
+//FileScan fscan = null;
+Scan scan = null;
+Tuple temp = null;
+rid = new RID();
+Vector100Dtype tmpVec;
+try {
+	scan = new Scan(f);
+} catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+}
+
+try {
+	temp = scan.getNext(rid);
+	t.tupleCopy(temp);
+	//System.out.println("read tuple flds no "+temp.noOfFlds());
+	//System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
+	//tmpVec = t.get100DVectFld(1);
+	//tmpVec.printVector();
+} catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+}
+while (temp != null) {
+	try {
+		//System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
+		t.tupleCopy(temp);// temp do not have header !!!
+		tmpVec = t.get100DVectFld(1);
+		//System.out.println("after "+Arrays.toString(t.returnTupleByteArray()));
+		tmpVec.printVector();
+		temp = scan.getNext(rid);
+	}catch (Exception e) {
+		status = FAIL;
+		e.printStackTrace();
+	}
+}
+	
+	
+
+// Sort "test2.in"
+//Sort sort = null;
+//try {
+//	sort = new Sort(attrType, (short) 1, attrSize, fscan, 1, order[1],
+//			REC_LEN1, SORTPGNUM);
+//} catch (Exception e) {
+//	status = FAIL;
+//	e.printStackTrace();
+//}
+//
+//int count = 0;
+//t = null;
+//String outval = null;
+//
+//try {
+//	t = sort.get_next();
+//} catch (Exception e) {
+//	status = FAIL;
+//	e.printStackTrace();
+//}
+//
+//boolean flag = true;
+//
+//while (t != null) {
+//	if (count >= NUM_RECORDS) {
+//		System.err.println("Test2 -- OOPS! too many records");
+//		status = FAIL;
+//		flag = false;
+//		break;
+//	}
+//
+//	try {
+//		outval = t.getStrFld(1);
+//	} catch (Exception e) {
+//		status = FAIL;
+//		e.printStackTrace();
+//	}
+//
+//	if (outval.compareTo(data2[NUM_RECORDS - count - 1]) != 0) {
+//		System.err.println("Test2 -- OOPS! test2.out not sorted");
+//		status = FAIL;
+//	}
+//	count++;
+//
+//	try {
+//		t = sort.get_next();
+//	} catch (Exception e) {
+//		status = FAIL;
+//		e.printStackTrace();
+//	}
+//}
+//if (count < NUM_RECORDS) {
+//	System.err.println("Test2 -- OOPS! too few records");
+//	status = FAIL;
+//} else if (flag && status) {
+//	System.err.println("Test2 -- Sorting OK");
+//}
+//
+//// clean up
+//try {
+//	sort.close();
+//} catch (Exception e) {
+//	status = FAIL;
+//	e.printStackTrace();
+//}
+
+//System.err.println("------------------- TEST 2 completed ---------------------\n");
+
+return status;
 	}
 
 	protected boolean test6() {
