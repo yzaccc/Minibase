@@ -4,6 +4,8 @@ import java.io.*;
 
 import global.*;
 import VAIndex.VAException;
+import VAIndex.VAFile;
+import VAIndex.VAFileScan;
 import VAIndex.Vector100Key;
 import bufmgr.*;
 import diskmgr.*;
@@ -12,6 +14,7 @@ import iterator.*;
 import index.*;
 import btree.*;
 
+import java.util.Arrays;
 import java.util.Random;
 
 class IndexDriver extends TestDriver implements GlobalConst {
@@ -784,13 +787,169 @@ class IndexDriver extends TestDriver implements GlobalConst {
 	}
 
 	protected boolean test4() {
-		Vector100Dtype v = new Vector100Dtype((short)5000);
+		
+		System.out
+		.println("------------------------ TEST 4 test--------------------------");
+		
+//		Vector100Dtype v = new Vector100Dtype((short)-1);
+//		try {
+//			Vector100Key key1 = new Vector100Key(v,4);
+//		} catch (VAException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		boolean status = OK;
+
+		AttrType[] attrType = new AttrType[1];
+		attrType[0] = new AttrType(AttrType.attrVector100D);
+		short[] attrSize = new short[1];
+		attrSize[0] = 200;
+		TupleOrder[] order = new TupleOrder[2];
+		order[0] = new TupleOrder(TupleOrder.Ascending);
+		order[1] = new TupleOrder(TupleOrder.Descending);
+
+
+
+		Vector100Dtype vector1 = new Vector100Dtype((short)1);//data
+		Vector100Dtype vector2 = new Vector100Dtype((short)2);//data
+//		Vector100Dtype tar = new Vector100Dtype(Targetarray);//target
+		Vector100Dtype[] vectorObject = new Vector100Dtype[2];
+		vectorObject[0] = vector1;
+		vectorObject[1] = vector2;
+		
+		// create a tuple of appropriate size
+		Tuple t = new Tuple();
 		try {
-			Vector100Key key1 = new Vector100Key(v,4);
-		} catch (VAException e) {
-			// TODO Auto-generated catch block
+			t.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			status = FAIL;
 			e.printStackTrace();
 		}
+		int size = t.size();
+
+		// Create unsorted data file "test2.in"
+		RID rid;
+		Heapfile f = null;
+		try {
+			f = new Heapfile("test4.in");
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+
+		t = new Tuple(size);
+		try {
+			t.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < 2; i++) {
+			try {
+				t.set100DVectFld(1, vectorObject[i]);
+				//System.out.println("offset "+t.getOffset());
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+
+			try {
+				//System.out.println("fldCnt in test5 "+t.getLength());
+				//System.out.println("before ");
+				//System.out.println("before "+ Arrays.toString(t.returnTupleByteArray()));
+				rid = f.insertRecord(t.returnTupleByteArray());
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+		}
+		
+		System.out.println("open a vafile");//debug
+		
+		
+		VAFile vaf = null;
+		try {
+			vaf = new VAFile("vafile1",4);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+			Runtime.getRuntime().exit(1);
+		}
+		
+		System.out.println("open vafile scan");
+		
+		//open a scan to read record to insert into vafile
+		VAFileScan vascan = null;
+		Tuple temp = null;
+		rid = new RID();
+		Vector100Dtype tmpVec = null;
+		try {
+			vascan = new VAFileScan(f);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		try {
+			temp = vascan.getNext(rid);
+			t.tupleCopy(temp);
+			//System.out.println("read tuple flds no "+temp.noOfFlds());
+			//System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
+			//tmpVec = t.get100DVectFld(1);
+			//tmpVec.printVector();
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		try {
+			t.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		Vector100Key vkey = null;
+		while (temp != null) {
+			try {
+				//System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
+				t.tupleCopy(temp);// temp do not have header !!!
+				
+				tmpVec = t.get100DVectFld(1);
+				//System.out.println("after "+Arrays.toString(t.returnTupleByteArray()));
+				tmpVec.printVector();
+				temp = vascan.getNext(rid);
+			}catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			
+			
+			try {
+				vkey = new Vector100Key(tmpVec,4);
+				
+			}catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			
+			
+			
+			try {
+				vaf.insertKey(vkey,rid);
+				
+			}catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			
+			
+		}
+
+		
+		
+		
+		
+		
 		return true;
 	}
 

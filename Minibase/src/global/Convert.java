@@ -6,6 +6,8 @@ import java.io.*;
 import java.lang.*;
 import java.util.Arrays;
 
+import VAIndex.Vector100Key;
+
 public class Convert{
  /**
   * Zongkun
@@ -62,6 +64,20 @@ public static void set100DVectorValue(Vector100Dtype value, int position, byte[]
 
 }
 //End
+
+public static void set100DVectorKeyValue(Vector100Key value, int position, byte[] data) throws IOException{
+
+//  Vector100Dtype v=new Vector100Dtype(data);
+//   
+//   // creates a byte array with this output stream size and the
+//   // valid contents of the buffer have been copied into it
+//   byte []B = ((ByteArrayOutputStream) out).toByteArray();
+//   
+//   // copies the first 2 bytes of this byte array into data[] 
+
+	System.arraycopy (value.returnKeyByteArray(), 0, data, position, value.getDataLength());
+
+}
  /**
  * read 4 bytes from given byte array at the specified position
  * convert it to an integer
