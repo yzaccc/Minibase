@@ -1,13 +1,17 @@
 package tests;
 
 import java.io.*;
+
 import global.*;
+import VAIndex.VAException;
+import VAIndex.Vector100Key;
 import bufmgr.*;
 import diskmgr.*;
 import heap.*;
 import iterator.*;
 import index.*;
 import btree.*;
+
 import java.util.Random;
 
 class IndexDriver extends TestDriver implements GlobalConst {
@@ -780,6 +784,13 @@ class IndexDriver extends TestDriver implements GlobalConst {
 	}
 
 	protected boolean test4() {
+		Vector100Dtype v = new Vector100Dtype((short)5000);
+		try {
+			Vector100Key key1 = new Vector100Key(v,4);
+		} catch (VAException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return true;
 	}
 

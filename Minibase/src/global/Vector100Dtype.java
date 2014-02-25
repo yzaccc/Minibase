@@ -34,6 +34,12 @@ public class Vector100Dtype {
 	      }
 		
 	}
+	public Vector100Dtype(short value){
+		for (int i=0;i<Max;i++){
+			VectorValue[i] = value;
+		}
+	}
+	
 	public Vector100Dtype(short[] vectorValue){
 		VectorValue = vectorValue;
 	}
