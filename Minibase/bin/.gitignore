@@ -1,6 +1,6 @@
-/.DS_Store
 /META-INF
 /Makefile
+/VAIndex
 /btree
 /bufmgr
 /catalog
@@ -13,4 +13,3 @@
 /javadoc
 /tests
 /typescript
-/VAIndex
