@@ -908,6 +908,8 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			status = FAIL;
 			e.printStackTrace();
 		}
+		
+		// insert va key
 		Vector100Key vkey = null;
 		while (temp != null) {
 			try {

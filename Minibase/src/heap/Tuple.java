@@ -5,6 +5,8 @@ package heap;
 import java.io.*;
 import java.lang.*;
 
+import VAIndex.VAException;
+import VAIndex.Vector100Key;
 import global.*;
 
 
@@ -193,6 +195,19 @@ public class Tuple implements GlobalConst{
 	     {
 	    	//System.out.println("offset in  get100DVectFld "+fldOffset[fldNo -1]);//debug
 	      val = Convert.get100DVectorValue(fldOffset[fldNo -1], data);
+	      //val.printVector();//debug
+	      return val;
+	     }
+	    else 
+	     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+   }
+   public Vector100Key get100DVectKeyFld(int fldNo) throws IOException, FieldNumberOutOfBoundException, VAException{
+	   Vector100Key val;
+	   
+	    if ( (fldNo > 0) && (fldNo <= fldCnt))
+	     {
+	    	//System.out.println("offset in  get100DVectFld "+fldOffset[fldNo -1]);//debug
+	      val = Convert.get100DVectorKeyValue(fldOffset[fldNo -1], data, fldOffset[fldNo] - fldOffset[fldNo -1]);
 	      //val.printVector();//debug
 	      return val;
 	     }
@@ -410,6 +425,10 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
   for (i=1; i<numFlds; i++)
   {
     switch(types[i-1].attrType) {
+    case AttrType.attrVector100Dkey:
+    	incr = (short) (strSizes[strCount] );//??? no +2 compare to string?
+    	strCount++;
+    	break;
     case AttrType.attrVector100D:
     	incr = 200;
     	break;
@@ -436,6 +455,11 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
  
 }
  switch(types[numFlds -1].attrType) {
+ 
+ 	case AttrType.attrVector100Dkey:
+	 	incr = (short) (strSizes[strCount] );//??? no +2 compare to string?
+	 	strCount++;
+	 	break;
  
  	case AttrType.attrVector100D:
  		incr = 200;

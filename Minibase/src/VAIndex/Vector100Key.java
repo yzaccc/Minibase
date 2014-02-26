@@ -17,6 +17,7 @@ public class Vector100Key extends KeyClass{
 	private int totalregionnum;// number of region in a dimension
 	private byte []data;
 	private Vector100Dtype _vector;
+	private int []_regionnum ;
 	
 	
 	public Vector100Dtype get_vector() {
@@ -48,9 +49,9 @@ public class Vector100Key extends KeyClass{
 		}
 		else
 			throw new VAException(null, "bit number should be even");
-		
+		_regionnum = new int [totalregionnum];
 		short [] vecvalue = v.getVectorValue();
-		int regionnum;
+		int tmpregionnum;
 		int bitmask;
 		StringBuffer binarydata = new StringBuffer();
 		for (int i=0;i<100;i++){
@@ -58,10 +59,11 @@ public class Vector100Key extends KeyClass{
 				throw new VAException(null, "vector value larger than upper bound");
 			else if (vecvalue[i] < VAFile.LOWERBOUND)
 				throw new VAException(null, "vector value lower than lower bound");
-			regionnum = (int)((vecvalue[i] - VAFile.LOWERBOUND)/regionsize);
-			if (regionnum == totalregionnum)//last region should be 2^b-1, change 2^b to 2^b-1
-				regionnum -= 1;
-			String binaryregion = Integer.toBinaryString(regionnum);// binary number of region
+			tmpregionnum = (int)((vecvalue[i] - VAFile.LOWERBOUND)/regionsize);
+			if (tmpregionnum == totalregionnum)//last region should be 2^b-1, change 2^b to 2^b-1
+				tmpregionnum -= 1;
+			_regionnum[i] = tmpregionnum;
+			String binaryregion = Integer.toBinaryString(tmpregionnum);// binary number of region
 			StringBuffer tmpsb = new StringBuffer();
 			if (binaryregion.length() < _b){// padding zero
 				
@@ -90,6 +92,53 @@ public class Vector100Key extends KeyClass{
 	}
 	public void setDataBytes(byte [] data, int position){
 		System.arraycopy(data, position, this.data, 0, this.dataLength);
+	}
+	public void setAllRegionNumber(){
+
+		StringBuffer sb = new StringBuffer();
+		//concate all bits to one string
+		for (int i=0;i<this.dataLength;i++)
+		{
+			String s1 = String.format("%8s", Integer.toBinaryString(data[i] & 0xFF)).replace(' ', '0');
+			System.out.println(s1);
+			sb.append(s1);
+		}
+		System.out.println(sb);//debug
+		for (int i=0;i<Vector100Dtype.Max;i++){
+			int rgnum = Integer.parseInt(sb.substring(i*_b, i*_b+_b),2);
+			this._regionnum[i] = rgnum;
+			System.out.println("in setRegionNumber " + rgnum);//debug
+		}
+	}
+	public int get_regionnumAt(int i){
+		return this._regionnum[i];
+	}
+	public short getPartionPointAt(int idx){
+		short p = (short)(this.regionsize * idx);
+		return p;
+	}
+	public int getLowerBoundDistance(Vector100Dtype target) throws VAException{
+		Vector100Dtype lbvector = null;// create a lower bound vector
+		Vector100Key tarkey = new Vector100Key(target,_b);
+		short[] VectorValue = new short[Vector100Dtype.Max];
+		for (int i=0;i<Vector100Dtype.Max;i++){
+			if (tarkey.get_regionnumAt(i) > this.get_regionnumAt(i)){
+				VectorValue[i] = 
+						(short)(target.getVectorValueAt(i) - (this.getPartionPointAt(i+1)));
+			}
+			else if (tarkey.get_regionnumAt(i) == this.get_regionnumAt(i)){
+				VectorValue[i] = 0;
+			}
+			else if (tarkey.get_regionnumAt(i) < this.get_regionnumAt(i)){
+				VectorValue[i] =
+						(short)((this.getPartionPointAt(i)) - target.getVectorValueAt(i));
+						
+			}
+		}
+		lbvector = new Vector100Dtype(VectorValue);
+		int distance = Vector100Dtype.distance(lbvector, target);
+		return distance;
+		
 	}
  
 }

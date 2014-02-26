@@ -17,6 +17,7 @@ public class AttrType {
    * Task 2
    */
   public static final int attrVector100D = 5;
+  public static final int attrVector100Dkey = 6;// Meng Yang
   	
   public int attrType;
 

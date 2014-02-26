@@ -114,6 +114,9 @@ public class Vector100Dtype {
 	public short[] getVectorValue() {
 		return VectorValue;
 	}
+	public short getVectorValueAt(int idx) {
+		return VectorValue[idx];
+	}
 	
 	public void setVectorValue(short[] vectorValue) {
 		VectorValue = vectorValue;

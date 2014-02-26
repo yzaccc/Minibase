@@ -51,7 +51,10 @@ public class VAFile extends Heapfile
 	public VAFile (String filename, int b) throws HFException, HFBufMgrException, HFDiskMgrException, IOException{
 		super(filename);
 		_b = b;
-	}
+		// if file exist, I can't guarantee b is the same when open file again
+		// but it can be checked later when get record from the file
+		// record.length*8/100 = b
+		}
 	
   public void insertKey(Vector100Key key, RID rid) 
 		  throws InvalidSlotNumberException, 

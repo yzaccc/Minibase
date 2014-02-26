@@ -6,6 +6,7 @@ import java.io.*;
 import java.lang.*;
 import java.util.Arrays;
 
+import VAIndex.VAException;
 import VAIndex.Vector100Key;
 
 public class Convert{
@@ -17,28 +18,37 @@ public class Convert{
   * @param data
   * @return
  * @throws IOException 
+ * @throws VAException 
   */
+public static Vector100Key get100DVectorKeyValue(int position, byte[] data, int length) throws IOException, VAException{
+
+	  Vector100Key value;
+	  int b = length*8/100;
+	  value=new Vector100Key(b);
+	  value.setDataBytes(data, position);//??? not sure need arrycopy
+	  return value;
+}
 public static Vector100Dtype get100DVectorValue(int position, byte[] data) throws IOException{
 	  //InputStream in;
-      //DataInputStream instr;
-      Vector100Dtype value;
-      byte tmp[] = new byte[200];
-      
-      // copy the value from data array out to a tmp byte array
-      System.arraycopy (data, position, tmp, 0, 200);
-      //System.out.println("data in get100DVectorValue\n"+Arrays.toString(data));//debug
-      //System.out.println("hello4");
-      
-      value=new Vector100Dtype(tmp);
-      /* creates a new data input stream to read data from the
-       * specified input stream
-       */
-//      in = new ByteArrayInputStream(tmp);
-//      instr = new DataInputStream(in);
-//      value = instr.readInt();  
-      //System.out.println("in get100DVectorValue");
-      //value.printVector();//debug
-      return value;
+    //DataInputStream instr;
+    Vector100Dtype value;
+    byte tmp[] = new byte[200];
+    
+    // copy the value from data array out to a tmp byte array
+    System.arraycopy (data, position, tmp, 0, 200);
+    //System.out.println("data in get100DVectorValue\n"+Arrays.toString(data));//debug
+    //System.out.println("hello4");
+    
+    value=new Vector100Dtype(tmp);
+    /* creates a new data input stream to read data from the
+     * specified input stream
+     */
+//    in = new ByteArrayInputStream(tmp);
+//    instr = new DataInputStream(in);
+//    value = instr.readInt();  
+    //System.out.println("in get100DVectorValue");
+    //value.printVector();//debug
+    return value;
 }
  /**
   * Zongkun 
