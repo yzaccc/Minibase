@@ -39,7 +39,7 @@ public class Vector100Key extends KeyClass{
 	public Vector100Key(Vector100Dtype v, int b) throws VAException{
 		_b = b;
 		_vector = v;
-		
+		//System.out.println("in Vector100Key");//debug
 		if (b%2 == 0)
 		{ 
 			dataLength = b*100/8;// convert to byte
@@ -49,7 +49,7 @@ public class Vector100Key extends KeyClass{
 		}
 		else
 			throw new VAException(null, "bit number should be even");
-		_regionnum = new int [totalregionnum];
+		_regionnum = new int [Vector100Dtype.Max];
 		short [] vecvalue = v.getVectorValue();
 		int tmpregionnum;
 		int bitmask;
@@ -100,44 +100,58 @@ public class Vector100Key extends KeyClass{
 		for (int i=0;i<this.dataLength;i++)
 		{
 			String s1 = String.format("%8s", Integer.toBinaryString(data[i] & 0xFF)).replace(' ', '0');
-			System.out.println(s1);
+			//System.out.println("in setAllRegionNumber1 "+i+" "+s1);//debug
 			sb.append(s1);
 		}
-		System.out.println(sb);//debug
+		//System.out.println("in setAllRegionNumber2 "+sb);//debug
+		_regionnum = new int [Vector100Dtype.Max];
 		for (int i=0;i<Vector100Dtype.Max;i++){
 			int rgnum = Integer.parseInt(sb.substring(i*_b, i*_b+_b),2);
 			this._regionnum[i] = rgnum;
-			System.out.println("in setRegionNumber " + rgnum);//debug
+			//System.out.println("in setRegionNumber3 " + rgnum);//debug
+		}
+	}
+	public void printAllRegionNumber(){
+		for (int i=0;i<100;i++){
+			System.out.print(this._regionnum[i]+" ");
 		}
 	}
 	public int get_regionnumAt(int i){
 		return this._regionnum[i];
 	}
 	public short getPartionPointAt(int idx){
-		short p = (short)(this.regionsize * idx);
+		short p = (short)((this.regionsize * this._regionnum[idx]) + VAFile.LOWERBOUND) ;
 		return p;
 	}
 	public int getLowerBoundDistance(Vector100Dtype target) throws VAException{
-		Vector100Dtype lbvector = null;// create a lower bound vector
-		Vector100Key tarkey = new Vector100Key(target,_b);
-		short[] VectorValue = new short[Vector100Dtype.Max];
+		double sum=0;
+		Vector100Key tarkey = new Vector100Key(target,_b);//for region number calculation
+		short tmpval=0;
 		for (int i=0;i<Vector100Dtype.Max;i++){
+//			if (i==0)
+//				System.out.print("$$$$$in getLowerBoundDistance "+
+//			tarkey.get_regionnumAt(i)+" "+this.get_regionnumAt(i));//debug
 			if (tarkey.get_regionnumAt(i) > this.get_regionnumAt(i)){
-				VectorValue[i] = 
+				tmpval = 
 						(short)(target.getVectorValueAt(i) - (this.getPartionPointAt(i+1)));
 			}
 			else if (tarkey.get_regionnumAt(i) == this.get_regionnumAt(i)){
-				VectorValue[i] = 0;
+				tmpval = 0;
 			}
 			else if (tarkey.get_regionnumAt(i) < this.get_regionnumAt(i)){
-				VectorValue[i] =
+				tmpval =
 						(short)((this.getPartionPointAt(i)) - target.getVectorValueAt(i));
+//				if (i==0) 
+//					System.out.print("&&&& getPartionPointAt "+this.getPartionPointAt(i));
+					
 						
 			}
+//			if (i==0) System.out.println(" tmpval "+ tmpval);//debug
+			sum += tmpval * tmpval;
 		}
-		lbvector = new Vector100Dtype(VectorValue);
-		int distance = Vector100Dtype.distance(lbvector, target);
-		return distance;
+		sum = Math.sqrt(sum);
+
+		return (int)sum;
 		
 	}
  

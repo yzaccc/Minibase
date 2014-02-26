@@ -5,6 +5,7 @@ package heap;
 import java.io.*;
 import java.lang.*;
 
+import VAIndex.KeyDataEntryVA;
 import VAIndex.VAException;
 import VAIndex.Vector100Key;
 import global.*;
@@ -106,6 +107,7 @@ public class Tuple implements GlobalConst{
    public void tupleCopy(Tuple fromTuple)
    {
        byte [] temparray = fromTuple.getTupleByteArray();
+//       System.out.println("in Tuple "+temparray.length+" "+data.length+ " "+ tuple_length);//debug
        System.arraycopy(temparray, 0, data, tuple_offset, tuple_length);   
 //       fldCnt = fromTuple.noOfFlds(); 
 //       fldOffset = fromTuple.copyFldOffset(); 
@@ -201,15 +203,15 @@ public class Tuple implements GlobalConst{
 	    else 
 	     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
    }
-   public Vector100Key get100DVectKeyFld(int fldNo) throws IOException, FieldNumberOutOfBoundException, VAException{
-	   Vector100Key val;
+   public KeyDataEntryVA get100DVectKeyFld(int fldNo) throws IOException, FieldNumberOutOfBoundException, VAException{
+	   KeyDataEntryVA keydata;
 	   
 	    if ( (fldNo > 0) && (fldNo <= fldCnt))
 	     {
-	    	//System.out.println("offset in  get100DVectFld "+fldOffset[fldNo -1]);//debug
-	      val = Convert.get100DVectorKeyValue(fldOffset[fldNo -1], data, fldOffset[fldNo] - fldOffset[fldNo -1]);
+	    	//System.out.println("offset in  get100DVectFld "+fldOffset[fldNo -1]+" "+fldOffset[fldNo]);//debug
+	    	keydata = Convert.get100DVectorKeyValue(fldOffset[fldNo -1], data, fldOffset[fldNo] - fldOffset[fldNo -1]);
 	      //val.printVector();//debug
-	      return val;
+	      return keydata;
 	     }
 	    else 
 	     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
@@ -227,6 +229,20 @@ public class Tuple implements GlobalConst{
 		     
 		  }
    //End
+   public Tuple set100DVectkeyFld(int fldNo, KeyDataEntryVA val) throws IOException, FieldNumberOutOfBoundException
+	  { 
+	   if ( (fldNo > 0) && (fldNo <= fldCnt))
+	    {
+		   
+		 Convert.setIntValue(val.getRid().slotNo, fldOffset[fldNo -1], data);  
+		 Convert.setIntValue(val.getRid().pageNo.pid, fldOffset[fldNo -1]+4, data);
+	     Convert.set100DVectorKeyValue(val.getKey(), fldOffset[fldNo -1]+8, data);
+	     return this;
+	    }
+	    else  
+	     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND"); 
+	     
+	  }
    
    /**
     * Convert this field into integer 
@@ -427,6 +443,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
     switch(types[i-1].attrType) {
     case AttrType.attrVector100Dkey:
     	incr = (short) (strSizes[strCount] );//??? no +2 compare to string?
+    	// 8 bytes for RID
     	strCount++;
     	break;
     case AttrType.attrVector100D:

@@ -6,6 +6,7 @@ import java.io.*;
 import java.lang.*;
 import java.util.Arrays;
 
+import VAIndex.KeyDataEntryVA;
 import VAIndex.VAException;
 import VAIndex.Vector100Key;
 
@@ -20,13 +21,20 @@ public class Convert{
  * @throws IOException 
  * @throws VAException 
   */
-public static Vector100Key get100DVectorKeyValue(int position, byte[] data, int length) throws IOException, VAException{
+public static KeyDataEntryVA get100DVectorKeyValue(int position, byte[] data, int length) throws IOException, VAException{
 
-	  Vector100Key value;
-	  int b = length*8/100;
-	  value=new Vector100Key(b);
-	  value.setDataBytes(data, position);//??? not sure need arrycopy
-	  return value;
+	  KeyDataEntryVA keydata;
+	  int b = (length-8)*8/100;
+	  byte tmp[] = new byte[length];
+	  System.arraycopy (data, position, tmp, 0, length);
+	  keydata = new KeyDataEntryVA(tmp,b);
+//	  System.out.println("int Convert get100DVectorKeyValue length="+length);//debug
+//	  System.out.println(Arrays.toString(tmp));//debug
+//	  keydata=new KeyDataEntryVA();
+//	  System.out.println("in get100DVectorKeyValue position = "+ position);//debug
+//	  keydata
+//	  //.setDataBytes(data, position+8);//??? not sure need arrycopy
+	  return keydata;
 }
 public static Vector100Dtype get100DVectorValue(int position, byte[] data) throws IOException{
 	  //InputStream in;

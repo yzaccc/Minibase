@@ -16,10 +16,26 @@ public class KeyDataEntryVA {
 		this.key = key;
 		this.rid = rid;
 	}
+	public KeyDataEntryVA(byte[] data, int b) throws VAException, IOException{
+		this.key = new Vector100Key(b);
+		key.setDataBytes(data,8);
+		int pid;
+		int slotNo;
+		slotNo = Convert.getIntValue(0, data);
+		pid = Convert.getIntValue(4, data);
+		PageId pageid = new PageId(pid);
+		this.rid = new RID(pageid,slotNo);	
+	}
 
 	
+	public Vector100Key getKey() {
+		return key;
+	}
+	public RID getRid() {
+		return rid;
+	}
 	byte [] getBytesFromEntry() throws IOException{
-		int datalength = 204;// vector + int
+		int datalength = key.getDataLength()+8;// vector + int
 		byte[] data = new byte[datalength];
 		Convert.setIntValue(rid.slotNo, 0, data);
 		Convert.setIntValue(rid.pageNo.pid, 4, data);

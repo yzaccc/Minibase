@@ -17,7 +17,9 @@ import btree.LeafInsertRecException;
 import btree.NodeNotMatchException;
 import btree.PinPageException;
 import btree.UnpinPageException;
+import global.AttrType;
 import global.RID;
+import heap.FieldNumberOutOfBoundException;
 import heap.HFBufMgrException;
 import heap.HFDiskMgrException;
 import heap.HFException;
@@ -25,6 +27,7 @@ import heap.Heapfile;
 import heap.InvalidSlotNumberException;
 import heap.InvalidTupleSizeException;
 import heap.SpaceNotAvailableException;
+import heap.Tuple;
 
 public class VAFile extends Heapfile
 {
@@ -63,9 +66,29 @@ public class VAFile extends Heapfile
 		  HFException, 
 		  HFBufMgrException, 
 		  HFDiskMgrException, 
-		  IOException {
+		  IOException, FieldNumberOutOfBoundException {
 	  KeyDataEntryVA kdva = new KeyDataEntryVA(key, rid);
-	  insertRecord(kdva.getBytesFromEntry());
+	  //System.out.println("in VAFile "+kdva.getBytesFromEntry().length);//debug
+	  Tuple t1 = new Tuple();
+		// set tuple header for va key  t1
+		AttrType[] attrType = new AttrType[1];
+		attrType[0] = new AttrType(AttrType.attrVector100Dkey);
+		short[] attrSize = new short[1];
+		attrSize[0] = (short)(_b*100/8+8);		
+		try {
+			t1.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		int size = t1.size();
+		t1 = new Tuple(size);
+		try {
+			t1.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		t1.set100DVectkeyFld(1, kdva);
+		insertRecord(t1.getTupleByteArray());
   }
 	
 	
