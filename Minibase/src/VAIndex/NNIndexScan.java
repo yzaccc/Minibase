@@ -40,7 +40,7 @@ public class NNIndexScan {
 	private CondExpr[]    _selects;
 	public FldSpec[]      perm_mat;
 	private int           _noOutFlds;
-	private Tuple         tuple1;// input tuple
+	private Tuple         tuplein;// input tuple
 	private int           t1_size;
 	
 	public NNIndexScan(IndexType index,
@@ -83,24 +83,24 @@ public class NNIndexScan {
 	    perm_mat = outFlds;
 	    _noOutFlds = noOutFlds;
 	    
-	    tuple1 = new Tuple();    
+	    tuplein = new Tuple();    
 	    try {
-	      tuple1.setHdr((short) noInFlds, types, str_sizes);
+	    	tuplein.setHdr((short) noInFlds, types, str_sizes);
 	    }
 	    catch (Exception e) {
 	      throw new IndexException(e, "IndexScan.java: Heapfile error");
 	    }
 	    
-	    t1_size = tuple1.size();// input tuple size
+	    t1_size = tuplein.size();// input tuple size
 
 	    
 		// ***************   copy1 end  *************************//
 	    
 	    
 	    // set again make sure it is correct
-	    tuple1 = new Tuple(t1_size);
+	    tuplein = new Tuple(t1_size);
 	    try {
-		      tuple1.setHdr((short) noInFlds, types, str_sizes);
+	    	tuplein.setHdr((short) noInFlds, types, str_sizes);
 		    }
 	    catch (Exception e) {
 	      throw new IndexException(e, "IndexScan.java: Heapfile error");
@@ -143,10 +143,10 @@ public class NNIndexScan {
 	    nextidx = 0;
 	    
 	    
-//	    for (int i=0;i<_count;i++){
-//	    	   Tuple nexttuple = vac[1].getTuple();
+	    for (int i=0;i<_count;i++){
+	    	   Tuple nexttuple = vac[1].getTuple();
 //	    	   vac[i].getVector().printVector();
-//	    	   
+	    	   
 //	   		try{
 //	   		Vector100Dtype tmpVec = nexttuple.get100DVectFld(1);
 //	   		System.out.println("in NNScan debug");
@@ -158,15 +158,20 @@ public class NNIndexScan {
 //	   		e.printStackTrace();
 //	   		}
 //	    	
-//	    }
+	    	   
+	    }
 	}
 	public Tuple get_next() throws IndexException {
-		System.out.println("in NN get next nextidx = "+ nextidx);
+//		System.out.println("in NN get next nextidx = "+ nextidx);
 		if (nextidx == this._count)// no more 
 			return null;
 	   boolean eval;
 	   Tuple nexttuple = vac[nextidx].getTuple();
+	   tuplein.tupleCopy(nexttuple);
+//	   System.out.println("in  NN get_next "+
+//	   Arrays.toString(vac[nextidx].getTuple().returnTupleByteArray()));
 	   
+
 //		try{
 //		Vector100Dtype tmpVec = nexttuple.get100DVectFld(1);
 //		System.out.println("in VACandidate ");
@@ -176,13 +181,14 @@ public class NNIndexScan {
 //
 //		e.printStackTrace();
 //		}
-//	   
-//	   
-//	   
+	   
+	   
+	   
 	   
 	   nextidx++;
+//	   return nexttuple;
 	   try {
-		   eval = PredEval.Eval(_selects, nexttuple, null, _types, null);
+		   eval = PredEval.Eval(_selects, tuplein, null, _types, null);
 	   }
 	   catch (Exception e) {
     	  throw new IndexException(e, "IndexScan.java: Heapfile error");
@@ -191,7 +197,8 @@ public class NNIndexScan {
       if (eval) {
     		// need projection.java
 		try {
-		  Projection.Project(tuple1, _types, Jtuple, perm_mat, _noOutFlds);
+			System.out.println("call projection");
+		  Projection.Project(tuplein, _types, Jtuple, perm_mat, _noOutFlds);
 		}
 		catch (Exception e) {
 		  throw new IndexException(e, "IndexScan.java: Heapfile error");
@@ -281,16 +288,16 @@ public class NNIndexScan {
 
 				try{
 					temp2 = hf.getRecord(rid2);
-					tuple1.tupleCopy(temp2);
+					tuplein.tupleCopy(temp2);
 					
 				}catch (Exception e) {
 
 					e.printStackTrace();
 				}
-				tmpVec = tuple1.get100DVectFld(_fldNum);// get indexed field
+				tmpVec = tuplein.get100DVectFld(_fldNum);// get indexed field
 				int realdistance = Vector100Dtype.distance(this.target, tmpVec);
 //				System.out.println("in VANN2 realdistance "+realdistance);//debug
-				largestdistance = this.Candidate(realdistance, rid2,tmpVec,tuple1);
+				largestdistance = this.Candidate(realdistance, rid2,tmpVec,tuplein);
 			}
 			
 			//get next key
@@ -331,17 +338,23 @@ public class NNIndexScan {
 			vac[0] = new VACandidate(realdst, rid,v,tuple);
 			System.out.println("in Candidate size"+tuple.size());	
 			sortCandidate();
-			
-			
-			
-			
-			
+
 		}
 		return vac[0].getDst();
 		
 	}
 	private void sortCandidate(){
 		VACandidate tmpc = null;
+		
+//		System.out.println("before in sortCandidate");
+//		if (vac[0].getDst()<0x7fffffff)
+//		{
+//			System.out.println("first "+ Arrays.toString(vac[0].getTuple().returnTupleByteArray()));
+//		}
+//		if (vac[1].getDst()<0x7fffffff)
+//		{
+//			System.out.println("second "+Arrays.toString(vac[1].getTuple().returnTupleByteArray()));
+//		}
 		for (int i=0;i<this._count-1;i++){
 			for (int j=i+1;j<this._count;j++){
 				if (vac[i].getDst() < vac[j].getDst())
@@ -352,6 +365,16 @@ public class NNIndexScan {
 				}
 			}
 		}
+		
+//		System.out.println("after in sortCandidate");
+//		if (vac[0].getDst()<0x7fffffff)
+//		{
+//			System.out.println("first "+Arrays.toString(vac[0].getTuple().returnTupleByteArray()));
+//		}
+//		if (vac[1].getDst()<0x7fffffff)
+//		{
+//			System.out.println("second "+Arrays.toString(vac[1].getTuple().returnTupleByteArray()));
+//		}
 	}
 
 }

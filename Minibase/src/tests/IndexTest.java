@@ -917,9 +917,9 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			status = FAIL;
 			e.printStackTrace();
 		}
-		
+		Tuple tmptuple = null;
 		try{
-			t = nnscan.get_next();
+			tmptuple = nnscan.get_next();
 		}
 		catch (Exception e) {
 			status = FAIL;
@@ -927,11 +927,13 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		}
 		
 		Vector100Dtype tmpVec = null;
-		while (t != null){
+		while (tmptuple != null){
 			try{
+				t.tupleCopy(tmptuple);
+
 				tmpVec = t.get100DVectFld(1);
-				System.out.println("in index test 4");
-				tmpVec.printVector();
+				System.out.println("in index test 4 ");//debug
+				tmpVec.printVector();//debug
 			}catch (Exception e) {
 				status = FAIL;
 				e.printStackTrace();
@@ -939,7 +941,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			
 			
 			try{
-				t = nnscan.get_next();
+				tmptuple = nnscan.get_next();
 			}
 			catch (Exception e) {
 				status = FAIL;
