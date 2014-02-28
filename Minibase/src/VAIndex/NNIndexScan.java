@@ -27,7 +27,6 @@ public class NNIndexScan {
 	private VAFile vaf;
 	private int _count;
 	private int _b;// va bit
-	private RID[] NNrid = null;
 	private VACandidate vac[] = null;
 	private int nextidx = 0;
 	
@@ -121,7 +120,6 @@ public class NNIndexScan {
 		target = query;
 		_b = vabit;
 		_count = count;
-		NNrid = new RID[_count];
 		vac = new VACandidate[_count];
 		
 	    try {
