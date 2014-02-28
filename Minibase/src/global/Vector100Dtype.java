@@ -44,17 +44,17 @@ public class Vector100Dtype {
 		VectorValue = vectorValue;
 	}
 	public static Vector100Dtype getMaxVector100D(Vector100Dtype v){
-		short [] maxarray= {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		
+		//short [] maxarray= {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		Vector100Dtype vector = new Vector100Dtype((short)0);
 		
 		short []  targetValue = v.getVectorValue();
 		for(int i =0;i<Max;i++){
 			if (targetValue[i] >0 )
-				maxarray[i] = -10000;
+				vector.VectorValue[i] = -10000;
 			else
-				maxarray[i] = 10000;
+				vector.VectorValue[i] = 10000;
 		}
-		Vector100Dtype maxv = new Vector100Dtype(maxarray);
+		Vector100Dtype maxv = new Vector100Dtype(vector.VectorValue);
 		return maxv;
 	}
 	public void printVector(){

@@ -67,7 +67,7 @@ public class Projection
 	      switch (type2[perm_mat[i].offset-1].attrType)
 		{
 	    case AttrType.attrVector100D:
-	    	Jtuple.set100DVectFld(i+1, t1.get100DVectFld(perm_mat[i].offset));
+	    	Jtuple.set100DVectFld(i+1, t2.get100DVectFld(perm_mat[i].offset));
 	    	break;
 		case AttrType.attrInteger:
 		  Jtuple.setIntFld(i+1, t2.getIntFld(perm_mat[i].offset));

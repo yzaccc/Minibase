@@ -3,9 +3,9 @@ package tests;
 import java.io.*;
 
 import global.*;
+import VAIndex.NNIndexScan;
 import VAIndex.VAException;
 import VAIndex.VAFile;
-import VAIndex.VAFileNNScan;
 import VAIndex.VAFileScan;
 import VAIndex.Vector100Key;
 import bufmgr.*;
@@ -809,11 +809,15 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		TupleOrder[] order = new TupleOrder[2];
 		order[0] = new TupleOrder(TupleOrder.Ascending);
 		order[1] = new TupleOrder(TupleOrder.Descending);
+		
+		FldSpec[] projlist = new FldSpec[1];
+		RelSpec rel = new RelSpec(RelSpec.outer);
+		projlist[0] = new FldSpec(rel, 1);
 
 
 
 		Vector100Dtype vector1 = new Vector100Dtype((short)1);//data
-		Vector100Dtype vector2 = new Vector100Dtype((short)2);//data
+		Vector100Dtype vector2 = new Vector100Dtype((short)6);//data
 		Vector100Dtype vector3 = new Vector100Dtype((short)9999);//data
 		Vector100Dtype vector4 = new Vector100Dtype((short)1300);//data
 		Vector100Dtype target = new Vector100Dtype((short)5);//data
@@ -903,13 +907,48 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			status = FAIL;
 			e.printStackTrace();
 		}
+		NNIndexScan nnscan  = null;
 		try{
-			VAFileNNScan nnscan = new VAFileNNScan(vkey,2,"test4.in","vafile1",4);
+			nnscan = new NNIndexScan(new IndexType(IndexType.VAIndex),
+					"test4.in","vafile1",attrType,attrSize,1,1,projlist,null,1,
+					target,2,4);
 			
 		}catch (Exception e) {
 			status = FAIL;
 			e.printStackTrace();
 		}
+		
+		try{
+			t = nnscan.get_next();
+		}
+		catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		
+		Vector100Dtype tmpVec = null;
+		while (t != null){
+			try{
+				tmpVec = t.get100DVectFld(1);
+				System.out.println("in index test 4");
+				tmpVec.printVector();
+			}catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			
+			
+			try{
+				t = nnscan.get_next();
+			}
+			catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			
+		}
+
+		
 		
 
 		

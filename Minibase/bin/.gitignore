@@ -1,5 +1,3 @@
-/META-INF
-/Makefile
 /VAIndex
 /btree
 /bufmgr
@@ -10,6 +8,4 @@
 /heap
 /index
 /iterator
-/javadoc
 /tests
-/typescript
