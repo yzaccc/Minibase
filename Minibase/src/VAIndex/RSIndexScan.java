@@ -24,7 +24,7 @@ public class RSIndexScan {
 	private Vector100Dtype target;
 	private Heapfile hf;// data file
 	private VAFile vaf;
-	private int _count;
+	//private int _count;
 	private int _b;// va bit
 	//private VACandidate vac[] = null;
 	private ArrayList<VACandidate> vac;
@@ -146,7 +146,7 @@ public class RSIndexScan {
 	private void VA_RS() throws VAException, FieldNumberOutOfBoundException, IOException{
 
 	    nextidx = 0;
-	    _count = 0;
+//	    _count = 0;
 		RID rid1 = new RID();
 		RID rid2 = new RID();
 		Vector100Key vkey = null;
@@ -207,7 +207,7 @@ public class RSIndexScan {
 				keydata = t1.get100DVectKeyFld((short)1);
 				vkey = keydata.getKey();
 				rid2 = keydata.getRid();
-				System.out.println("in NNScan rid "+rid2.slotNo+" "+rid2.pageNo.pid);//debug
+//				System.out.println("in NNScan rid "+rid2.slotNo+" "+rid2.pageNo.pid);//debug
 			} catch (Exception e) {
 
 				e.printStackTrace();
@@ -257,15 +257,15 @@ public class RSIndexScan {
 	private void storeData (int realdst, RID rid, Vector100Dtype v, Tuple tuple){
 
 		VACandidate tmp = new VACandidate(realdst, rid,v,tuple);
-		System.out.println("in Candidate size"+tuple.size());	
+//		System.out.println("in Candidate size"+tuple.size());	
 		vac.add(tmp);
-		this._count++;
+//		this._count++;
 		
 	}
 	
 	public Tuple get_next() throws IndexException {
 //		System.out.println("in NN get next nextidx = "+ nextidx);
-		if (nextidx == this._count)// no more 
+		if (nextidx == this.vac.size())// no more 
 			return null;
 	   boolean eval;
 
@@ -281,9 +281,8 @@ public class RSIndexScan {
 	   }
 	      
       if (eval) {
-    		// need projection.java
 		try {
-			System.out.println("call projection");
+//			System.out.println("call projection");
 		  Projection.Project(tuplein, _types, Jtuple, perm_mat, _noOutFlds);
 		}
 		catch (Exception e) {

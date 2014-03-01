@@ -106,17 +106,6 @@ public class NNIndexScan {
 	    }
 	    
 	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
 		target = query;
 		_b = vabit;
 		_count = count;
@@ -184,7 +173,6 @@ public class NNIndexScan {
 	   
 	   
 	   nextidx++;
-//	   return nexttuple;
 	   try {
 		   eval = PredEval.Eval(_selects, tuplein, null, _types, null);
 	   }
@@ -193,9 +181,8 @@ public class NNIndexScan {
 	   }
 	      
       if (eval) {
-    		// need projection.java
 		try {
-			System.out.println("call projection");
+//			System.out.println("call projection");//debug
 		  Projection.Project(tuplein, _types, Jtuple, perm_mat, _noOutFlds);
 		}
 		catch (Exception e) {
@@ -232,13 +219,6 @@ public class NNIndexScan {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// set tuple header for vector 100  t2
-		//Tuple t2 = new Tuple();
-
-
-
-
-
 
 		//open vafile index file
 		VAFileScan vascan = null;
@@ -270,7 +250,7 @@ public class NNIndexScan {
 				vkey = keydata.getKey();
 				rid2 = keydata.getRid();
 					
-				System.out.println("in NNScan rid "+rid2.slotNo+" "+rid2.pageNo.pid);//debug
+//				System.out.println("in NNScan rid "+rid2.slotNo+" "+rid2.pageNo.pid);//debug
 			} catch (Exception e) {
 
 				e.printStackTrace();
@@ -336,7 +316,7 @@ public class NNIndexScan {
 		if (realdst < vac[0].getDst())
 		{
 			vac[0] = new VACandidate(realdst, rid,v,tuple);
-			System.out.println("in Candidate size"+tuple.size());	
+//			System.out.println("in Candidate size "+tuple.size());//debug
 			sortCandidate();
 
 		}
@@ -346,15 +326,6 @@ public class NNIndexScan {
 	private void sortCandidate(){
 		VACandidate tmpc = null;
 		
-//		System.out.println("before in sortCandidate");
-//		if (vac[0].getDst()<0x7fffffff)
-//		{
-//			System.out.println("first "+ Arrays.toString(vac[0].getTuple().returnTupleByteArray()));
-//		}
-//		if (vac[1].getDst()<0x7fffffff)
-//		{
-//			System.out.println("second "+Arrays.toString(vac[1].getTuple().returnTupleByteArray()));
-//		}
 		for (int i=0;i<this._count-1;i++){
 			for (int j=i+1;j<this._count;j++){
 				if (vac[i].getDst() < vac[j].getDst())
@@ -366,19 +337,9 @@ public class NNIndexScan {
 			}
 		}
 		
-//		System.out.println("after in sortCandidate");
-//		if (vac[0].getDst()<0x7fffffff)
-//		{
-//			System.out.println("first "+Arrays.toString(vac[0].getTuple().returnTupleByteArray()));
-//		}
-//		if (vac[1].getDst()<0x7fffffff)
-//		{
-//			System.out.println("second "+Arrays.toString(vac[1].getTuple().returnTupleByteArray()));
-//		}
 	}
 
 }
-
 
 
 
@@ -409,38 +370,11 @@ class VACandidate {
 		this.vector = vector;
 	}
 	public VACandidate(int dst, RID rid, Vector100Dtype vector, Tuple tuple1) {
-//		try{
-//			Vector100Dtype tmpVec = tuple.get100DVectFld(1);
-//			System.out.println("in VACandidate ");
-//			tmpVec.printVector();//debug
-//			
-//		}catch (Exception e) {
-//
-//			e.printStackTrace();
-//		}
-
 		this.dst = dst;
 		this.rid = rid;
 		this.vector = vector;
 		this.tuple = new Tuple(tuple1.size());
-		this.tuple.tupleCopy(tuple1);
-		
-//		System.out.println(Arrays.toString(this.tuple.returnTupleByteArray()));
-		
-//		this.tuple = tuple1;
-
-		
-//		try{
-//			Vector100Dtype tmpVec = tuple1.get100DVectFld(1);
-//			System.out.println("in VACandidate2 ");
-//			tmpVec.printVector();//debug
-//			System.out.println("in VACandidate3 ");
-//			this.vector.printVector();
-//			
-//		}catch (Exception e) {
-//
-//			e.printStackTrace();
-//		}
+		this.tuple.tupleCopy(tuple1);	
 	}
 	public int getDst() {
 		return dst;
