@@ -34,6 +34,12 @@ public class KeyDataEntryVA {
 	public RID getRid() {
 		return rid;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	byte [] getBytesFromEntry() throws IOException{
 		int datalength = key.getDataLength()+8;// vector + int
 		byte[] data = new byte[datalength];
@@ -42,7 +48,14 @@ public class KeyDataEntryVA {
 		Convert.set100DVectorKeyValue(key, 8, data);
 		return data;
 	}
-	
+	/**
+	 * 
+	 * @param data
+	 * @param b
+	 * @return
+	 * @throws VAException
+	 * @throws IOException
+	 */
 	public static KeyDataEntryVA getEntryFromBytes(byte[] data, int b) throws VAException, IOException{
 		Vector100Key vkey = new Vector100Key(b);
 		vkey.setDataBytes(data,8);

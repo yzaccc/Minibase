@@ -42,6 +42,9 @@ public class NNIndexScan {
 	private Tuple         tuplein;// input tuple
 	private int           t1_size;
 	
+	/**
+	 * define the nearest neighbor index scan
+	 */
 	public NNIndexScan(IndexType index,
 			String heapfilename, String indName,
 			AttrType[] types, short[] str_sizes, 
@@ -55,7 +58,7 @@ public class NNIndexScan {
 		
 		
 		
-		// ***************   copy1 begin  *************************//
+		// ***************   copy1 begin  copy from IndexScan.java *************************//
 	    _fldNum = fldNum;  
 	    _noInFlds = noInFlds;
 	    _types = types;  
@@ -193,6 +196,15 @@ public class NNIndexScan {
 	   }
       return null;
 	}
+	
+	/**
+	 * Simple Search algorithm
+	 * 
+	 * 
+	 * @throws VAException
+	 * @throws FieldNumberOutOfBoundException
+	 * @throws IOException
+	 */
 	private void VA_SSA() throws VAException, FieldNumberOutOfBoundException, IOException{
 		int largestdistance = initCandidate();
 		RID rid1 = new RID();

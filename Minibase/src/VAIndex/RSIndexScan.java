@@ -143,6 +143,13 @@ public class RSIndexScan {
 	    
 		
 	}
+	
+	/**
+	 * perform range scan, store result in vac
+	 * @throws VAException
+	 * @throws FieldNumberOutOfBoundException
+	 * @throws IOException
+	 */
 	private void VA_RS() throws VAException, FieldNumberOutOfBoundException, IOException{
 
 	    nextidx = 0;
@@ -254,6 +261,14 @@ public class RSIndexScan {
 //		getResult();//debug
 		
 	}
+	
+	/**
+	 * Store result in vac
+	 * @param realdst
+	 * @param rid
+	 * @param v
+	 * @param tuple
+	 */
 	private void storeData (int realdst, RID rid, Vector100Dtype v, Tuple tuple){
 
 		VACandidate tmp = new VACandidate(realdst, rid,v,tuple);
