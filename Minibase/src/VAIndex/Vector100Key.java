@@ -1,7 +1,6 @@
 package VAIndex;
 
 import java.util.Arrays;
-
 import global.Vector100Dtype;
 import btree.KeyClass;
 
@@ -19,6 +18,12 @@ public class Vector100Key extends KeyClass{
 	private Vector100Dtype _vector;
 	private int []_regionnum ;
 	
+	public int get_b() {
+		return _b;
+	}
+	public void set_b(int _b) {
+		this._b = _b;
+	}
 	
 	public Vector100Dtype get_vector() {
 		return _vector;
@@ -106,9 +111,10 @@ public class Vector100Key extends KeyClass{
 		//System.out.println("in setAllRegionNumber2 "+sb);//debug
 		_regionnum = new int [Vector100Dtype.Max];
 		for (int i=0;i<Vector100Dtype.Max;i++){
+//			System.out.println("in setRegionNumber3 b=" + _b+" i="+i);//debug
 			int rgnum = Integer.parseInt(sb.substring(i*_b, i*_b+_b),2);
 			this._regionnum[i] = rgnum;
-			//System.out.println("in setRegionNumber3 " + rgnum);//debug
+
 		}
 	}
 	public void printAllRegionNumber(){

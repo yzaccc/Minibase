@@ -131,7 +131,7 @@ public class NNIndexScan {
 	    
 	    
 	    try {
-    		vaf = new VAFile(indName,vabit); 
+    		vaf = new VAFile(indName,-1); // we will set the bit later
 	      }
 	      catch (Exception e) {
 		throw new IndexException(e, "VAFileNNScan.java: VAFile exceptions caught from VAFile constructor");
@@ -141,23 +141,23 @@ public class NNIndexScan {
 	    nextidx = 0;
 	    
 	    
-	    for (int i=0;i<_count;i++){
-	    	   Tuple nexttuple = vac[1].getTuple();
-//	    	   vac[i].getVector().printVector();
-	    	   
-//	   		try{
-//	   		Vector100Dtype tmpVec = nexttuple.get100DVectFld(1);
-//	   		System.out.println("in NNScan debug");
-//	   		tmpVec.printVector();//debug
-//	   		
-//	   		
-//	   		}catch (Exception e) {
-//
-//	   		e.printStackTrace();
-//	   		}
-//	    	
-	    	   
-	    }
+//	    for (int i=0;i<_count;i++){
+//	    	   Tuple nexttuple = vac[1].getTuple();
+////	    	   vac[i].getVector().printVector();
+//	    	   
+////	   		try{
+////	   		Vector100Dtype tmpVec = nexttuple.get100DVectFld(1);
+////	   		System.out.println("in NNScan debug");
+////	   		tmpVec.printVector();//debug
+////	   		
+////	   		
+////	   		}catch (Exception e) {
+////
+////	   		e.printStackTrace();
+////	   		}
+////	    	
+//	    	   
+//	    }
 	}
 	public Tuple get_next() throws IndexException {
 //		System.out.println("in NN get next nextidx = "+ nextidx);
@@ -265,9 +265,11 @@ public class NNIndexScan {
 			try {
 //				System.out.println("in NNScan "+Arrays.toString(t1.returnTupleByteArray()).length());		
 //				System.out.println("in NNScan "+Arrays.toString(t1.returnTupleByteArray())  );//debug
+				
 				keydata = t1.get100DVectKeyFld((short)1);
 				vkey = keydata.getKey();
 				rid2 = keydata.getRid();
+					
 				System.out.println("in NNScan rid "+rid2.slotNo+" "+rid2.pageNo.pid);//debug
 			} catch (Exception e) {
 
