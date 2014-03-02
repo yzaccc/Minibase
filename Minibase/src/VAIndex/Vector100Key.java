@@ -134,11 +134,15 @@ public class Vector100Key extends KeyClass{
 //	}
 	public short getPartionPointAt(int idx){
 		short p;
-		if (Vector100Dtype.Max == idx)//avoid index out of bound
-			p = (short)((this.regionsize * this._regionnum[idx-1]) + VAFile.LOWERBOUND + this.regionsize);
-		else
-			p = (short)((this.regionsize * this._regionnum[idx]) + VAFile.LOWERBOUND) ;
-			return p;
+		p = (short)((this.regionsize * this._regionnum[idx]) + VAFile.LOWERBOUND) ;
+		return p;
+		}
+	public short getPartionPointPlusOneAt(int idx){
+		short p;
+		p = (short)((this.regionsize * (this._regionnum[idx] + 1)) + VAFile.LOWERBOUND) ;
+		if (p > VAFile.UPPERBOUND)
+			p = VAFile.UPPERBOUND;
+		return p;
 		}
 	public int getLowerBoundDistance(Vector100Dtype target) throws VAException{
 		double sum=0;
@@ -150,7 +154,7 @@ public class Vector100Key extends KeyClass{
 //			tarkey.get_regionnumAt(i)+" "+this.get_regionnumAt(i));//debug
 			if (tarkey.get_regionnumAt(i) > this.get_regionnumAt(i)){
 				tmpval = 
-						(short)(target.getVectorValueAt(i) - (this.getPartionPointAt(i+1)));
+						(short)(target.getVectorValueAt(i) - (this.getPartionPointPlusOneAt(i)));
 			}
 			else if (tarkey.get_regionnumAt(i) == this.get_regionnumAt(i)){
 				tmpval = 0;
