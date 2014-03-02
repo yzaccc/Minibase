@@ -289,6 +289,7 @@ public class RSIndexScan {
 	   
 	   nextidx++;
 	   try {
+		   TupleUtils.target = this.target;
 		   eval = PredEval.Eval(_selects, tuplein, null, _types, null);
 	   }
 	   catch (Exception e) {
