@@ -36,7 +36,7 @@ public class KeyDataEntryVA {
 	}
 	
 	/**
-	 * 
+	 * first 4 bytes for slotNo, next 4 bytes for pid, rest for key
 	 * @return
 	 * @throws IOException
 	 */
@@ -51,7 +51,7 @@ public class KeyDataEntryVA {
 	/**
 	 * 
 	 * @param data
-	 * @param b
+	 * @param b 
 	 * @return
 	 * @throws VAException
 	 * @throws IOException

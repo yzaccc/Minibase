@@ -28,8 +28,11 @@ public class Vector100Key extends KeyClass{
 	public Vector100Dtype get_vector() {
 		return _vector;
 	}
+	
 	public Vector100Key(int b) throws VAException{
 		_b = b;
+		
+		//Check if the bit number is even.
 		if (b%2 == 0)
 		{ 
 			dataLength = b*100/8;// convert to byte
@@ -125,10 +128,18 @@ public class Vector100Key extends KeyClass{
 	public int get_regionnumAt(int i){
 		return this._regionnum[i];
 	}
+//	public short getPartionPointAt(int idx){
+//		short p = (short)((this.regionsize * this._regionnum[idx]) + VAFile.LOWERBOUND) ;
+//		return p;
+//	}
 	public short getPartionPointAt(int idx){
-		short p = (short)((this.regionsize * this._regionnum[idx]) + VAFile.LOWERBOUND) ;
-		return p;
-	}
+		short p;
+		if (Vector100Dtype.Max == idx)//avoid index out of bound
+			p = (short)((this.regionsize * this._regionnum[idx-1]) + VAFile.LOWERBOUND + this.regionsize);
+		else
+			p = (short)((this.regionsize * this._regionnum[idx]) + VAFile.LOWERBOUND) ;
+			return p;
+		}
 	public int getLowerBoundDistance(Vector100Dtype target) throws VAException{
 		double sum=0;
 		Vector100Key tarkey = new Vector100Key(target,_b);//for region number calculation

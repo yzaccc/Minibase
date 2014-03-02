@@ -877,7 +877,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 				//System.out.println("before ");
 				//System.out.println("before "+ Arrays.toString(t.returnTupleByteArray()));
 				rid = f.insertRecord(t.returnTupleByteArray());
-//				System.out.println("in IndexTest rid "+rid.slotNo+ " "+rid.pageNo.pid);//debug
+				System.out.println("in IndexTest rid "+rid.slotNo+ " "+rid.pageNo.pid);//debug
 			} catch (Exception e) {
 				status = FAIL;
 				e.printStackTrace();
@@ -948,7 +948,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			}
 			
 		}
-
+		System.out.println("Page counter in test4: "+PCounter.counter);
 		
 		
 
@@ -1190,7 +1190,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			}
 			
 		}
-		
+		System.out.println("Page counter in test5: "+PCounter.counter);
 		return true;
 	}
 

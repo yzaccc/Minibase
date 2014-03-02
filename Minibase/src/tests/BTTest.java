@@ -171,6 +171,7 @@ class BTDriver  implements GlobalConst
 	  break;          
 	case 3:
 	  BT.printAllLeafPages(file.getHeaderPage());
+	  System.out.println("pg counter in bt test counter="+PCounter.counter);
 	  break;            
 	case 4:
 	  System.out.println("Please input the page number: ");              
