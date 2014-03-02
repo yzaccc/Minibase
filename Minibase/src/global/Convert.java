@@ -4,9 +4,98 @@ package global;
 
 import java.io.*;
 import java.lang.*;
+import java.util.Arrays;
+
+import VAIndex.KeyDataEntryVA;
+import VAIndex.VAException;
+import VAIndex.Vector100Key;
 
 public class Convert{
- 
+ /**
+  * Zongkun
+  * Task 2
+  * read from given byte array at the specified position convert it to a Vector100Dtype
+  * @param position
+  * @param data
+  * @return
+ * @throws IOException 
+ * @throws VAException 
+  */
+public static KeyDataEntryVA get100DVectorKeyValue(int position, byte[] data, int length) throws IOException, VAException{
+
+	  KeyDataEntryVA keydata;
+	  int b = (length-8)*8/100;
+	  byte tmp[] = new byte[length];
+	  System.arraycopy (data, position, tmp, 0, length);
+	  keydata = new KeyDataEntryVA(tmp,b);
+//	  System.out.println("int Convert get100DVectorKeyValue length="+length);//debug
+//	  System.out.println(Arrays.toString(tmp));//debug
+//	  keydata=new KeyDataEntryVA();
+//	  System.out.println("in get100DVectorKeyValue position = "+ position);//debug
+//	  keydata
+//	  //.setDataBytes(data, position+8);//??? not sure need arrycopy
+	  return keydata;
+}
+public static Vector100Dtype get100DVectorValue(int position, byte[] data) throws IOException{
+	  //InputStream in;
+    //DataInputStream instr;
+    Vector100Dtype value;
+    byte tmp[] = new byte[200];
+    
+    // copy the value from data array out to a tmp byte array
+    System.arraycopy (data, position, tmp, 0, 200);
+    //System.out.println("data in get100DVectorValue\n"+Arrays.toString(data));//debug
+    //System.out.println("hello4");
+    
+    value=new Vector100Dtype(tmp);
+    /* creates a new data input stream to read data from the
+     * specified input stream
+     */
+//    in = new ByteArrayInputStream(tmp);
+//    instr = new DataInputStream(in);
+//    value = instr.readInt();  
+    //System.out.println("in get100DVectorValue");
+    //value.printVector();//debug
+    return value;
+}
+ /**
+  * Zongkun 
+  * Task 2
+  * update a Vector100Dtype in the given byte array at the specified position
+  * @param value
+  * @param position
+  * @param data
+  * @return
+ * @throws IOException 
+  */
+public static void set100DVectorValue(Vector100Dtype value, int position, byte[] data) throws IOException{
+
+//   Vector100Dtype v=new Vector100Dtype(data);
+//    
+//    // creates a byte array with this output stream size and the
+//    // valid contents of the buffer have been copied into it
+//    byte []B = ((ByteArrayOutputStream) out).toByteArray();
+//    
+//    // copies the first 2 bytes of this byte array into data[] 
+
+	System.arraycopy (Vector100Dtype.Vector100DtoByte(value), 0, data, position, 200);
+
+}
+//End
+
+public static void set100DVectorKeyValue(Vector100Key value, int position, byte[] data) throws IOException{
+
+//  Vector100Dtype v=new Vector100Dtype(data);
+//   
+//   // creates a byte array with this output stream size and the
+//   // valid contents of the buffer have been copied into it
+//   byte []B = ((ByteArrayOutputStream) out).toByteArray();
+//   
+//   // copies the first 2 bytes of this byte array into data[] 
+
+	System.arraycopy (value.returnKeyByteArray(), 0, data, position, value.getDataLength());
+
+}
  /**
  * read 4 bytes from given byte array at the specified position
  * convert it to an integer

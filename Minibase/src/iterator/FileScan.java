@@ -133,6 +133,7 @@ public class FileScan extends  Iterator
 	}
 	
 	tuple1.setHdr(in1_len, _in1, s_sizes);
+//	System.out.println("in FileScan get next iiii");//debug
 	if (PredEval.Eval(OutputFilter, tuple1, null, _in1, null) == true){
 	  Projection.Project(tuple1, _in1,  Jtuple, perm_mat, nOutFlds); 
 	  return  Jtuple;

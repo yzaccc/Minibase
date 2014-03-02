@@ -10,7 +10,13 @@ import global.*;
  */
 
 public class CondExpr {
-  
+  /**
+   * Zongkun 
+   * Phrase 2 task 3
+   */
+  public int distance;
+	
+	
   /**
    * Operator like "<"
    */
@@ -46,6 +52,10 @@ public class CondExpr {
     operand2.integer = 0;
     
     next = null;
+    /**
+     * Zongkun
+     */
+    distance = 0;
   }
 }
 

@@ -26,6 +26,8 @@ interface ConstSlot{
 
 public class HFPage extends Page 
   implements ConstSlot, GlobalConst{
+
+  public PCounter pc = new PCounter();
   
   
   public static final int SIZE_OF_SLOT = 4;
@@ -190,6 +192,8 @@ public class HFPage extends Page
     throws IOException 
     {
       prevPage.pid =  Convert.getIntValue (PREV_PAGE, data);
+      pc.increment();
+      System.out.println("counter in getPrevPage");//debug
       return prevPage;
     }
   
@@ -208,11 +212,19 @@ public class HFPage extends Page
   /**
    * @return     page number of next page
    * @exception IOException I/O errors
+ * @throws InvalidTypeException 
    */
   public PageId getNextPage()
     throws IOException
     {
-      nextPage.pid =  Convert.getIntValue (NEXT_PAGE, data);    
+      nextPage.pid =  Convert.getIntValue (NEXT_PAGE, data);
+      pc.increment();     
+      System.out.println("counter in getNextPage");//debug
+//      try{
+//    	  throw new InvalidTypeException(null,"deug exception");
+//      }catch(Exception e){
+//    	  e.printStackTrace();
+//      }
       return nextPage;
     }
   
@@ -236,6 +248,8 @@ public class HFPage extends Page
     throws IOException
     {
       curPage.pid =  Convert.getIntValue (CUR_PAGE, data);
+      pc.increment(); 
+      System.out.println("counter in getCurPage");//debug
       return curPage;
     }
   

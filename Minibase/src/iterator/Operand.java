@@ -1,5 +1,7 @@
 package iterator;
 
+import global.Vector100Dtype;
+
 
 
 public class Operand {
@@ -7,4 +9,9 @@ public class Operand {
   public  String   string;
   public  int      integer;
   public  float    real;
+  /**
+   * Zongkun 
+   * Task 3
+   */
+  public Vector100Dtype vector;
 }

@@ -1,13 +1,22 @@
 package tests;
 
 import java.io.*;
+
 import global.*;
+import VAIndex.NNIndexScan;
+import VAIndex.RSIndexScan;
+import VAIndex.VAException;
+import VAIndex.VAFile;
+import VAIndex.VAFileScan;
+import VAIndex.Vector100Key;
 import bufmgr.*;
 import diskmgr.*;
 import heap.*;
 import iterator.*;
 import index.*;
 import btree.*;
+
+import java.util.Arrays;
 import java.util.Random;
 
 class IndexDriver extends TestDriver implements GlobalConst {
@@ -780,10 +789,408 @@ class IndexDriver extends TestDriver implements GlobalConst {
 	}
 
 	protected boolean test4() {
+		
+		System.out
+		.println("------------------------ TEST 4 test--------------------------");
+		System.out
+		.println("------------------------ NN Scan test--------------------------");
+		
+
+		
+		boolean status = OK;
+
+		AttrType[] attrType = new AttrType[1];
+		attrType[0] = new AttrType(AttrType.attrVector100D);
+		short[] attrSize = new short[1];
+		attrSize[0] = 200;
+		TupleOrder[] order = new TupleOrder[2];
+		order[0] = new TupleOrder(TupleOrder.Ascending);
+		order[1] = new TupleOrder(TupleOrder.Descending);
+		
+		FldSpec[] projlist = new FldSpec[1];
+		RelSpec rel = new RelSpec(RelSpec.outer);
+		projlist[0] = new FldSpec(rel, 1);
+
+
+
+		Vector100Dtype vector1 = new Vector100Dtype((short)1);//data
+		Vector100Dtype vector2 = new Vector100Dtype((short)6);//data
+		Vector100Dtype vector3 = new Vector100Dtype((short)9999);//data
+		Vector100Dtype vector4 = new Vector100Dtype((short)1300);//data
+		Vector100Dtype target = new Vector100Dtype((short)5);//data
+		Vector100Dtype[] vectorObject = new Vector100Dtype[4];
+		vectorObject[0] = vector1;
+		vectorObject[1] = vector2;
+		vectorObject[2] = vector3;
+		vectorObject[3] = vector4;
+		
+		// set tuple header for vector 100
+		Tuple t = new Tuple();
+		try {
+			t.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		int size = t.size();
+
+		// Create heapfile
+		RID rid = null;
+		Heapfile f = null;
+		try {
+			f = new Heapfile("test4.in");
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		// set header again??
+		t = new Tuple(size);
+		try {
+			t.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		// open a vafile for indexing
+		System.out.println("open a vafile");//debug		
+		VAFile vaf = null;
+		try {
+			vaf = new VAFile("vafile1",4);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+			Runtime.getRuntime().exit(1);
+		}
+		// insert into heapfile & va file at same time
+		Vector100Key vkey = null;
+		for (int i = 0; i < 4; i++) {
+			try {
+				t.set100DVectFld(1, vectorObject[i]);
+				//System.out.println("offset "+t.getOffset());
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+
+			try {
+				//System.out.println("fldCnt in test5 "+t.getLength());
+				//System.out.println("before ");
+				//System.out.println("before "+ Arrays.toString(t.returnTupleByteArray()));
+				rid = f.insertRecord(t.returnTupleByteArray());
+				System.out.println("in IndexTest rid "+rid.slotNo+ " "+rid.pageNo.pid);//debug
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			try{
+				vkey = new Vector100Key(vectorObject[i],4);
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			try {
+				vaf.insertKey(vkey,rid);
+				
+			}catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+		}
+		
+		
+		// open NN scan
+		try{
+			vkey = new Vector100Key(target,4);
+		}
+		catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		NNIndexScan nnscan  = null;
+		try{
+			nnscan = new NNIndexScan(new IndexType(IndexType.VAIndex),
+					"test4.in","vafile1",attrType,attrSize,1,1,projlist,null,1,
+					target,2,4);
+			
+		}catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		Tuple tmptuple = null;
+		try{
+			tmptuple = nnscan.get_next();
+		}
+		catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		
+		Vector100Dtype tmpVec = null;
+		while (tmptuple != null){
+			try{
+				t.tupleCopy(tmptuple);
+
+				tmpVec = t.get100DVectFld(1);
+				System.out.println("in index test 4 ");//debug
+				tmpVec.printVector();//debug
+			}catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			
+			
+			try{
+				tmptuple = nnscan.get_next();
+			}
+			catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			
+		}
+		System.out.println("Page counter in test4: "+PCounter.counter);
+		
+		
+
+		
+//		System.out.println("open vafile scan");
+		
+//		//open a scan to read record to insert into vafile
+//		VAFileScan vascan = null;
+//		Tuple temp = null;
+//		rid = new RID();
+//		Vector100Dtype tmpVec = null;
+//		try {
+//			vascan = new VAFileScan(f);
+//		} catch (Exception e) {
+//			status = FAIL;
+//			e.printStackTrace();
+//		}
+//		try {
+//			temp = vascan.getNext(rid);
+//			t.tupleCopy(temp);
+//			//System.out.println("read tuple flds no "+temp.noOfFlds());
+//			//System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
+//			//tmpVec = t.get100DVectFld(1);
+//			//tmpVec.printVector();
+//		} catch (Exception e) {
+//			status = FAIL;
+//			e.printStackTrace();
+//		}
+//		try {
+//			t.setHdr((short) 1, attrType, attrSize);
+//		} catch (Exception e) {
+//			status = FAIL;
+//			e.printStackTrace();
+//		}
+//		
+//		// insert va key
+//		Vector100Key vkey = null;
+//		while (temp != null) {
+//			try {
+//				//System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
+//				t.tupleCopy(temp);// temp do not have header !!!
+//				
+//				tmpVec = t.get100DVectFld(1);
+//				//System.out.println("after "+Arrays.toString(t.returnTupleByteArray()));
+//				tmpVec.printVector();
+//				temp = vascan.getNext(rid);
+//			}catch (Exception e) {
+//				status = FAIL;
+//				e.printStackTrace();
+//			}
+//			
+//			
+//			try {
+//				vkey = new Vector100Key(tmpVec,4);
+//				
+//			}catch (Exception e) {
+//				status = FAIL;
+//				e.printStackTrace();
+//			}
+//			
+//			
+//			
+//			try {
+//				vaf.insertKey(vkey,rid);
+//				
+//			}catch (Exception e) {
+//				status = FAIL;
+//				e.printStackTrace();
+//			}
+//			
+//			
+//		}
+
+		
+		
+		
+		
+		
 		return true;
 	}
 
 	protected boolean test5() {
+		System.out
+		.println("------------------------ TEST 5 test--------------------------");
+		System.out
+		.println("------------------------ NN Scan test--------------------------");
+		
+		
+		boolean status = OK;
+
+		AttrType[] attrType = new AttrType[1];
+		attrType[0] = new AttrType(AttrType.attrVector100D);
+		short[] attrSize = new short[1];
+		attrSize[0] = 200;
+		TupleOrder[] order = new TupleOrder[2];
+		order[0] = new TupleOrder(TupleOrder.Ascending);
+		order[1] = new TupleOrder(TupleOrder.Descending);
+		
+		FldSpec[] projlist = new FldSpec[1];
+		RelSpec rel = new RelSpec(RelSpec.outer);
+		projlist[0] = new FldSpec(rel, 1);
+
+
+
+		Vector100Dtype vector1 = new Vector100Dtype((short)1);//data
+		Vector100Dtype vector2 = new Vector100Dtype((short)6);//data
+		Vector100Dtype vector3 = new Vector100Dtype((short)8);//data
+		Vector100Dtype vector4 = new Vector100Dtype((short)1300);//data
+		Vector100Dtype target = new Vector100Dtype((short)5);//data
+		Vector100Dtype[] vectorObject = new Vector100Dtype[4];
+		vectorObject[0] = vector1;
+		vectorObject[1] = vector2;
+		vectorObject[2] = vector3;
+		vectorObject[3] = vector4;
+		
+		// set tuple header for vector 100
+		Tuple t = new Tuple();
+		try {
+			t.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		int size = t.size();
+
+		// Create heapfile
+		RID rid = null;
+		Heapfile f = null;
+		try {
+			f = new Heapfile("test5.in");
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		// set header again??
+		t = new Tuple(size);
+		try {
+			t.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		// open a vafile for indexing
+		System.out.println("open a vafile");//debug		
+		VAFile vaf = null;
+		try {
+			vaf = new VAFile("vafile2",4);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+			Runtime.getRuntime().exit(1);
+		}
+		// insert into heapfile & va file at same time
+		Vector100Key vkey = null;
+		for (int i = 0; i < 4; i++) {
+			try {
+				t.set100DVectFld(1, vectorObject[i]);
+				//System.out.println("offset "+t.getOffset());
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+
+			try {
+				//System.out.println("fldCnt in test5 "+t.getLength());
+				//System.out.println("before ");
+				//System.out.println("before "+ Arrays.toString(t.returnTupleByteArray()));
+				rid = f.insertRecord(t.returnTupleByteArray());
+//				System.out.println("in IndexTest rid "+rid.slotNo+ " "+rid.pageNo.pid);//debug
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			try{
+				vkey = new Vector100Key(vectorObject[i],4);
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			try {
+				vaf.insertKey(vkey,rid);
+				
+			}catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		
+		// open NN scan
+		try{
+			vkey = new Vector100Key(target,4);
+		}
+		catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		RSIndexScan nnscan  = null;
+		try{
+			nnscan = new RSIndexScan(new IndexType(IndexType.VAIndex),
+					"test5.in","vafile2",attrType,attrSize,1,1,projlist,null,1,
+					target,100,4);
+			
+		}catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		Tuple tmptuple = null;
+		try{
+			tmptuple = nnscan.get_next();
+		}
+		catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		
+		Vector100Dtype tmpVec = null;
+		while (tmptuple != null){
+			try{
+				t.tupleCopy(tmptuple);
+
+				tmpVec = t.get100DVectFld(1);
+				System.out.println("in index test 5 ");//debug
+				tmpVec.printVector();//debug
+			}catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			
+			
+			try{
+				tmptuple = nnscan.get_next();
+			}
+			catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			
+		}
+		System.out.println("Page counter in test5: "+PCounter.counter);
 		return true;
 	}
 
