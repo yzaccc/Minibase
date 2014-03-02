@@ -88,6 +88,7 @@ public class Scan implements GlobalConst{
     Tuple recptrtuple = null;
     
     if (nextUserStatus != true) {
+//    	System.out.println("in Scan getNext debug");
         nextDataPage();
     }
      
@@ -96,6 +97,7 @@ public class Scan implements GlobalConst{
     
     rid.pageNo.pid = userrid.pageNo.pid;    
     rid.slotNo = userrid.slotNo;
+//  System.out.println("in Scan getNext  	 "+rid.slotNo+" "+rid.pageNo.pid);
          
     try {
       recptrtuple = datapage.getRecord(rid);
@@ -107,6 +109,7 @@ public class Scan implements GlobalConst{
     }   
     
     userrid = datapage.nextRecord(rid);
+
     if(userrid == null) nextUserStatus = false;
     else nextUserStatus = true;
      
@@ -440,6 +443,7 @@ public class Scan implements GlobalConst{
 	// pin first data page
 	try {
 	  datapage  = new HFPage();
+//	  System.out.println("in Scan nextDataPage debug");
 	  pinPage(datapageId, (Page) datapage, false);
 	}
 	catch (Exception e){

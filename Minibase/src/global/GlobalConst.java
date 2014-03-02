@@ -4,16 +4,16 @@ public interface GlobalConst {
 
   public static  int MINIBASE_MAXARRSIZE = 50;
   //public static  int NUMBUF = 50;
-  public static  int NUMBUF = 4000;
+  public static  int NUMBUF = 40;
 
   /** Size of page. */
-  public static  int MINIBASE_PAGESIZE = 1024;           // in bytes
+  public static  int MINIBASE_PAGESIZE = 4096;           // in bytes
 
   /** Size of each frame. */
   //public static  int MINIBASE_BUFFER_POOL_SIZE = 1024;   // in Frames
   public static  int MINIBASE_BUFFER_POOL_SIZE = 4096;
 
-  public static  int MAX_SPACE = 1024;   // in Frames
+  public static  int MAX_SPACE = 4096;   // in Frames
   
   /**
    * in Pages => the DBMS Manager tells the DB how much disk 

@@ -161,7 +161,7 @@ public class DB implements GlobalConst {
 		byte[] buffer = apage.getpage(); // new byte[MINIBASE_PAGESIZE];
 		try {
 			fp.read(buffer);
-			System.out.println("in DB read page");
+//			System.out.println("in DB read page");
 			PCounter.increment();//add page counter
 		} catch (IOException e) {
 			throw new FileIOException(e, "DB file I/O error");
@@ -196,6 +196,8 @@ public class DB implements GlobalConst {
 		// Write the appropriate number of bytes.
 		try {
 			fp.write(apage.getpage());
+//			PCounterw.increment();
+//			System.out.println("in DB write page");
 		} catch (IOException e) {
 			throw new FileIOException(e, "DB file I/O error");
 		}

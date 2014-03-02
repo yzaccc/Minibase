@@ -558,7 +558,7 @@ public class HFPage extends Page
       pageNo.pid= rid.pageNo.pid;
       curPage.pid = Convert.getIntValue (CUR_PAGE, data);
       int slotNo = rid.slotNo;
-      
+//      PCounter.increment();//counter added
       // length of record being returned
       recLen = getSlotLength (slotNo);
       slotCnt = Convert.getShortValue (SLOT_CNT, data);

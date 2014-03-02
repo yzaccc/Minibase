@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import diskmgr.PCounter;
+import diskmgr.PCounterw;
 import global.AttrType;
 import global.GlobalConst;
 import global.IndexType;
@@ -54,11 +55,12 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 	public static String QSNAME ="/Users/akun1012/Desktop/jinxuanw/qspec.txt";
 	public static String IndexOption = "Y";
 	public static AttrType[] attrType;
-	public static int k = 4;// number of bits
-	public static int numtuple = 10;
+	public static int k = 4;// number of bits   input
+	public static int numtuple = 400;// input
 	public Tuple t = new Tuple();
 	public int vectorfld [];
 	public int topk;
+	public int cnt = 0;// number of lines of input
 	Heapfile f = null;
 	public boolean runTests(){
 		System.out.println("\n" + "Running " + testName() + " tests...." +"\n");
@@ -109,6 +111,7 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 		System.out.println("----------------- begin test1-------------------------");
 		//PCounter.initialize();
 		PCounter.setZero();
+		PCounterw.setZero();
 	int num_fld;
 	BufferedReader br = null;
 	try
@@ -256,10 +259,12 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 	Vector100Dtype vector = new Vector100Dtype((short)0);
 	//PCounter.counter = 0;
 	//Read Data one by one
-	int kk=numtuple*4;
+	int kk=numtuple*4;//limit read line
+
 	while ((kk)!=0 && (line != null))
 	{
 		kk--;
+		cnt++;
 		for (int i = 0; i < num_fld; i++)
 		{
 			try
@@ -355,7 +360,7 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 		}
 	}
 	Scan scan = null;
-	System.out.print("Read page is " + PCounter.counter +"\n");
+	System.out.print("write page1 is " + PCounterw.counter +"\n");
 //	PCounter.counter = 0;
 	try
 	{
@@ -409,7 +414,7 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 	try
 	{
 		//System.out.print("Page used is" +PCounter.counter);
-		System.out.print("Read page is " + PCounter.counter +"\n");
+		System.out.print("write page2 is " + PCounterw.counter +"\n");
 		scan.closescan();
 		br.close();
 	} catch (IOException e)
@@ -569,6 +574,9 @@ class Phase2Driver extends TestDriver implements GlobalConst{
                 int QA=Integer.parseInt(ArgumentList[0]);
 	  			String T = ArgumentList[1];
 	  			int topk = Integer.parseInt(ArgumentList[2]);
+	  			
+	  			System.out.println("in phase2test topk="+topk+" bits="+this.k+
+	  					" num of tuple="+this.cnt+" NUMBUF="+this.NUMBUF);
 	  			
 	  			BufferedReader Targetbr =null;
 	  			try

@@ -263,7 +263,7 @@ public class NNIndexScan {
 				vkey = keydata.getKey();
 				rid2 = keydata.getRid();
 					
-				System.out.println("in NNScan9 rid "+rid2.slotNo+" "+rid2.pageNo.pid);//debug
+//				System.out.println("in NNScan9 rid "+rid2.slotNo+" "+rid2.pageNo.pid);//debug
 			} catch (Exception e) {
 
 				e.printStackTrace();
