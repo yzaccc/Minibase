@@ -387,6 +387,7 @@ public class TupleUtils {
 
 		int n_strs = 0;
 		for (i = 0; i < nOutFlds; i++) {
+//			System.out.println("in Tuple Utiles "+nOutFlds+" "+i );
 			if (proj_list[i].relation.key == RelSpec.outer)
 				res_attrs[i] = new AttrType(
 						in1[proj_list[i].offset - 1].attrType);

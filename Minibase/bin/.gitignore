@@ -1,3 +1,6 @@
+/index
+/iterator
+/tests
 /VAIndex
 /btree
 /bufmgr
@@ -6,6 +9,3 @@
 /diskmgr
 /global
 /heap
-/index
-/iterator
-/tests

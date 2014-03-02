@@ -9,6 +9,12 @@ JAVA  = $(JDKPATH)/bin/java  -classpath $(CLASSPATH)
 
 # test buffer manager
 
+phase2test:phas2test.java
+	$(JAVAC) TestDriver.java phase2test.java
+
+phase2:phase2test
+	$(JAVA) tests.phase2test
+
 BMTest:BMTest.java
 	$(JAVAC) TestDriver.java BMTest.java
 

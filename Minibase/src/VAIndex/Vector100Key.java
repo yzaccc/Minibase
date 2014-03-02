@@ -64,7 +64,7 @@ public class Vector100Key extends KeyClass{
 		StringBuffer binarydata = new StringBuffer();
 		for (int i=0;i<100;i++){
 			if (vecvalue[i] > VAFile.UPPERBOUND)
-				throw new VAException(null, "vector value larger than upper bound");
+				throw new VAException(null, "vector value larger than upper bound "+vecvalue[i]);
 			else if (vecvalue[i] < VAFile.LOWERBOUND)
 				throw new VAException(null, "vector value lower than lower bound");
 			tmpregionnum = (int)((vecvalue[i] - VAFile.LOWERBOUND)/regionsize);
