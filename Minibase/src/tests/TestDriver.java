@@ -2,6 +2,12 @@ package tests;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
+
+import bufmgr.BufMgrException;
+import bufmgr.HashOperationException;
+import bufmgr.PageNotFoundException;
+import bufmgr.PagePinnedException;
+import bufmgr.PageUnpinnedException;
 import chainexception.*;
 
 //    Major Changes:
@@ -71,8 +77,14 @@ public class TestDriver {
   
   /** 
    * @return whether the test has completely successfully 
+ * @throws IOException 
+ * @throws BufMgrException 
+ * @throws PageNotFoundException 
+ * @throws PagePinnedException 
+ * @throws PageUnpinnedException 
+ * @throws HashOperationException 
    */
-  protected boolean test2 () { return true; }
+  protected boolean test2 () throws HashOperationException, PageUnpinnedException, PagePinnedException, PageNotFoundException, BufMgrException, IOException { return true; }
 
   /** 
    * @return whether the test has completely successfully 
@@ -192,7 +204,14 @@ public class TestDriver {
 
     //Running test1() to test6()
     if (!test1()) { _passAll = FAIL; }
-    if (!test2()) { _passAll = FAIL; }
+    try {
+		if (!test2()) { _passAll = FAIL; }
+	} catch (HashOperationException | PageUnpinnedException
+			| PagePinnedException | PageNotFoundException | BufMgrException
+			| IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     if (!test3()) { _passAll = FAIL; }
     if (!test4()) { _passAll = FAIL; }
     if (!test5()) { _passAll = FAIL; }

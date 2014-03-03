@@ -60,8 +60,8 @@ public class Vector100Key extends KeyClass{
 		_regionnum = new int [Vector100Dtype.Max];
 		short [] vecvalue = v.getVectorValue();
 		int tmpregionnum;
-		int bitmask;
 		StringBuffer binarydata = new StringBuffer();
+		// set bits in string
 		for (int i=0;i<100;i++){
 			if (vecvalue[i] > VAFile.UPPERBOUND)
 				throw new VAException(null, "vector value larger than upper bound "+vecvalue[i]);
@@ -82,6 +82,7 @@ public class Vector100Key extends KeyClass{
 			tmpsb.append(binaryregion);
 			binarydata.append(tmpsb);		
 		}
+		// convert string to bytes
 		for (int i=0;i<dataLength;i++){
 			String tmpstr = new String(binarydata.substring(i*8, i*8+8));
 			byte numberbyte = (byte) Integer.parseInt(tmpstr,2);

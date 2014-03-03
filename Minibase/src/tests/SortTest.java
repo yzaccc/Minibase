@@ -47,16 +47,39 @@ class SORTDriver extends TestDriver implements GlobalConst {
 			"ulloa", "vharvey", "waic", "wan", "wawrzon", "wenchao", "wlau",
 			"xbao", "xiaoming", "xin", "yi-chun", "yiching", "yuc", "yung",
 			"yuvadee", "zmudzin" };
-	private static short [] Targetarray= {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	private static short [] Targetarray1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	private static short [] Targetarray2 = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-	private static short [][] Target2Darray =new short [][]{
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}	
-	};
-	//Target2Darray[0] = new short [100]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	private static short[] Targetarray = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private static short[] Targetarray1 = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+	private static short[] Targetarray2 = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+	private static short[][] Target2Darray = new short[][] {
+			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+					1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+					1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+					1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+					1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+			{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+					2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+					2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+					2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+					2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 } };
+	// Target2Darray[0] = new short [100]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-	//Target2Darray[1] = Targetarray2;
+	// Target2Darray[1] = Targetarray2;
 	private static int NUM_RECORDS = data2.length;
 	private static int LARGE = 1000;
 	private static short REC_LEN1 = 32;
@@ -889,182 +912,176 @@ class SORTDriver extends TestDriver implements GlobalConst {
 
 	protected boolean test5() {
 		System.out
-		.println("------------------------ TEST 5555 test--------------------------");
+				.println("------------------------ TEST 5555 test--------------------------");
 
-boolean status = OK;
+		boolean status = OK;
 
-AttrType[] attrType = new AttrType[1];
-attrType[0] = new AttrType(AttrType.attrVector100D);
-short[] attrSize = new short[1];
-attrSize[0] = 200;
-TupleOrder[] order = new TupleOrder[2];
-order[0] = new TupleOrder(TupleOrder.Ascending);
-order[1] = new TupleOrder(TupleOrder.Descending);
+		AttrType[] attrType = new AttrType[1];
+		attrType[0] = new AttrType(AttrType.attrVector100D);
+		short[] attrSize = new short[1];
+		attrSize[0] = 200;
+		TupleOrder[] order = new TupleOrder[2];
+		order[0] = new TupleOrder(TupleOrder.Ascending);
+		order[1] = new TupleOrder(TupleOrder.Descending);
 
-Vector100Dtype target = new Vector100Dtype(Targetarray);
+		Vector100Dtype target = new Vector100Dtype(Targetarray);
 
-for (short i=1;i<=100;i++){
-	Targetarray1[i-1] = i;
-}
-Vector100Dtype vector1 = new Vector100Dtype(Targetarray1);//data
-Vector100Dtype vector2 = new Vector100Dtype(Targetarray2);//data
-Vector100Dtype tar = new Vector100Dtype(Targetarray);//target
-Vector100Dtype[] vectorObject = new Vector100Dtype[2];
-vectorObject[0] = vector1;
-vectorObject[1] = vector2;
+//		for (short i = 1; i <= 100; i++) {
+//			Targetarray1[i - 1] = i;
+//		}
+		Vector100Dtype vector1 = new Vector100Dtype(Targetarray1);// data
+		Vector100Dtype vector2 = new Vector100Dtype(Targetarray2);// data
+		Vector100Dtype tar = new Vector100Dtype(Targetarray);// target
+		Vector100Dtype[] vectorObject = new Vector100Dtype[2];
+		vectorObject[0] = vector1;
+		vectorObject[1] = vector2;
 
-// create a tuple of appropriate size
-Tuple t = new Tuple();
-try {
-	t.setHdr((short) 1, attrType, attrSize);
-} catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-}
-int size = t.size();
+		// create a tuple of appropriate size
+		Tuple t = new Tuple();
+		try {
+			t.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		int size = t.size();
 
-// Create unsorted data file "test2.in"
-RID rid;
-Heapfile f = null;
-try {
-	f = new Heapfile("test5.in");
-} catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-}
+		// Create unsorted data file "test2.in"
+		RID rid;
+		Heapfile f = null;
+		try {
+			f = new Heapfile("test5.in");
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
 
-t = new Tuple(size);
-try {
-	t.setHdr((short) 1, attrType, attrSize);
-} catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-}
+		t = new Tuple(size);
+		try {
+			t.setHdr((short) 1, attrType, attrSize);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
 
-for (int i = 0; i < 2; i++) {
-	try {
-		t.set100DVectFld(1, vectorObject[i]);
-		//System.out.println("offset "+t.getOffset());
-	} catch (Exception e) {
-		status = FAIL;
-		e.printStackTrace();
-	}
+		for (int k=0;k<100;k++)
+		for (int i = 0; i < 2; i++) {
+			try {
+				t.set100DVectFld(1, vectorObject[i]);
+				// System.out.println("offset "+t.getOffset());
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
 
-	try {
-		//System.out.println("fldCnt in test5 "+t.getLength());
-		//System.out.println("before ");
-		//System.out.println("before "+ Arrays.toString(t.returnTupleByteArray()));
-		rid = f.insertRecord(t.returnTupleByteArray());
-	} catch (Exception e) {
-		status = FAIL;
-		e.printStackTrace();
-	}
-}
+			try {
+				// System.out.println("fldCnt in test5 "+t.getLength());
+				// System.out.println("before ");
+				// System.out.println("before "+
+				// Arrays.toString(t.returnTupleByteArray()));
+				rid = f.insertRecord(t.returnTupleByteArray());
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+		}
 
+		// FileScan fscan = null;
+		Scan scan = null;
+		Tuple temp = null;
+		rid = new RID();
+		Vector100Dtype tmpVec;
+		try {
+			scan = new Scan(f);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		// System.out.println("hello2");
+		try {
+			temp = scan.getNext(rid);
+			t.tupleCopy(temp);
+			// System.out.println("read tuple flds no "+temp.noOfFlds());
+			// System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
+			// tmpVec = t.get100DVectFld(1);
+			// tmpVec.printVector();
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
+		while (temp != null) {
+			try {
+				// System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
+				t.tupleCopy(temp);// temp do not have header !!!
 
+				tmpVec = t.get100DVectFld(1);
+				// System.out.println("after "+Arrays.toString(t.returnTupleByteArray()));
+				// tmpVec.printVector();
+				temp = scan.getNext(rid);
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+		}
 
+		System.out.println("FileScan added");
+		// create an iterator by open a file scan
+		FldSpec[] projlist = new FldSpec[2];
+		RelSpec rel = new RelSpec(RelSpec.outer);
+		projlist[0] = new FldSpec(rel, 1);
+		projlist[1] = new FldSpec(rel, 2);
 
-//FileScan fscan = null;
-Scan scan = null;
-Tuple temp = null;
-rid = new RID();
-Vector100Dtype tmpVec;
-try {
-	scan = new Scan(f);
-} catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-}
-//System.out.println("hello2");
-try {
-	temp = scan.getNext(rid);
-	t.tupleCopy(temp);
-	//System.out.println("read tuple flds no "+temp.noOfFlds());
-	//System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
-	//tmpVec = t.get100DVectFld(1);
-	//tmpVec.printVector();
-} catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-}
-while (temp != null) {
-	try {
-		//System.out.println("after "+Arrays.toString(temp.returnTupleByteArray()));
-		t.tupleCopy(temp);// temp do not have header !!!
-		
-		tmpVec = t.get100DVectFld(1);
-		//System.out.println("after "+Arrays.toString(t.returnTupleByteArray()));
-		//tmpVec.printVector();
-		temp = scan.getNext(rid);
-	}catch (Exception e) {
-		status = FAIL;
-		e.printStackTrace();
-	}
-}
+		FileScan fscan = null;
 
+		try {
+			fscan = new FileScan("test5.in", attrType, attrSize, (short) 1, 1,
+					projlist, null);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
 
-System.out.println("FileScan added");
-//create an iterator by open a file scan
-FldSpec[] projlist = new FldSpec[2];
-RelSpec rel = new RelSpec(RelSpec.outer);
-projlist[0] = new FldSpec(rel, 1);
-projlist[1] = new FldSpec(rel, 2);
+		System.out.println("Sort added");
+		Sort sort = null;
+		try {
+			sort = new Sort(attrType, (short) 1, attrSize, fscan, 1, order[1],
+					Vector100Dtype.Max * 2, SORTPGNUM, tar, 2);// new sort
+																// constructor
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
 
-FileScan fscan = null;
+		int count = 0;
+		t = null;// ??? no header
+		Vector100Dtype outval = null;
 
-try {
-	fscan = new FileScan("test5.in", attrType, attrSize, (short) 1, 1,
-			projlist, null);
-} catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-}
+		try {
+			t = sort.get_next();
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}
 
+		while (t != null) {
+			try {
+				outval = t.get100DVectFld(1);
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
+			System.out.println("outval ");
+			outval.printVector();
+			try {
+				t = sort.get_next();
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
 
-System.out.println("Sort added");
-Sort sort = null;
-try {
-	sort = new Sort(attrType, (short) 1, attrSize, fscan, 1, order[1],
-			Vector100Dtype.Max*2, SORTPGNUM, tar, 2 );// new sort constructor
-} catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-}
+		}
 
-
-
-int count = 0;
-t = null;//??? no header
-Vector100Dtype outval = null;
-
-try {
-	t = sort.get_next();
-} catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-}
-
-while (t != null){
-	try {
-		outval = t.get100DVectFld(1);
-	} catch (Exception e) {
-		status = FAIL;
-		e.printStackTrace();
-	}
-	System.out.println("outval ");
-	outval.printVector();
-	try {
-		t = sort.get_next();
-	} catch (Exception e) {
-		status = FAIL;
-		e.printStackTrace();
-	}
-	
-	
-}
-
-
-return status;
+		return status;
 	}
 
 	protected boolean test6() {

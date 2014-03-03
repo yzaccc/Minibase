@@ -161,7 +161,11 @@ public class DB implements GlobalConst {
 		byte[] buffer = apage.getpage(); // new byte[MINIBASE_PAGESIZE];
 		try {
 			fp.read(buffer);
-//			System.out.println("in DB read page");
+//			if (pageno.pid == 30 || pageno.pid ==31)
+//				for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+//				    System.out.println(ste);
+//				}
+			//System.out.println("in DB read page pid="+pageno.pid);
 			PCounter.increment();//add page counter
 		} catch (IOException e) {
 			throw new FileIOException(e, "DB file I/O error");

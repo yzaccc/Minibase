@@ -268,7 +268,7 @@ class Clock extends Replacer {
 			if (num == 2 * numBuffers) {
 
 				throw new BufferPoolExceededException(null,
-						"BUFMGR: BUFFER_EXCEEDED.");
+						"BUFMGR: BUFFER_EXCEEDED. num="+num+" numBuffers"+numBuffers);
 
 			}
 			++num;
@@ -515,13 +515,13 @@ public class BufMgr implements GlobalConst {
 
 			}
 			
-			PCounterw.increment();
+			if (emptyPage)  PCounterw.increment();
 			if ((frmeTable[frameNo].pageNo.pid != INVALID_PAGE)
 					&& (frmeTable[frameNo].dirty == true)) {
 				needwrite = 1;
 				oldpageNo.pid = frmeTable[frameNo].pageNo.pid;
 			}
-//			System.out.println("in BufMgr debug2 "+needwrite+emptyPage);
+//			System.out.println("in BufMgr debug2 "+frameNo+" "+emptyPage+needwrite);
 
 			bst = hashTable.remove(frmeTable[frameNo].pageNo);
 			if (bst != true) {

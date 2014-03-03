@@ -352,8 +352,9 @@ public class HFPage extends Page
       // Start by checking if sufficient space exists.
       // This is an upper bound check. May not actually need a slot
       // if we can find an empty one.
-      
       freeSpace = Convert.getShortValue (FREE_SPACE, data);
+//      System.out.println("in HFPage FREE_SPACE="+freeSpace+" spaceNeeded="+spaceNeeded);
+
       if (spaceNeeded > freeSpace) {
         return null;
 	

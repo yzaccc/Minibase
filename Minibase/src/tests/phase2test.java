@@ -20,6 +20,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import bufmgr.BufMgrException;
+import bufmgr.HashOperationException;
+import bufmgr.PageNotFoundException;
+import bufmgr.PagePinnedException;
+import bufmgr.PageUnpinnedException;
 import diskmgr.PCounter;
 import diskmgr.PCounterw;
 import global.AttrType;
@@ -230,6 +235,7 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 		// TODO Auto-generated catch block
 		e2.printStackTrace();
 	}
+//	System.out.println("in phase2test tuple size ="+t.size());
 	
 	//Declare array, which contains va indexfile
 	Vector100Key key =  null;
@@ -259,7 +265,7 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 	Vector100Dtype vector = new Vector100Dtype((short)0);
 	//PCounter.counter = 0;
 	//Read Data one by one
-	int kk=numtuple*4;//limit read line
+	int kk=numtuple;//limit read line
 
 	while ((kk)!=0 && (line != null))
 	{
@@ -391,6 +397,7 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 				}
 				try
 				{
+//					System.out.println("insert key");
 					vafile[i].insertKey(key, rid1);
 				} catch (InvalidSlotNumberException
 						| SpaceNotAvailableException | HFException
@@ -432,6 +439,27 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 	  protected boolean test2 () { 
 		  System.out.println("----------------- begin test2-------------------------");
 	  	//Open Query Specification file
+		  try {
+			SystemDefs.JavabaseBM.flushAllPages();
+		} catch (HashOperationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (PageUnpinnedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (PagePinnedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (PageNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (BufMgrException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		  PCounter.setZero();
 	  	BufferedReader Querybr = null;
 	  	try
@@ -574,7 +602,7 @@ class Phase2Driver extends TestDriver implements GlobalConst{
                 int QA=Integer.parseInt(ArgumentList[0]);
 	  			String T = ArgumentList[1];
 	  			int topk = Integer.parseInt(ArgumentList[2]);
-	  			
+	  			topk = 350;//debug
 	  			System.out.println("in phase2test topk="+topk+" bits="+this.k+
 	  					" num of tuple="+this.cnt+" NUMBUF="+this.NUMBUF);
 	  			
@@ -629,6 +657,7 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 					{
 						fscan=  new FileScan(DBNAME, attrType, strsize, (short)attrType.length,Outputflds.length ,
 								projlist, null);
+						System.out.println("after new FileScan " +attrType.length+" "+Outputflds.length);
 					} catch (FileScanException | TupleUtilsException
 							| InvalidRelation | IOException e)
 					{
@@ -640,11 +669,13 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 	  				order[1] = new TupleOrder(TupleOrder.Descending);
 	  				try
 					{
-						Sort sort = new Sort(attrType, (short) attrType.length, strsize, fscan, 2, order[0],
+//	  					TupleUtils.target.printVector();
+						Sort sort = new Sort(attrType, (short) attrType.length, 
+								strsize, fscan, 4, order[1],
 								Vector100Dtype.Max*2, 300, TupleUtils.target, topk );
 						try
 						{
-							sort.get_next().get100DVectFld(4).printVector();
+//							sort.get_next().get100DVectFld(4).printVector();
 						} catch (Exception e)
 						{
 							// TODO Auto-generated catch block
