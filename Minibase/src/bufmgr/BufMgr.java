@@ -515,7 +515,7 @@ public class BufMgr implements GlobalConst {
 
 			}
 			
-			if (emptyPage)  PCounterw.increment();
+			if (emptyPage)  PCounterPinPage.increment();
 			if ((frmeTable[frameNo].pageNo.pid != INVALID_PAGE)
 					&& (frmeTable[frameNo].dirty == true)) {
 				needwrite = 1;

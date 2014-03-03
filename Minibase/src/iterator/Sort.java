@@ -619,6 +619,7 @@ public class Sort extends Iterator implements GlobalConst {
 
 		if (useBM) {
 			try {
+//				System.out.println("_n_pages="+_n_pages);
 				get_buffer_pages(_n_pages, bufs_pids, bufs);
 			} catch (Exception e) {
 				throw new SortException(e, "Sort.java: BUFmgr error");
