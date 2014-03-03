@@ -156,8 +156,12 @@ public class NNIndexScan {
 		if (nextidx == this._count)// no more 
 			return null;
 	   boolean eval;
+	   
 	   Tuple nexttuple = vac[nextidx].getTuple();
+	   if (nexttuple == null)
+		   return null;
 	   tuplein.tupleCopy(nexttuple);
+
 //	   System.out.println("in  NN get_next "+
 //	   Arrays.toString(vac[nextidx].getTuple().returnTupleByteArray()));
 	   
