@@ -59,10 +59,10 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 	public static String DATAFILENAME = "/Users/akun1012/Desktop/jinxuanw/data.txt";
 	public static String DBNAME = "test1.in";
 	public static String QSNAME ="/Users/akun1012/Desktop/jinxuanw/qspec.txt";
-	public static String IndexOption = "N";
+	public static String IndexOption = "Y";
 	public static AttrType[] attrType;
-	public static int k = 4;// number of bits   input
-	public static int numtuple = 10;// input
+	public static int k = 20;// number of bits   input
+	public static int numtuple = 369;// input
 	public Tuple t = new Tuple();
 	public int vectorfld [];
 	public int topk;
@@ -445,27 +445,27 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 	  protected boolean test2 () { 
 		  System.out.println("----------------- begin test2-------------------------");
 	  	//Open Query Specification file
-//		  try {
-//			SystemDefs.JavabaseBM.flushAllPages();
-//		} catch (HashOperationException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (PageUnpinnedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (PagePinnedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (PageNotFoundException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (BufMgrException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		  try {
+			SystemDefs.JavabaseBM.flushAllPages();
+		} catch (HashOperationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (PageUnpinnedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (PagePinnedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (PageNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (BufMgrException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		  PCounter.setZero();
 		  PCounterw.setZero();
 		  PCounterPinPage.setZero();
@@ -492,6 +492,8 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 //	  		System.out.println(queryCommand);
 	  		if(queryCommand.contains("Range"))
 	  		{
+	  			System.out.println("in phase2test topk="+topk+" bits="+this.k+
+	  					" num of tuple="+this.cnt+" NUMBUF="+this.NUMBUF);
 	  			int beginindex = queryCommand.indexOf("(");
 	  			int arrayindexbegin = queryCommand.indexOf("[");
 	  			int arrayindexend = queryCommand.indexOf("]");	  			
@@ -559,6 +561,7 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 	  			}
 	  			try
 				{
+	  				System.out.println("in range scan");
 					rscan =  new RSIndexScan(new IndexType(IndexType.VAIndex),
 							DBNAME, 
 							DBNAME+"_"+index, 
@@ -577,27 +580,27 @@ class Phase2Driver extends TestDriver implements GlobalConst{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-	  			Tuple tmp = null;
-	  			try
-				{
-					tmp = rscan.get_next();
+//	  			Tuple tmp = null;
+//	  			try
+//				{
+//					tmp = rscan.get_next();
 //					int size = tmp.size();
 //					Tuple tt = new Tuple(size);
-//					tt.setHdr(numFlds, types, strSizes);
-					t.get100DVectFld(2).printVector();;
-				} catch (IndexException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (FieldNumberOutOfBoundException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+////					tt.setHdr(numFlds, types, strSizes);
+//					t.get100DVectFld(2).printVector();;
+//				} catch (IndexException e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (FieldNumberOutOfBoundException e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (IOException e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 	  					
 	  		}
 	  		else if(queryCommand.contains("NN"))

@@ -521,7 +521,7 @@ public class BufMgr implements GlobalConst {
 				needwrite = 1;
 				oldpageNo.pid = frmeTable[frameNo].pageNo.pid;
 			}
-//			System.out.println("in BufMgr debug2 "+frameNo+" "+emptyPage+needwrite);
+			//System.out.println("in BufMgr debug2 "+frameNo+" "+emptyPage+needwrite);
 
 			bst = hashTable.remove(frmeTable[frameNo].pageNo);
 			if (bst != true) {
