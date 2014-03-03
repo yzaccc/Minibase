@@ -284,7 +284,22 @@ public class RSIndexScan {
 			return null;
 	   boolean eval;
 
-	   Tuple nexttuple = vac.get(nextidx).getTuple();
+//	   Tuple nexttuple = vac.get(nextidx).getTuple();
+//	   tuplein.tupleCopy(nexttuple);
+	   RID nextrid = vac.get(nextidx).getRid();
+	   Tuple nexttuple = null;//vac[nextidx].getTuple();
+	   
+		try{
+//			System.out.println("get data pid="+nextrid.pageNo.pid);
+			nexttuple = hf.getRecord(nextrid);
+			tuplein.tupleCopy(nexttuple);
+			
+		}catch (Exception e) {
+
+			e.printStackTrace();
+		}
+	   if (nexttuple == null)
+		   return null;
 	   tuplein.tupleCopy(nexttuple);
 	   
 	   nextidx++;

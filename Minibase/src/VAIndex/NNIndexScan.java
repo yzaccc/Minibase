@@ -156,8 +156,18 @@ public class NNIndexScan {
 		if (nextidx == this._count)// no more 
 			return null;
 	   boolean eval;
+	   RID nextrid = vac[nextidx].getRid();
+	   Tuple nexttuple = null;//vac[nextidx].getTuple();
 	   
-	   Tuple nexttuple = vac[nextidx].getTuple();
+		try{
+//			System.out.println("get data pid="+nextrid.pageNo.pid);
+			nexttuple = hf.getRecord(nextrid);
+			tuplein.tupleCopy(nexttuple);
+			
+		}catch (Exception e) {
+
+			e.printStackTrace();
+		}
 	   if (nexttuple == null)
 		   return null;
 	   tuplein.tupleCopy(nexttuple);
@@ -284,7 +294,7 @@ public class NNIndexScan {
 			{
 
 				try{
-					//System.out.println("get data pid="+rid2.pageNo.pid);
+					System.out.println("get data pid="+rid2.pageNo.pid);
 					temp2 = hf.getRecord(rid2);
 					tuplein.tupleCopy(temp2);
 					
@@ -300,7 +310,7 @@ public class NNIndexScan {
 			
 			//get next key
 			try{
-//				System.out.println("get key pid="+rid1.pageNo.pid);
+				System.out.println("get key pid="+rid1.pageNo.pid);
 				temp = vascan.getNext(rid1);
 				
 			}catch (Exception e) {
