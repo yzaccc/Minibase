@@ -19,7 +19,7 @@ import global.IndexType;
 import global.RID;
 import global.Vector100Dtype;
 
-public class RSIndexScan {
+public class RSIndexScan{
 	
 	private Vector100Dtype target;
 	private Heapfile hf;// data file
@@ -224,6 +224,15 @@ public class RSIndexScan {
 //			+vkey.getLowerBoundDistance(this.target) );//debug
 //			vkey.printAllRegionNumber();//debug
 
+			try{
+				temp2 = hf.getRecord(rid2);
+				tuplein.tupleCopy(temp2);
+				
+			}catch (Exception e) {
+
+				e.printStackTrace();
+			}
+			
 			if (vkey.getLowerBoundDistance(this.target) <= this._distance)
 				// in this case, real data need to be fetched
 				
@@ -240,6 +249,7 @@ public class RSIndexScan {
 				}
 				tmpVec = tuplein.get100DVectFld(_fldNum);// get indexed field
 				int realdistance = Vector100Dtype.distance(this.target, tmpVec);
+
 //				System.out.println("in VANN2 realdistance "+realdistance);//debug
 				if (realdistance <= this._distance)
 					// find qualified data
@@ -256,7 +266,6 @@ public class RSIndexScan {
 
 				e.printStackTrace();
 			}
-		
 		}
 //		getResult();//debug
 		

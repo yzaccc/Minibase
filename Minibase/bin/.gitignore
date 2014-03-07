@@ -1,11 +1,11 @@
+/catalog
+/chainexception
+/diskmgr
+/global
+/heap
 /index
 /iterator
 /tests
 /VAIndex
 /btree
 /bufmgr
-/catalog
-/chainexception
-/diskmgr
-/global
-/heap

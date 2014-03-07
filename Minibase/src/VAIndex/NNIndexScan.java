@@ -294,7 +294,6 @@ public class NNIndexScan {
 			{
 
 				try{
-					System.out.println("get data pid="+rid2.pageNo.pid);
 					temp2 = hf.getRecord(rid2);
 					tuplein.tupleCopy(temp2);
 					
@@ -310,7 +309,7 @@ public class NNIndexScan {
 			
 			//get next key
 			try{
-				System.out.println("get key pid="+rid1.pageNo.pid);
+
 				temp = vascan.getNext(rid1);
 				
 			}catch (Exception e) {
