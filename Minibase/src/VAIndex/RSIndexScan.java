@@ -10,8 +10,11 @@ import index.IndexException;
 import iterator.CondExpr;
 import iterator.FldSpec;
 import iterator.InvalidRelation;
+import iterator.Iterator;
+import iterator.JoinsException;
 import iterator.PredEval;
 import iterator.Projection;
+import iterator.SortException;
 import iterator.TupleUtils;
 import iterator.TupleUtilsException;
 import global.AttrType;
@@ -19,7 +22,7 @@ import global.IndexType;
 import global.RID;
 import global.Vector100Dtype;
 
-public class RSIndexScan{
+public class RSIndexScan extends Iterator{
 	
 	private Vector100Dtype target;
 	private Heapfile hf;// data file
@@ -42,7 +45,7 @@ public class RSIndexScan{
 	private int           _noOutFlds;
 	private Tuple         tuplein;// input tuple
 	private int           t1_size;
-	
+	private VAFileScan vascan = null;
 	
 	
 	
@@ -187,7 +190,7 @@ public class RSIndexScan{
 
 
 		//open vafile index file
-		VAFileScan vascan = null;
+		
 		try {
 			vascan = new VAFileScan(vaf);
 		} catch (Exception e) {
@@ -226,6 +229,7 @@ public class RSIndexScan{
 
 			try{
 				temp2 = hf.getRecord(rid2);
+				
 				tuplein.tupleCopy(temp2);
 				
 			}catch (Exception e) {
@@ -332,6 +336,15 @@ public class RSIndexScan{
     		return Jtuple;
 	   }
       return null;
+	}
+
+	@Override
+	public void close() throws IOException, JoinsException, SortException,
+			IndexException
+	{
+	// TODO Auto-generated method stub
+		
+	vascan.closescan();
 	}
 
 }

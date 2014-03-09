@@ -203,7 +203,10 @@ public class TestDriver {
     //the logged error types. 
 
     //Running test1() to test6()
-    if (!test1()) { _passAll = FAIL; }
+    if(phase2test.query == true)
+    	;
+    else
+    	if (!test1()) { _passAll = FAIL; }
     try {
 		if (!test2()) { _passAll = FAIL; }
 	} catch (HashOperationException | PageUnpinnedException

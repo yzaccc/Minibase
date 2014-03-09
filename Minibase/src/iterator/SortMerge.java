@@ -5,7 +5,10 @@ import global.*;
 import diskmgr.*;
 import bufmgr.*;
 import index.*;
+
 import java.io.*;
+
+import tests.phase2test;
 
 /**
  * This file contains the interface for the sort_merg joins.
@@ -140,12 +143,7 @@ public class SortMerge extends Iterator implements GlobalConst
       }
      
       if (! in2_sorted){
-	try {
-	  p_i2 = new Sort(in2, (short)len_in2, s2_sizes, am2, join_col_in2,
-			   order, sortFld2Len, amt_of_mem / 2);
-	}catch(Exception e){
-	  throw new SortException (e, "Sort failed");
-	}
+			p_i2 = new Sort(in2, (short)len_in2, s2_sizes, am2, join_col_in2,order, sortFld2Len, amt_of_mem / 2);
       }
       
       OutputFilter = outFilter;

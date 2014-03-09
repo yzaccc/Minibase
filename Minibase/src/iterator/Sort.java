@@ -43,7 +43,6 @@ public class Sort extends Iterator implements GlobalConst {
 	private PageId[] bufs_pids;
 	private boolean useBM = true; // flag for whether to use buffer manager
 	private int _k;
-	private boolean isSortVector;
 	
 	/**
 	 * Set up for merging the runs. Open an input buffer for each run, and
@@ -578,10 +577,14 @@ public class Sort extends Iterator implements GlobalConst {
 	public Sort(AttrType[] in, short len_in, short[] str_sizes, Iterator am,
 			int sort_fld, TupleOrder sort_order, int sort_fld_len, int n_pages, Vector100Dtype target, int vk)
 			throws IOException, SortException {
+		if(vk>0)
+			_k = vk;
+		else
+			_k = Integer.MAX_VALUE;
 		_in = new AttrType[len_in];
 		n_cols = len_in;
 		int n_strs = 0;
-		TupleUtils.target = target;
+		TupleUtils.target = target;		
 		for (int i = 0; i < len_in; i++) {
 			_in[i] = new AttrType(in[i].attrType);
 			if (in[i].attrType == AttrType.attrString) {
@@ -812,9 +815,11 @@ public class Sort extends Iterator implements GlobalConst {
 			// no more tuples availble
 			return null;
 		}
-
+		
 		output_tuple = delete_min();
-		if (output_tuple != null) {
+		
+		_k -- ;
+		if (output_tuple != null && _k>=0) {
 			op_buf.tupleCopy(output_tuple);
 			return op_buf;
 		} else

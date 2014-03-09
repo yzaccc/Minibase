@@ -1,5 +1,6 @@
 package global;
 
+import tests.phase2test;
 import bufmgr.*;
 import diskmgr.*;
 import catalog.*;
@@ -83,8 +84,13 @@ public class SystemDefs {
       } 
       else {
 	try {
-	  JavabaseDB.openDB(dbname, num_pgs);
-	  JavabaseBM.flushAllPages();
+		if(phase2test.query == true)
+			JavabaseDB.openDB(dbname);
+		  else
+		  {
+			  JavabaseDB.openDB(dbname, num_pgs);
+			  JavabaseBM.flushAllPages();
+		  }
 	}
 	catch (Exception e) {
 	  System.err.println (""+e);

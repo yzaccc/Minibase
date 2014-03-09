@@ -38,14 +38,14 @@ public class Tuple implements GlobalConst{
    * private field
    * Number of fields in this tuple
    */
-  private short fldCnt;
+  public short fldCnt;
 
   /** 
    * private field
    * Array of offsets of the fields
    */
  
-  private short [] fldOffset; 
+  public short [] fldOffset; 
 
    /**
     * Class constructor
