@@ -2,6 +2,7 @@ package VAIndex;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import heap.FieldNumberOutOfBoundException;
 import heap.Heapfile;
@@ -190,7 +191,7 @@ public class RSIndexScan{
 		//open vafile index file
 		Scan vascan = null;
 		try {
-			vascan = vaf.openScan();
+			vascan =vaf.openScan();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Runtime.getRuntime().exit(1);
@@ -203,8 +204,9 @@ public class RSIndexScan{
 			e.printStackTrace();
 		}
 		while (temp != null) {
-			//System.out.println("in VANN scan  fldcnt="+ temp.noOfFlds());
-//			System.out.println("in VANN scan  temp.size="+ temp.size());
+			//System.out.println("in NNScan "+Arrays.toString(temp.returnTupleByteArray())  );//debug
+//			System.out.println("in VANN scan  fldcnt="+ temp.noOfFlds());
+			//System.out.println("in VANN scan  temp.size="+ temp.getLength());
 			//System.out.println("in VANN scan  fldcnt="+ t1.noOfFlds());
 			t1.tupleCopy(temp);
 			

@@ -107,7 +107,7 @@ public class Tuple implements GlobalConst{
    public void tupleCopy(Tuple fromTuple)
    {
        byte [] temparray = fromTuple.getTupleByteArray();
-//       System.out.println("in Tuple "+temparray.length+" "+data.length+ " "+ tuple_length);//debug
+       //System.out.println("in Tuple "+temparray.length+" "+data.length+ " "+ tuple_length);//debug
        System.arraycopy(temparray, 0, data, tuple_offset, tuple_length);   
 //       fldCnt = fromTuple.noOfFlds(); 
 //       fldOffset = fromTuple.copyFldOffset(); 

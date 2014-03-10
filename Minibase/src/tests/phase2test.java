@@ -1388,7 +1388,8 @@ class Phase2Driver extends TestDriver implements GlobalConst
 			String Outputflds[] = queryCommand.substring(arrayindexbegin + 1,
 					arrayindexend).split(",");
 			QA = Integer.parseInt(ArgumentList[0]);
-			phase2test.topk = Integer.parseInt(ArgumentList[0]);
+			phase2test.topk = Integer.parseInt(ArgumentList[2]);
+			topk = Integer.parseInt(ArgumentList[2]);
 			if (IndexOption.equals("N"))
 			{
 				System.out.print("Using Sort\n");
@@ -1642,9 +1643,9 @@ class Phase2Driver extends TestDriver implements GlobalConst
 							e.printStackTrace();
 						}
 						int currentnum = 1;
-						while (tmp != null && phase2test.topk >= 0)
+						while (tmp != null && topk >= 0)
 						{
-							phase2test.topk--;
+							topk--;
 							t.tupleCopy(tmp);
 							System.out.print("\n\n\nTuple " + currentnum
 									+ ":\n{\n");
