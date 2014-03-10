@@ -153,13 +153,6 @@ public class PredEval
 		throw new PredEvalException (e,"TupleUtilsException is caught by PredEval.java");
 	      }
 	      op_res = false;
-	      /**
-	       * Zongkun
-	       * Phrase 2 task 3
-	       */
-	      if(comparison_type.attrType == AttrType.attrVector100D){
-	    	  comp_res = comp_res - temp_ptr.distance;
-	      }
 	      switch (temp_ptr.op.attrOperator)
 		{
 		case AttrOperator.aopEQ:

@@ -6,6 +6,8 @@ import global.*;
 import java.io.*;
 import java.lang.*;
 
+import tests.phase2test;
+
 /**
  * some useful method when processing Tuple
  */
@@ -54,6 +56,17 @@ public class TupleUtils {
 			int distance2 = 0;
 			Vector100Dtype d1;
 			Vector100Dtype d2;
+			if(phase2test.D!=-1&&phase2test.NLJSortNNFlag)
+			{
+				try {
+					d1 = t1.get100DVectFld(t1_fld_no);
+					d2 = t2.get100DVectFld(t2_fld_no);
+				} catch (FieldNumberOutOfBoundException e) {
+					throw new TupleUtilsException(e,
+							"FieldNumberOutOfBoundException is caught by TupleUtils.java");
+				}
+				return Vector100Dtype.distance(d1,d2);
+			}
 			Vector100Dtype tar = TupleUtils.target;
 			try {
 				d1 = t1.get100DVectFld(t1_fld_no);
