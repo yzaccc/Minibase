@@ -1,0 +1,24 @@
+4
+
+Running *** unknown *** tests....
+
+Replacer: Clock
+
+PinPage Id 0
+Open sort
+PinPage Id 2
+PinPage Id 5
+PinPage Id 1
+PinPage Id 62
+PinPage Id 63
+PinPage Id 64
+PinPage Id 65
+PinPage Id 66
+PinPage Id 67
+PinPage Id 68
+PinPage Id 69
+PinPage Id 1
+iterator.SortException: Sort.java: BUFmgr error
+iterator.IteratorBMException: Iterator.java: newPage() failed
+bufmgr.BufMgrException: BufMgr.java: allocate_page() failed
+diskmgr.DiskMgrException: DB.java: pinPage() failed

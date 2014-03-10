@@ -367,7 +367,10 @@ public class BufMgr implements GlobalConst {
 			if ((all_pages != 0) || (frmeTable[i].pageNo.pid == pageid.pid)) {
 
 				if (frmeTable[i].pin_count() != 0)
+				{
+					System.out.print("Current pin page"+frmeTable[i].pageNo.pid+"\n");
 					unpinned++;
+				}
 
 				if (frmeTable[i].dirty != false) {
 
@@ -506,7 +509,7 @@ public class BufMgr implements GlobalConst {
 
 
 		if (frameNo < 0) { // Not in the buffer pool
-			
+			System.out.print("PinPage Id " + pin_pgid +"\n");
 			frameNo = replacer.pick_victim(); // frameNo is pinned
 
 			if (frameNo < 0) {

@@ -21,6 +21,7 @@ import global.RID;
 import global.Vector100Dtype;
 import heap.FieldNumberOutOfBoundException;
 import heap.Heapfile;
+import heap.Scan;
 import heap.Tuple;
 
 
@@ -251,9 +252,10 @@ public class NNIndexScan extends Iterator{
 		}
 
 		//open vafile index file
-		VAFileScan vascan = null;
+		Scan vascan = null;
 		try {
-			vascan = new VAFileScan(vaf);
+			//vascan = new VAFileScan(vaf);
+			vascan = vaf.openScan();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Runtime.getRuntime().exit(1);

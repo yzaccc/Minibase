@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import heap.FieldNumberOutOfBoundException;
 import heap.Heapfile;
+import heap.Scan;
 import heap.Tuple;
 import index.IndexException;
 import iterator.CondExpr;
@@ -45,7 +46,7 @@ public class RSIndexScan extends Iterator{
 	private int           _noOutFlds;
 	private Tuple         tuplein;// input tuple
 	private int           t1_size;
-	private VAFileScan vascan = null;
+	private Scan vascan = null;
 	
 	
 	
@@ -192,7 +193,8 @@ public class RSIndexScan extends Iterator{
 		//open vafile index file
 		
 		try {
-			vascan = new VAFileScan(vaf);
+//			vascan = new VAFileScan(vaf);
+			vascan = vaf.openScan();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Runtime.getRuntime().exit(1);

@@ -88,6 +88,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	public Sort sortIndex(String[] ArgumentList, String[] Outputflds,
 			boolean IsRange)
 	{
+	System.out.print("Open sort\n");
 	QA = Integer.parseInt(ArgumentList[0]);
 	Q = Integer.parseInt(ArgumentList[0]);
 	String T = ArgumentList[1];
@@ -158,9 +159,9 @@ class Phase2Driver extends TestDriver implements GlobalConst
 			sort = new Sort(attrType, (short) attrType.length, null, fscan, QA,
 					order[0], Vector100Dtype.Max * 2, phase2test.numbuf,
 					phase2test.TargetforSort, phase2test.topk);
-		else
+		else 
 			sort = new Sort(attrType, (short) attrType.length, null, fscan, Q,
-					order[0], Vector100Dtype.Max * 2, phase2test.numbuf,
+					order[0], Vector100Dtype.Max * 2,phase2test.numbuf,
 					phase2test.TargetforSort, 0);
 	} catch (SortException | IOException e)
 	{
@@ -741,34 +742,6 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	 {
 	 return true;
 	 }
-//	try
-//	{
-//		SystemDefs.JavabaseBM.flushAllPages();
-//	} catch (HashOperationException e1)
-//	{
-//		// TODO Auto-generated catch block
-//		e1.printStackTrace();
-//	} catch (PageUnpinnedException e1)
-//	{
-//		// TODO Auto-generated catch block
-//		e1.printStackTrace();
-//	} catch (PagePinnedException e1)
-//	{
-//		// TODO Auto-generated catch block
-//		e1.printStackTrace();
-//	} catch (PageNotFoundException e1)
-//	{
-//		// TODO Auto-generated catch block
-//		e1.printStackTrace();
-//	} catch (BufMgrException e1)
-//	{
-//		// TODO Auto-generated catch block
-//		e1.printStackTrace();
-//	} catch (IOException e1)
-//	{
-//		// TODO Auto-generated catch block
-//		e1.printStackTrace();
-//	}
 	PCounter.setZero();
 	PCounterw.setZero();
 	PCounterPinPage.setZero();
@@ -1216,7 +1189,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					arrayindexend).split(",");
 			int range = Integer.parseInt(ArgumentList[2]);
 			System.out.print(IndexOption);
-			if (IndexOption=="N")
+			if (IndexOption.equals("N"))
 			{
 				System.out.print("brefore");
 				Sort sort = sortIndex(ArgumentList, Outputflds, true);
@@ -1299,6 +1272,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 				{
 					e.printStackTrace();
 				}
+				
 			}
 			else
 			{
@@ -1383,8 +1357,8 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					arrayindexbegin).split(",");
 			String Outputflds[] = queryCommand.substring(arrayindexbegin + 1,
 					arrayindexend).split(",");
-
-			if (IndexOption == "N")
+			Sort sort = null;
+			if (IndexOption.equals("N"))
 			{
 				AttrType outputflds[] = new AttrType[Outputflds.length];
 				IsNN = true;
@@ -1392,7 +1366,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 				{
 					outputflds[i] = attrType[Integer.parseInt(Outputflds[i]) - 1];
 				}
-				Sort sort = sortIndex(ArgumentList, Outputflds, false);
+				sort = sortIndex(ArgumentList, Outputflds, false);
 				Tuple tmp = null;
 				try
 				{
@@ -1551,7 +1525,16 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					}
 
 				}
+				
+			try
+			{
 
+				sort.close();
+			} catch (SortException | IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			}
 			// Here we use NNIndexScan
 			else
@@ -1654,6 +1637,8 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	}
 	try
 	{
+		
+		
 		Querybr.close();
 	} catch (IOException e)
 	{
@@ -1664,7 +1649,6 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	System.out.println("Write page in query=" + PCounterw.counter);
 	System.out.print("The number of pin page in BM is"
 			+ PCounterPinPage.counter + "\n");
-
 	return true;
 	}
 
