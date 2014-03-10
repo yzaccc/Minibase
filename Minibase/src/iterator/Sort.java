@@ -578,6 +578,10 @@ public class Sort extends Iterator implements GlobalConst {
 	public Sort(AttrType[] in, short len_in, short[] str_sizes, Iterator am,
 			int sort_fld, TupleOrder sort_order, int sort_fld_len, int n_pages, Vector100Dtype target, int vk)
 			throws IOException, SortException {
+	if(vk>0)
+		_k = vk;
+	else
+		_k = Integer.MAX_VALUE;
 		_in = new AttrType[len_in];
 		n_cols = len_in;
 		int n_strs = 0;

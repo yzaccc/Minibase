@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import bufmgr.BufMgrException;
 import bufmgr.HashOperationException;
@@ -30,6 +31,7 @@ import bufmgr.PageUnpinnedException;
 import diskmgr.PCounter;
 import diskmgr.PCounterPinPage;
 import diskmgr.PCounterw;
+import global.AttrOperator;
 import global.AttrType;
 import global.GlobalConst;
 import global.IndexType;
@@ -61,10 +63,10 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		super("phase2test");
 		}
 
-	public static String DATAFILENAME = "/Users/akun1012/Documents/Courses2014Spring/510DBI/hw2/demo_data/test_data.txt";
+	public static String DATAFILENAME = "/home/jinxuanw/demo_data/test_data.txt";
 	public static String DBNAME = "test1.in";
-	public static String QSNAME = "/Users/akun1012/Documents/Courses2014Spring/510DBI/hw2/demo_data/rquery1.txt";
-	public static String IndexOption = "Y";
+	public static String QSNAME = "/home/jinxuanw/demo_data/nljquery12.txt";
+	public static String IndexOption = "N";
 	public static AttrType[] attrType;
 	public static int k = 4;// number of bits input
 	public static int numtuple = 369;// input
@@ -78,12 +80,12 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	public static Vector100Dtype TargetforSort;
 	public static Vector100Dtype TargetforNN;
 	public static Vector100Dtype TargetforRange;
+	public boolean IsNN=false;
 
 	public Sort sortIndex(String[] ArgumentList, String[] Outputflds,
 			boolean IsRange)
 	{
-	QA = Integer.parseInt(ArgumentList[0]);
-	Q = Integer.parseInt(ArgumentList[0]);
+	System.out.print("In Sort\n");
 	String T = ArgumentList[1];
 	topk = Integer.parseInt(ArgumentList[2]);
 	BufferedReader Targetbr = null;
@@ -110,7 +112,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	{
 		Targetarray[i] = Short.parseShort(TargetStr[i]);
 	}
-	TargetforSort = new Vector100Dtype(Targetarray);// Target
+	phase2test.TargetforSort = new Vector100Dtype(Targetarray);// Target
 													// Vector
 
 	try
@@ -148,8 +150,12 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	Sort sort = null;
 	try
 	{
-		sort = new Sort(attrType, (short) attrType.length, null, fscan, QA,
-				order[0], Vector100Dtype.Max * 2, 30, TargetforSort, topk);
+		if(IsRange == true)
+		sort = new Sort(attrType, (short) attrType.length, null, fscan, Q,
+				order[0], Vector100Dtype.Max * 2, phase2test.numbuf, phase2test.TargetforSort, 0);
+		else
+			sort = new Sort(attrType, (short) attrType.length, null, fscan, QA,
+					order[0], Vector100Dtype.Max * 2, phase2test.numbuf, phase2test.TargetforSort, topk);
 	} catch (SortException | IOException e)
 	{
 		// TODO Auto-generated catch block
@@ -359,6 +365,8 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	 */
 	protected boolean test1()
 	{
+	if(phase2test.batchinsert == true)
+		return true;
 	System.out
 			.println("----------------- begin test1-------------------------");
 	// PCounter.initialize();
@@ -638,11 +646,8 @@ class Phase2Driver extends TestDriver implements GlobalConst
 				}
 			}
 			tmp = scan.getNext(rid1);
-			if (tmp == null)
-			{
-				System.out.print("inser all");
-			}
 		}
+		
 	} catch (InvalidTupleSizeException | IOException e1)
 	{
 		e1.printStackTrace();
@@ -658,6 +663,15 @@ class Phase2Driver extends TestDriver implements GlobalConst
 				+ "\n");
 		System.out.print("The number of write page in DB is "
 				+ PCounterw.counter + "\n");
+		try
+		{
+			SystemDefs.JavabaseBM.flushAllPages();
+		} catch (HashOperationException | PageUnpinnedException
+				| PagePinnedException | PageNotFoundException | BufMgrException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		scan.closescan();
 		br.close();
 	} catch (IOException e)
@@ -674,6 +688,8 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	 */
 	protected boolean test2()
 	{
+	if(phase2test.query == false)
+		return true;
 	System.out
 			.println("----------------- begin test2-------------------------");
 	// Open Query Specification file
@@ -733,7 +749,6 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		{
 			String ParamforRange;
 			String ParamforNN;
-			int D;
 			try
 			{
 				ParamforRange = Querybr.readLine().trim();
@@ -741,79 +756,349 @@ class Phase2Driver extends TestDriver implements GlobalConst
 						ParamforRange.length() - 1);
 				ParamforNN = Querybr.readLine().trim();
 				ParamforNN = ParamforNN.substring(0, ParamforNN.length() - 1);
-				D = Integer.parseInt(Querybr.readLine().trim());
+				phase2test.D = Integer.parseInt(Querybr.readLine().trim());
 
 				int beginindex = ParamforRange.indexOf("(");
 				int arrayindexbegin = ParamforRange.indexOf("[");
 				int arrayindexend = ParamforRange.indexOf("]");
-				String ArgumentList[] = ParamforRange.substring(beginindex + 1,
-						arrayindexbegin).split(",");
-				String Outputfldsra[] = ParamforRange.substring(
-						arrayindexbegin + 1, arrayindexend).split(",");
+				String ArgumentListra[] = ParamforRange.substring(
+						beginindex + 1, arrayindexbegin).split(",");
+				String Outputfldsrastr = ParamforRange.substring(
+						arrayindexbegin + 1, arrayindexend);
+				String Outputfldsra[] = Outputfldsrastr.split(",");
+				int range = Integer.parseInt(ArgumentListra[2]);
 				RSIndexScan rscan = null;
-				if (IndexOption == "Y")
+				Q = Integer.parseInt(ArgumentListra[0]);
+				if (IndexOption.equals("Y"))
 				{
-					rscan = rangescan(ArgumentList, Outputfldsra);
+					rscan = rangescan(ArgumentListra, Outputfldsra);
+				}
+				int raVindex = 0;
+				AttrType outputfldTypera[] = new AttrType[Outputfldsra.length];
+				for (int i = 0; i < Outputfldsra.length; i++)
+				{
+					if (Integer.parseInt(Outputfldsra[i]) == Q)
+						raVindex = i + 1;
+					outputfldTypera[i] = attrType[Integer
+							.parseInt(Outputfldsra[i]) - 1];
 				}
 
 				beginindex = ParamforNN.indexOf("(");
 				arrayindexbegin = ParamforNN.indexOf("[");
 				arrayindexend = ParamforNN.indexOf("]");
-				ArgumentList = ParamforNN.substring(beginindex + 1,
+				String ArgumentListnn[] = ParamforNN.substring(beginindex + 1,
 						arrayindexbegin).split(",");
 				String Outputfldsnn[] = ParamforNN.substring(
 						arrayindexbegin + 1, arrayindexend).split(",");
 				NNIndexScan nnscan = null;
-				if (IndexOption == "Y")
+				QA = Integer.parseInt(ArgumentListnn[0]);
+				phase2test.topk = Integer.parseInt(ArgumentListnn[2]);
+				AttrType outputfldTypenn[] = new AttrType[Outputfldsnn.length];
+				if (IndexOption.equals("Y"))
 				{
-					nnscan = nnInexScan(ArgumentList, Outputfldsnn);
+					nnscan = nnInexScan(ArgumentListnn, Outputfldsnn);
+				}
+				int nnVindex = 0;
+				for (int i = 0; i < Outputfldsnn.length; i++)
+				{
+					if (Integer.parseInt(Outputfldsnn[i]) == QA)
+						nnVindex = i + 1;
+					outputfldTypenn[i] = attrType[Integer
+							.parseInt(Outputfldsnn[i]) - 1];
 				}
 
-				Tuple tmp = null;
-				try
+				// Create projectlist
+
+				int totalnumOutputfld = Outputfldsnn.length
+						+ Outputfldsra.length;
+				AttrType NLJOutputflds[] = new AttrType[totalnumOutputfld];
+				FldSpec[] proj_list = new FldSpec[totalnumOutputfld];
+				int fldindex = 0;
+				for (fldindex = 0; fldindex < Outputfldsra.length; fldindex++)
 				{
-					tmp = nnscan.get_next();
-				} catch (IndexException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					proj_list[fldindex] = new FldSpec(
+							new RelSpec(RelSpec.outer), fldindex + 1);
+					NLJOutputflds[fldindex] = attrType[Integer
+							.parseInt(Outputfldsra[fldindex]) - 1];
 				}
-				AttrType outputflds[] = new AttrType[Outputfldsnn.length];
-				for (int i = 0; i < outputflds.length; i++)
+				for (; fldindex < totalnumOutputfld; fldindex++)
 				{
-					outputflds[i] = attrType[Integer.parseInt(Outputfldsnn[i]) - 1];
+					proj_list[fldindex] = new FldSpec(new RelSpec(
+							RelSpec.innerRel), fldindex - Outputfldsra.length
+							+ 1);
+					NLJOutputflds[fldindex] = attrType[Integer
+							.parseInt(Outputfldsnn[fldindex
+									- Outputfldsra.length]) - 1];
 				}
 
-				Tuple tt = new Tuple(tmp.size());
-				try
+				TupleOrder ascending = new TupleOrder(TupleOrder.Ascending);
+
+				// Create Outputfilter
+				CondExpr[] outFilter = new CondExpr[2];
+				outFilter[0] = new CondExpr();
+				outFilter[1] = new CondExpr();
+				outFilter[0].next = null;
+				outFilter[0].op = new AttrOperator(AttrOperator.aopLE);
+				outFilter[0].type1 = new AttrType(AttrType.attrSymbol);
+				outFilter[0].operand1.symbol = new FldSpec(new RelSpec(
+						RelSpec.outer), raVindex);
+				outFilter[0].type2 = new AttrType(AttrType.attrSymbol);
+				outFilter[0].operand2.symbol = new FldSpec(new RelSpec(
+						RelSpec.innerRel), nnVindex);
+				outFilter[1] = null;
+				// SortMerge sm = null;
+				// try
+				// {
+				// sm = new SortMerge(outputfldTypera, outputfldTypera.length,
+				// null, outputfldTypenn, outputfldTypenn.length,
+				// null, raVindex, 200, nnVindex, 200, NUMBUF, rscan,
+				// nnscan, true, false, ascending, outFilter,
+				// proj_list, proj_list.length);
+				// } catch (Exception e)
+				// {
+				// System.err.println("" + e);
+				// }
+
+				ArrayList<Tuple> tuplennlist = new ArrayList<Tuple>();
+				ArrayList<Tuple> tupleralist = new ArrayList<Tuple>();
+				if (IndexOption.equals("Y"))
 				{
-					tt.setHdr((short) outputflds.length, outputflds, null);
-				} catch (InvalidTypeException | InvalidTupleSizeException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+					Tuple tmpnn = nnscan.get_next();
+					while (tmpnn != null)
+					{
+						tuplennlist.add(new Tuple());
+						tuplennlist.get(tuplennlist.size() - 1).setHdr(
+								(short) outputfldTypenn.length,
+								outputfldTypenn, null);
+						tuplennlist.get(tuplennlist.size() - 1)
+								.tupleCopy(tmpnn);
+						tmpnn = nnscan.get_next();
+					}
+					Tuple tmpra = rscan.get_next();
+
+					while (tmpra != null)
+					{
+						tupleralist.add(new Tuple());
+						tupleralist.get(tupleralist.size() - 1).setHdr(
+								(short) outputfldTypera.length,
+								outputfldTypera, null);
+						tupleralist.get(tupleralist.size() - 1)
+								.tupleCopy(tmpra);
+						tmpra = rscan.get_next();
+					}
 				}
-				tt.tupleCopy(tmp);
-				for (int i = 0; i < outputflds.length; i++)
+				else
 				{
-					switch (outputflds[i].attrType)
+					Sort sortra = sortIndex(ArgumentListra, Outputfldsra, true);
+					Tuple tmpra = new Tuple();
+					int currentdistance = 0;
+					try
+					{
+						tmpra = sortra.get_next();
+						int resultnum = 0;
+						while (currentdistance >= 0 && tmpra != null)
 						{
-						case 1:
-						System.out.print(tt.getIntFld(i + 1));
-						System.out.print(",\n");
-						break;
-						case 2:
-						System.out.print(tt.getFloFld(i + 1));
-						System.out.print(",\n");
-						break;
-						case 5:
-						System.out.print("[");
-						tt.get100DVectFld(i + 1).printVector();
-						System.out.print("],\n");
-						break;
+
+							resultnum++;
+							tmpra.setHdr((short) attrType.length, attrType,
+									null);
+							currentdistance = Vector100Dtype.distance(
+									tmpra.get100DVectFld(Q),
+									phase2test.TargetforSort);
+							if (currentdistance >= range)
+							{
+								while(tmpra!=null)
+									tmpra = sortra.get_next();
+								break;
+							}
+							AttrType outputflds[] = new AttrType[outputfldTypera.length];
+							for (int i = 0; i < outputflds.length; i++)
+							{
+								outputflds[i] = outputfldTypera[i];
+							}
+							Tuple JTuple = new Tuple();
+							try
+							{
+								JTuple.setHdr((short) outputflds.length,
+										outputflds, null);
+							} catch (InvalidTypeException
+									| InvalidTupleSizeException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							FldSpec[] projlist = new FldSpec[outputfldTypera.length];
+							RelSpec rel = new RelSpec(RelSpec.outer);
+							for (int i = 0; i < outputflds.length; i++)
+							{
+								projlist[i] = new FldSpec(rel,
+										Integer.parseInt(Outputfldsra[i]));
+							}
+							Projection.Project(tmpra, attrType, JTuple,
+									projlist, outputflds.length);
+							tupleralist.add(new Tuple());
+							tupleralist.get(tupleralist.size() - 1).setHdr(
+									(short) outputfldTypera.length,
+									outputfldTypera, null);
+							tupleralist.get(tupleralist.size() - 1).tupleCopy(
+									JTuple);
+							tmpra = sortra.get_next();
 						}
+
+					} catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+					sortra.close();
+					// Begin Sort NN, and add it to NNList
+					AttrType outputflds[] = new AttrType[Outputfldsnn.length];
+					IsNN = true;
+					for (int i = 0; i < Outputfldsnn.length; i++)
+					{
+						outputflds[i] = attrType[Integer
+								.parseInt(Outputfldsnn[i]) - 1];
+					}
+					Sort sortnn = sortIndex(ArgumentListnn, Outputfldsnn, false);
+					Tuple tmpnn = new Tuple();
+					for (int i = 0; i < phase2test.topk; i++)
+					{
+						tmpnn = sortnn.get_next();
+						Tuple JTuple = new Tuple();
+						JTuple.setHdr((short) outputflds.length, outputflds,
+								null);
+						FldSpec[] projlist = new FldSpec[Outputfldsnn.length];
+						RelSpec rel = new RelSpec(RelSpec.outer);
+						for (int i1 = 0; i1 < outputflds.length; i1++)
+						{
+							projlist[i1] = new FldSpec(rel,
+									Integer.parseInt(Outputfldsnn[i1]));
+						}
+						try
+						{
+							Projection.Project(tmpnn, attrType, JTuple,
+									projlist, outputflds.length);
+						} catch (UnknowAttrType | WrongPermat
+								| FieldNumberOutOfBoundException | IOException e1)
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						tuplennlist.add(new Tuple());
+						tuplennlist.get(tuplennlist.size() - 1).setHdr(
+								(short) outputfldTypenn.length,
+								outputfldTypenn, null);
+						tuplennlist.get(tuplennlist.size() - 1).tupleCopy(
+								JTuple);
+					}
+					while(tmpnn!=null)
+						tmpnn = sortnn.get_next();
+					sortnn.close();
+
 				}
-				System.out.print("}");
+
+				ArrayList<Tuple> resultTupleList = new ArrayList<Tuple>();
+				AttrType vectortype = new AttrType(AttrType.attrVector100D);
+				Tuple tmpresult = new Tuple();
+				tmpresult.setHdr((short) NLJOutputflds.length, NLJOutputflds,
+						null);
+				phase2test.NLJSortNNFlag = true;
+				for (int i = 0; i < tupleralist.size(); i++)
+				{
+					for (int j = 0; j < tuplennlist.size(); j++)
+					{
+						phase2test.NLJSortNNFlag = true;
+						int distance = TupleUtils.CompareTupleWithTuple(
+								vectortype, tupleralist.get(i), raVindex,
+								tuplennlist.get(j), nnVindex)
+								- phase2test.D;
+						if (distance <= 0)
+						{
+							int curposition = 1;
+							for (int k = 0; k < tupleralist.get(i).fldCnt; k++)
+							{
+								curposition++;
+								switch (outputfldTypera[k].attrType)
+									{
+									case 1:
+									tmpresult
+											.setIntFld(k + 1, tupleralist
+													.get(i).getIntFld(k + 1));
+									break;
+									case 2:
+									tmpresult
+											.setFloFld(k + 1, tupleralist
+													.get(i).getFloFld(k + 1));
+									break;
+									case 5:
+									tmpresult.set100DVectFld(k + 1, tupleralist
+											.get(i).get100DVectFld(k + 1));
+									break;
+									}
+							}
+
+							for (int k = 0; k < tuplennlist.get(j).fldCnt; k++, curposition++)
+							{
+								switch (outputfldTypera[k].attrType)
+									{
+									case 1:
+									tmpresult
+											.setIntFld(curposition, tuplennlist
+													.get(j).getIntFld(k + 1));
+									break;
+									case 2:
+									tmpresult
+											.setFloFld(curposition, tuplennlist
+													.get(j).getFloFld(k + 1));
+									break;
+									case 5:
+									tmpresult.set100DVectFld(
+											curposition,
+											tuplennlist.get(j).get100DVectFld(
+													k + 1));
+									break;
+									}
+							}
+							resultTupleList.add(new Tuple());
+							resultTupleList.get(resultTupleList.size() - 1)
+									.setHdr((short) NLJOutputflds.length,
+											NLJOutputflds, null);
+							resultTupleList.get(resultTupleList.size() - 1)
+									.tupleCopy(tmpresult);
+						}
+
+					}
+				}
+
+				for (int j = 0; j < resultTupleList.size(); j++)
+				{
+					int cur = j + 1;
+					System.out.print("\n\n\nTuple " + cur + "{\n");
+					for (int i = 0; i < NLJOutputflds.length; i++)
+					{
+						switch (NLJOutputflds[i].attrType)
+							{
+							case 1:
+							System.out.print(resultTupleList.get(j).getIntFld(
+									i + 1));
+							System.out.print(",\n");
+							break;
+							case 2:
+							System.out.print(resultTupleList.get(j).getFloFld(
+									i + 1));
+							System.out.print(",\n");
+							break;
+							case 5:
+							System.out.print("[");
+							resultTupleList.get(j).get100DVectFld(i + 1)
+									.printVector();
+							System.out.print("],\n");
+							break;
+							}
+					}
+					System.out.print("}\n");
+
+				}
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -830,9 +1115,11 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					arrayindexbegin).split(",");
 			String Outputflds[] = queryCommand.substring(arrayindexbegin + 1,
 					arrayindexend).split(",");
+			Q = Integer.parseInt(ArgumentList[0]);
 			int range = Integer.parseInt(ArgumentList[2]);
-			if (IndexOption == "N")
+			if (IndexOption.equals("N"))
 			{
+				System.out.print("Using Sort\n");
 				Sort sort = sortIndex(ArgumentList, Outputflds, true);
 				Tuple tmp = null;
 				int currentdistance = 0;
@@ -846,7 +1133,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 						resultnum++;
 						tmp.setHdr((short) attrType.length, attrType, null);
 						currentdistance = Vector100Dtype.distance(
-								tmp.get100DVectFld(Q), TargetforSort);
+								tmp.get100DVectFld(Q), phase2test.TargetforSort);
 						if (currentdistance >= range)
 						{
 							break;
@@ -910,7 +1197,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					e.printStackTrace();
 				}
 			}
-			else if (IndexOption == "Y")
+			else if (IndexOption.equals("Y"))
 			{
 				RSIndexScan rscan = rangescan(ArgumentList, Outputflds);
 				Tuple tmp = null;
@@ -993,9 +1280,10 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					arrayindexbegin).split(",");
 			String Outputflds[] = queryCommand.substring(arrayindexbegin + 1,
 					arrayindexend).split(",");
-
-			if (IndexOption == "N")
+			QA = Integer.parseInt(ArgumentList[0]);
+			if (IndexOption.equals("N"))
 			{
+				System.out.print("Using Sort\n");
 				AttrType outputflds[] = new AttrType[Outputflds.length];
 				for (int i = 0; i < Outputflds.length; i++)
 				{
@@ -1313,11 +1601,38 @@ class Phase2Driver extends TestDriver implements GlobalConst
 
 public class phase2test
 {
+	public static int D = -1;
+	public static int topk;
+	public static Vector100Dtype TargetforSort;
+	public static Vector100Dtype TargetforNN;
+	public static Vector100Dtype TargetforRange;
+	public static boolean NLJSortNNFlag = false;
+	public static int numbuf = 80;
+	public static boolean batchinsert = false;
+	public static boolean query = false;
 	public static void main(String argv[])
 	{
 	boolean phase2status;
+	System.out.print(argv.length+"\n");
 	Phase2Driver phase2 = new Phase2Driver();
-
+	if (argv.length == 4)
+	{
+		query = true;
+		Phase2Driver.DBNAME = argv[0];
+		Phase2Driver.QSNAME = argv[1];
+		Phase2Driver.IndexOption = argv[2];
+		numbuf = Integer.parseInt(argv[3]);
+	}
+	else if (argv.length == 2)
+	{
+		batchinsert = true;
+		Phase2Driver.DATAFILENAME = argv[0];
+		Phase2Driver.DBNAME = argv[1];
+	}
+	else
+	{
+		System.out.print("Input error");
+	}
 	phase2status = phase2.runTests();
 
 	if (phase2status != true)
