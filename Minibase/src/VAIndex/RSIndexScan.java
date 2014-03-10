@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import heap.FieldNumberOutOfBoundException;
 import heap.Heapfile;
+import heap.Scan;
 import heap.Tuple;
 import index.IndexException;
 import iterator.CondExpr;
@@ -187,9 +188,9 @@ public class RSIndexScan{
 
 
 		//open vafile index file
-		VAFileScan vascan = null;
+		Scan vascan = null;
 		try {
-			vascan = new VAFileScan(vaf);
+			vascan = vaf.openScan();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Runtime.getRuntime().exit(1);
@@ -223,15 +224,16 @@ public class RSIndexScan{
 //			System.out.println("in VANN2 getLowerBoundDistance " 
 //			+vkey.getLowerBoundDistance(this.target) );//debug
 //			vkey.printAllRegionNumber();//debug
-
-			try{
-				temp2 = hf.getRecord(rid2);
-				tuplein.tupleCopy(temp2);
-				
-			}catch (Exception e) {
-
-				e.printStackTrace();
-			}
+//
+//			try{
+//				
+//				temp2 = hf.getRecord(rid2);
+//				tuplein.tupleCopy(temp2);
+//				
+//			}catch (Exception e) {
+//
+//				e.printStackTrace();
+//			}
 			
 			if (vkey.getLowerBoundDistance(this.target) <= this._distance)
 				// in this case, real data need to be fetched
@@ -240,7 +242,9 @@ public class RSIndexScan{
 			{
 
 				try{
+					
 					temp2 = hf.getRecord(rid2);
+					//System.out.println("get data in VA_RS rid="+rid2.pageNo.pid);
 					tuplein.tupleCopy(temp2);
 					
 				}catch (Exception e) {
@@ -260,7 +264,9 @@ public class RSIndexScan{
 			
 			//get next key
 			try{
+				
 				temp = vascan.getNext(rid1);
+//				System.out.println("get key in VA_RS rid="+rid1.pageNo.pid);
 				
 			}catch (Exception e) {
 
@@ -299,7 +305,7 @@ public class RSIndexScan{
 	   Tuple nexttuple = null;//vac[nextidx].getTuple();
 	   
 		try{
-//			System.out.println("get data pid="+nextrid.pageNo.pid);
+			System.out.println("get data pid="+nextrid.pageNo.pid);
 			nexttuple = hf.getRecord(nextrid);
 			tuplein.tupleCopy(nexttuple);
 			

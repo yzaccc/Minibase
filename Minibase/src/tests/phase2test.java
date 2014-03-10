@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import bufmgr.BufMgrException;
@@ -63,10 +64,11 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		super("phase2test");
 		}
 
+	public String fld_str[];
 	public static String DATAFILENAME = "/home/jinxuanw/demo_data/test_data.txt";
 	public static String DBNAME = "test1.in";
-	public static String QSNAME = "/home/jinxuanw/demo_data/nljquery12.txt";
-	public static String IndexOption = "N";
+	public static String QSNAME = "/home/jinxuanw/demo_data/rquery1.txt";
+	public static String IndexOption = "Y";
 	public static AttrType[] attrType;
 	public static int k = 4;// number of bits input
 	public static int numtuple = 369;// input
@@ -80,7 +82,8 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	public static Vector100Dtype TargetforSort;
 	public static Vector100Dtype TargetforNN;
 	public static Vector100Dtype TargetforRange;
-	public boolean IsNN=false;
+	public boolean IsNN = false;
+	public int num_fld;
 
 	public Sort sortIndex(String[] ArgumentList, String[] Outputflds,
 			boolean IsRange)
@@ -113,7 +116,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		Targetarray[i] = Short.parseShort(TargetStr[i]);
 	}
 	phase2test.TargetforSort = new Vector100Dtype(Targetarray);// Target
-													// Vector
+	// Vector
 
 	try
 	{
@@ -141,21 +144,21 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	
-	
-	
+
 	TupleOrder[] order = new TupleOrder[2];
 	order[0] = new TupleOrder(TupleOrder.Ascending);
 	order[1] = new TupleOrder(TupleOrder.Descending);
 	Sort sort = null;
 	try
 	{
-		if(IsRange == true)
-		sort = new Sort(attrType, (short) attrType.length, null, fscan, Q,
-				order[0], Vector100Dtype.Max * 2, phase2test.numbuf, phase2test.TargetforSort, 0);
+		if (IsRange == true)
+			sort = new Sort(attrType, (short) attrType.length, null, fscan, Q,
+					order[0], Vector100Dtype.Max * 2, phase2test.numbuf,
+					phase2test.TargetforSort, 0);
 		else
 			sort = new Sort(attrType, (short) attrType.length, null, fscan, QA,
-					order[0], Vector100Dtype.Max * 2, phase2test.numbuf, phase2test.TargetforSort, topk);
+					order[0], Vector100Dtype.Max * 2, phase2test.numbuf,
+					phase2test.TargetforSort, topk);
 	} catch (SortException | IOException e)
 	{
 		// TODO Auto-generated catch block
@@ -335,8 +338,14 @@ class Phase2Driver extends TestDriver implements GlobalConst
 
 	try
 	{
-		Runtime.getRuntime().exec(remove_logcmd);
-		Runtime.getRuntime().exec(remove_dbcmd);
+		if (phase2test.query == true)
+			;
+		else
+		{
+			Runtime.getRuntime().exec(remove_logcmd);
+			Runtime.getRuntime().exec(remove_dbcmd);
+		}
+
 	} catch (IOException e)
 	{
 		System.err.println("" + e);
@@ -346,8 +355,13 @@ class Phase2Driver extends TestDriver implements GlobalConst
 
 	try
 	{
-		Runtime.getRuntime().exec(remove_logcmd);
-		Runtime.getRuntime().exec(remove_dbcmd);
+		if (phase2test.query == true)
+			;
+		else
+		{
+			Runtime.getRuntime().exec(remove_logcmd);
+			Runtime.getRuntime().exec(remove_dbcmd);
+		}
 	} catch (IOException e)
 	{
 		System.err.println("" + e);
@@ -365,8 +379,9 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	 */
 	protected boolean test1()
 	{
-	if(phase2test.batchinsert == true)
+	if (phase2test.batchinsert == false)
 		return true;
+
 	System.out
 			.println("----------------- begin test1-------------------------");
 	// PCounter.initialize();
@@ -386,7 +401,16 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-
+	String DBFileSpec = dbpath + DBNAME + "_spec";
+	PrintWriter specfile = null;
+	try
+	{
+		specfile = new PrintWriter(DBFileSpec);
+	} catch (Exception e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	// read num of fields
 	String line = null;
 	try
@@ -397,6 +421,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	}
+	specfile.println(line.trim());
 	num_fld = Integer.parseInt(line.trim()); // Set number of fields
 
 	// read array type of fields
@@ -408,7 +433,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	{
 		e1.printStackTrace();
 	}
-
+	specfile.println(line.trim());
 	// Assign the second line of DATAFILE into fld_array
 	String fld_str[] = line.split(" ");
 	short[] fld_array = new short[fld_str.length];
@@ -647,7 +672,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 			}
 			tmp = scan.getNext(rid1);
 		}
-		
+
 	} catch (InvalidTupleSizeException | IOException e1)
 	{
 		e1.printStackTrace();
@@ -674,6 +699,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		}
 		scan.closescan();
 		br.close();
+		specfile.close();
 	} catch (IOException e)
 	{
 		// TODO Auto-generated catch block
@@ -688,11 +714,12 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	 */
 	protected boolean test2()
 	{
-	if(phase2test.query == false)
+	// Check if it is query, if not doesn't execute this function
+	if (phase2test.query == false)
 		return true;
 	System.out
 			.println("----------------- begin test2-------------------------");
-	// Open Query Specification file
+
 	try
 	{
 		SystemDefs.JavabaseBM.flushAllPages();
@@ -724,7 +751,74 @@ class Phase2Driver extends TestDriver implements GlobalConst
 	PCounter.setZero();
 	PCounterw.setZero();
 	PCounterPinPage.setZero();
+
+	// Specbr is to read a spec file in /tmp, which contains number of fields
+	// and type.
+	// Querbr is to read QSPEC
 	BufferedReader Querybr = null;
+	BufferedReader Specbr = null;
+	try
+	{
+		Querybr = new BufferedReader(new FileReader(QSNAME));
+		Specbr = new BufferedReader(new FileReader(dbpath + DBNAME + "_spec"));
+	} catch (FileNotFoundException e)
+	{
+		e.printStackTrace();
+	}
+	String queryCommand = null;
+	try
+	{
+		num_fld = Integer.parseInt(Specbr.readLine().trim());
+	} catch (NumberFormatException | IOException e2)
+	{
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+	try
+	{
+		fld_str = Specbr.readLine().trim().split(" ");
+	} catch (IOException e2)
+	{
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+	short[] fld_array = new short[fld_str.length];
+	for (int i = 0; i < fld_str.length; i++)
+	{
+		fld_array[i] = Short.parseShort(fld_str[i]);
+	}
+	attrType = new AttrType[num_fld];
+	int vectorfldnum = 0;
+	for (int i = 0; i < num_fld; i++)
+	{
+		switch (fld_array[i])
+			{
+			case 1:
+			attrType[i] = new AttrType(AttrType.attrInteger);
+			break;
+			case 2:
+			attrType[i] = new AttrType(AttrType.attrReal);
+			break;
+			case 3:
+			// currently Sample data don't have string, so ignore it.
+			break;
+			case 4:
+			attrType[i] = new AttrType(AttrType.attrVector100D);
+			vectorfldnum++;
+			break;
+			default:
+			break;
+			}
+	}
+	vectorfld = new int[vectorfldnum];
+	for (int i = 0, j = 0; i < num_fld; i++)
+	{
+		if (fld_array[i] == 4)
+		{
+			vectorfld[j] = i;
+			j++;
+		}
+	}
 	try
 	{
 		Querybr = new BufferedReader(new FileReader(QSNAME));
@@ -733,24 +827,25 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	String queryCommand = null;
+
 	try
 	{
 		queryCommand = Querybr.readLine().trim();
 	} catch (IOException e)
 	{
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+	// Begin to loop over the QSpec file, check if it is NlJ, NN or Range
+
 	while (queryCommand != null)
 	{
-		// System.out.println(queryCommand);
 		if (queryCommand.contains("NLJ"))
 		{
 			String ParamforRange;
 			String ParamforNN;
 			try
 			{
+				// Parse Input
 				ParamforRange = Querybr.readLine().trim();
 				ParamforRange = ParamforRange.substring(0,
 						ParamforRange.length() - 1);
@@ -769,11 +864,14 @@ class Phase2Driver extends TestDriver implements GlobalConst
 				int range = Integer.parseInt(ArgumentListra[2]);
 				RSIndexScan rscan = null;
 				Q = Integer.parseInt(ArgumentListra[0]);
+
+				// Using scan
 				if (IndexOption.equals("Y"))
 				{
 					rscan = rangescan(ArgumentListra, Outputfldsra);
 				}
 				int raVindex = 0;
+				// A array contains output data type for range search
 				AttrType outputfldTypera[] = new AttrType[Outputfldsra.length];
 				for (int i = 0; i < Outputfldsra.length; i++)
 				{
@@ -782,7 +880,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					outputfldTypera[i] = attrType[Integer
 							.parseInt(Outputfldsra[i]) - 1];
 				}
-
+				// Parase input for NN
 				beginindex = ParamforNN.indexOf("(");
 				arrayindexbegin = ParamforNN.indexOf("[");
 				arrayindexend = ParamforNN.indexOf("]");
@@ -794,6 +892,8 @@ class Phase2Driver extends TestDriver implements GlobalConst
 				QA = Integer.parseInt(ArgumentListnn[0]);
 				phase2test.topk = Integer.parseInt(ArgumentListnn[2]);
 				AttrType outputfldTypenn[] = new AttrType[Outputfldsnn.length];
+
+				// Using nnscan
 				if (IndexOption.equals("Y"))
 				{
 					nnscan = nnInexScan(ArgumentListnn, Outputfldsnn);
@@ -807,8 +907,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 							.parseInt(Outputfldsnn[i]) - 1];
 				}
 
-				// Create projectlist
-
+				// Create Outputflds array for final output
 				int totalnumOutputfld = Outputfldsnn.length
 						+ Outputfldsra.length;
 				AttrType NLJOutputflds[] = new AttrType[totalnumOutputfld];
@@ -908,7 +1007,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 									phase2test.TargetforSort);
 							if (currentdistance >= range)
 							{
-								while(tmpra!=null)
+								while (tmpra != null)
 									tmpra = sortra.get_next();
 								break;
 							}
@@ -991,7 +1090,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 						tuplennlist.get(tuplennlist.size() - 1).tupleCopy(
 								JTuple);
 					}
-					while(tmpnn!=null)
+					while (tmpnn != null)
 						tmpnn = sortnn.get_next();
 					sortnn.close();
 
@@ -1132,8 +1231,9 @@ class Phase2Driver extends TestDriver implements GlobalConst
 
 						resultnum++;
 						tmp.setHdr((short) attrType.length, attrType, null);
-						currentdistance = Vector100Dtype.distance(
-								tmp.get100DVectFld(Q), phase2test.TargetforSort);
+						currentdistance = Vector100Dtype
+								.distance(tmp.get100DVectFld(Q),
+										phase2test.TargetforSort);
 						if (currentdistance >= range)
 						{
 							break;
@@ -1141,9 +1241,10 @@ class Phase2Driver extends TestDriver implements GlobalConst
 						System.out.print("\n\n\nResult Tuple " + resultnum
 								+ ":\n{\n");
 						AttrType outputflds[] = new AttrType[Outputflds.length];
-						for(int i=0;i<outputflds.length;i++)
+						for (int i = 0; i < outputflds.length; i++)
 						{
-							outputflds[i] = attrType[Integer.parseInt(Outputflds[i])-1];
+							outputflds[i] = attrType[Integer
+									.parseInt(Outputflds[i]) - 1];
 						}
 						Tuple JTuple = new Tuple();
 						try
@@ -1211,7 +1312,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 						resultnum++;
 						System.out.print("\n\n\nResult Tuple " + resultnum
 								+ ":\n{\n");
-						
+
 						int size = tmp.size();
 						AttrType outputflds[] = new AttrType[Outputflds.length];
 						for (int i = 0; i < outputflds.length; i++)
@@ -1281,6 +1382,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 			String Outputflds[] = queryCommand.substring(arrayindexbegin + 1,
 					arrayindexend).split(",");
 			QA = Integer.parseInt(ArgumentList[0]);
+			phase2test.topk = Integer.parseInt(ArgumentList[0]);
 			if (IndexOption.equals("N"))
 			{
 				System.out.print("Using Sort\n");
@@ -1319,22 +1421,20 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				
+
 				Tuple JTuple = new Tuple();
 				try
 				{
 					try
 					{
-						JTuple.setHdr((short) outputflds.length,
-								outputflds, null);
+						JTuple.setHdr((short) outputflds.length, outputflds,
+								null);
 					} catch (IOException e)
 					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				} catch (InvalidTypeException
-						| InvalidTupleSizeException e)
+				} catch (InvalidTypeException | InvalidTupleSizeException e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1356,7 +1456,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 				int curtupnum = 0;
 				while (tmp != null && topk > 0)
 				{
@@ -1475,10 +1575,14 @@ class Phase2Driver extends TestDriver implements GlobalConst
 						{
 							e.printStackTrace();
 						}
-						while (tmp != null)
+						int currentnum = 1;
+						while (tmp != null && phase2test.topk >= 0)
 						{
+							phase2test.topk--;
 							t.tupleCopy(tmp);
-							System.out.print("\n\n\n{\n");
+							System.out.print("\n\n\nTuple " + currentnum
+									+ ":\n{\n");
+							currentnum++;
 							for (int i = 0; i < tmpattr.length; i++)
 							{
 								switch (tmpattr[i].attrType)
@@ -1525,9 +1629,10 @@ class Phase2Driver extends TestDriver implements GlobalConst
 									break;
 									}
 							}
+							System.out.print("}");
 							tmp = nnscan.get_next();
 						}
-						System.out.print("}");
+						
 
 					}
 				} catch (Exception e)
@@ -1610,10 +1715,11 @@ public class phase2test
 	public static int numbuf = 80;
 	public static boolean batchinsert = false;
 	public static boolean query = false;
+
 	public static void main(String argv[])
 	{
 	boolean phase2status;
-	System.out.print(argv.length+"\n");
+	System.out.print(argv.length + "\n");
 	Phase2Driver phase2 = new Phase2Driver();
 	if (argv.length == 4)
 	{

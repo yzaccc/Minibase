@@ -72,7 +72,7 @@ public class SystemDefs {
       
       // create or open the DB
       
-      if ((MINIBASE_RESTART_FLAG)||(num_pgs == 0||phase2test.D!=-1)){//open an existing database
+      if ((MINIBASE_RESTART_FLAG)||(num_pgs == 0||phase2test.query==true)){//open an existing database
 	try {
 	  JavabaseDB.openDB(dbname);
 	}
