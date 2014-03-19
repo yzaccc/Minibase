@@ -65,10 +65,11 @@ class Phase2Driver extends TestDriver implements GlobalConst
 		}
 
 	public String fld_str[];
-	public static String DATAFILENAME = "/home/jinxuanw/demo_data/test_data.txt";
-	public static String DBNAME = "test1.in";
-	public static String QSNAME = "/home/jinxuanw/demo_data/rquery1.txt";
-	public static String IndexOption = "Y";
+	public static String DATAFILENAME;// =
+									  // "/home/jinxuanw/demo_data/test_data.txt";
+	public static String DBNAME;// = "test1.in";
+	public static String QSNAME;// = "/home/jinxuanw/demo_data/nljquery12.txt";
+	public static String IndexOption;// = "Y";
 	public static AttrType[] attrType;
 	public static int k = 10;// number of bits input
 	public static int numtuple = 369;// input
@@ -1049,7 +1050,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					{
 						e.printStackTrace();
 					}
-					while(tmpra!=null)
+					while (tmpra != null)
 						sortra.get_next();
 					sortra.close();
 					SystemDefs.JavabaseBM.flushAllPages();
@@ -1277,8 +1278,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 							switch (outputflds[i].attrType)
 								{
 								case 1:
-								System.out.print(tt.getIntFld(Integer
-										.parseInt(Outputflds[i + 1])));
+								System.out.print(tt.getIntFld(i + 1));
 								System.out.print(",\n");
 								break;
 								case 2:
@@ -1295,7 +1295,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 						System.out.print("}\n");
 						tmp = sort.get_next();
 					}
-					while(tmp!=null)
+					while (tmp != null)
 						tmp = sort.get_next();
 					sort.close();
 					SystemDefs.JavabaseBM.flushAllPages();
@@ -1344,8 +1344,7 @@ class Phase2Driver extends TestDriver implements GlobalConst
 							switch (outputflds[i].attrType)
 								{
 								case 1:
-								System.out.print(tt.getIntFld(Integer
-										.parseInt(Outputflds[i + 1])));
+								System.out.print(tt.getIntFld(i + 1));
 								System.out.print(",\n");
 								break;
 								case 2:
@@ -1557,10 +1556,10 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					}
 
 				}
-				while(tmp!=null)
+				while (tmp != null)
 					try
 					{
-						tmp=sort.get_next();
+						tmp = sort.get_next();
 					} catch (SortException e)
 					{
 						// TODO Auto-generated catch block
@@ -1699,7 +1698,6 @@ class Phase2Driver extends TestDriver implements GlobalConst
 							System.out.print("}");
 							tmp = nnscan.get_next();
 						}
-						
 
 					}
 				} catch (Exception e)
