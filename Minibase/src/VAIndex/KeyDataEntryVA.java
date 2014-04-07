@@ -16,13 +16,21 @@ public class KeyDataEntryVA {
 		this.key = key;
 		this.rid = rid;
 	}
+	/**
+	 * construct from bytes 4-7
+	 * @param data
+	 * @param b
+	 * @throws VAException
+	 * @throws IOException
+	 */
 	public KeyDataEntryVA(byte[] data, int b) throws VAException, IOException{
 		this.key = new Vector100Key(b);
-		key.setDataBytes(data,8);
+		key.setDataBytes(data,0);
 		int pid;
 		int slotNo;
-		slotNo = Convert.getIntValue(0, data);
-		pid = Convert.getIntValue(4, data);
+		int keylen=Vector100Key.getVAKeyLength(b);
+		pid = Convert.getIntValue(keylen, data);
+		slotNo = Convert.getIntValue(keylen+4, data);
 		PageId pageid = new PageId(pid);
 		this.rid = new RID(pageid,slotNo);	
 	}
@@ -36,20 +44,22 @@ public class KeyDataEntryVA {
 	}
 	
 	/**
-	 * first 4 bytes for slotNo, next 4 bytes for pid, rest for key
+	 * convert from data to bytes 4-7
 	 * @return
 	 * @throws IOException
 	 */
 	byte [] getBytesFromEntry() throws IOException{
 		int datalength = key.getDataLength()+8;// vector + int
 		byte[] data = new byte[datalength];
-		Convert.setIntValue(rid.slotNo, 0, data);
-		Convert.setIntValue(rid.pageNo.pid, 4, data);
-		Convert.set100DVectorKeyValue(key, 8, data);
+
+		Convert.set100DVectorKeyValue(this.key, 0, data);
+		Convert.setIntValue(this.rid.pageNo.pid, datalength-8, data);
+		Convert.setIntValue(this.rid.slotNo, datalength-4, data);
+		
 		return data;
 	}
 	/**
-	 * 
+	 * convert from bytes to data 4-7
 	 * @param data
 	 * @param b 
 	 * @return
@@ -58,11 +68,12 @@ public class KeyDataEntryVA {
 	 */
 	public static KeyDataEntryVA getEntryFromBytes(byte[] data, int b) throws VAException, IOException{
 		Vector100Key vkey = new Vector100Key(b);
-		vkey.setDataBytes(data,8);
+		vkey.setDataBytes(data,0);
 		int pid;
 		int slotNo;
-		slotNo = Convert.getIntValue(0, data);
-		pid = Convert.getIntValue(4, data);
+		int keylen=Vector100Key.getVAKeyLength(b);
+		pid = Convert.getIntValue(keylen, data);
+		slotNo = Convert.getIntValue(keylen+4, data);
 		PageId pageid = new PageId(pid);
 		RID rid = new RID(pageid,slotNo);
 		KeyDataEntryVA kde = new KeyDataEntryVA(vkey,rid);

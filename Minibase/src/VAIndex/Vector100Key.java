@@ -1,6 +1,7 @@
 package VAIndex;
 
 import java.util.Arrays;
+
 import global.Vector100Dtype;
 import btree.KeyClass;
 
@@ -17,6 +18,7 @@ public class Vector100Key extends KeyClass{
 	private byte []data;
 	private Vector100Dtype _vector;
 	private int []_regionnum ;
+	private boolean isAllRegionSet;
 	
 	public int get_b() {
 		return _b;
@@ -25,10 +27,18 @@ public class Vector100Key extends KeyClass{
 		this._b = _b;
 	}
 	
+	public boolean isAllRegionSet() {
+		return isAllRegionSet;
+	}
 	public Vector100Dtype get_vector() {
+		if (_vector == null)
+			System.out.println("error vector null in Vector100Key");
 		return _vector;
 	}
-	
+	public static int getVAKeyLength(int b){
+		int len=b*100/8;
+		return len;
+	}
 	public Vector100Key(int b) throws VAException{
 		_b = b;
 		
@@ -43,6 +53,18 @@ public class Vector100Key extends KeyClass{
 		else
 			throw new VAException(null, "bit number should be even");
 	}
+	public Vector100Key(int datalen,byte[] da){
+		this.dataLength = datalen;
+		this.setDataBytes(da, 0);
+		this._b = datalen*8/100;
+		this.setAllRegionNumber();
+		this.totalregionnum = 1<<this._b;
+		this.regionsize = VAFile.MAXRANGE / (double)totalregionnum;
+	}
+	
+//	public Vector100Key getKey(){
+//		return null;
+//	}
 
 	public Vector100Key(Vector100Dtype v, int b) throws VAException{
 		_b = b;
@@ -120,6 +142,7 @@ public class Vector100Key extends KeyClass{
 			this._regionnum[i] = rgnum;
 
 		}
+		isAllRegionSet = true;
 	}
 	public void printAllRegionNumber(){
 		for (int i=0;i<100;i++){

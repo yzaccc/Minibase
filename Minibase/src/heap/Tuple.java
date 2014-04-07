@@ -10,609 +10,644 @@ import VAIndex.VAException;
 import VAIndex.Vector100Key;
 import global.*;
 
+public class Tuple implements GlobalConst {
 
-public class Tuple implements GlobalConst{
+	/**
+	 * Maximum size of any tuple
+	 */
+	public static final int max_size = MINIBASE_PAGESIZE;
 
+	/**
+	 * a byte array to hold data
+	 */
+	private byte[] data;
 
- /** 
-  * Maximum size of any tuple
-  */
-  public static final int max_size = MINIBASE_PAGESIZE;
+	/**
+	 * start position of this tuple in data[]
+	 */
+	private int tuple_offset;
 
- /** 
-   * a byte array to hold data
-   */
-  private byte [] data;
+	/**
+	 * length of this tuple
+	 */
+	private int tuple_length;
 
-  /**
-   * start position of this tuple in data[]
-   */
-  private int tuple_offset;
+	/**
+	 * private field Number of fields in this tuple
+	 */
+	public short fldCnt;
 
-  /**
-   * length of this tuple
-   */
-  private int tuple_length;
+	/**
+	 * private field Array of offsets of the fields
+	 */
 
-  /** 
-   * private field
-   * Number of fields in this tuple
-   */
-  public short fldCnt;
+	public short[] fldOffset;
 
-  /** 
-   * private field
-   * Array of offsets of the fields
-   */
- 
-  public short [] fldOffset; 
+	/**
+	 * Class constructor Creat a new tuple with length = max_size,tuple offset =
+	 * 0.
+	 */
 
-   /**
-    * Class constructor
-    * Creat a new tuple with length = max_size,tuple offset = 0.
-    */
+	public Tuple() {
+		// Creat a new tuple
+		data = new byte[max_size];
+		tuple_offset = 0;
+		tuple_length = max_size;
+	}
 
-  public  Tuple()
-  {
-       // Creat a new tuple
-       data = new byte[max_size];
-       tuple_offset = 0;
-       tuple_length = max_size;
-  }
-   
-   /** Constructor
-    * @param atuple a byte array which contains the tuple
-    * @param offset the offset of the tuple in the byte array
-    * @param length the length of the tuple
-    */
+	/**
+	 * Constructor
+	 * 
+	 * @param atuple
+	 *            a byte array which contains the tuple
+	 * @param offset
+	 *            the offset of the tuple in the byte array
+	 * @param length
+	 *            the length of the tuple
+	 */
 
-   public Tuple(byte [] atuple, int offset, int length)
-   {
-      data = atuple;
-      tuple_offset = offset;
-      tuple_length = length;
-    //  fldCnt = getShortValue(offset, data);
-   }
-   
-   /** Constructor(used as tuple copy)
-    * @param fromTuple   a byte array which contains the tuple
-    * 
-    */
-   public Tuple(Tuple fromTuple)
-   {
-       data = fromTuple.getTupleByteArray();
-       tuple_length = fromTuple.getLength();
-       tuple_offset = 0;
-       fldCnt = fromTuple.noOfFlds(); 
-       fldOffset = fromTuple.copyFldOffset(); 
-   }
+	public Tuple(byte[] atuple, int offset, int length) {
+		data = atuple;
+		tuple_offset = offset;
+		tuple_length = length;
+		// fldCnt = getShortValue(offset, data);
+	}
 
-   /**  
-    * Class constructor
-    * Creat a new tuple with length = size,tuple offset = 0.
-    */
- 
-  public  Tuple(int size)
-  {
-       // Creat a new tuple
-       data = new byte[size];
-       tuple_offset = 0;
-       tuple_length = size;     
-  }
-   
-   /** Copy a tuple to the current tuple position
-    *  you must make sure the tuple lengths must be equal
-    * @param fromTuple the tuple being copied
-    */
-   public void tupleCopy(Tuple fromTuple)
-   {
-       byte [] temparray = fromTuple.getTupleByteArray();
-       //System.out.println("in Tuple "+temparray.length+" "+data.length+ " "+ tuple_length);//debug
-       System.arraycopy(temparray, 0, data, tuple_offset, tuple_length);   
-//       fldCnt = fromTuple.noOfFlds(); 
-//       fldOffset = fromTuple.copyFldOffset(); 
-   }
+	/**
+	 * Constructor(used as tuple copy)
+	 * 
+	 * @param fromTuple
+	 *            a byte array which contains the tuple
+	 * 
+	 */
+	public Tuple(Tuple fromTuple) {
+		data = fromTuple.getTupleByteArray();
+		tuple_length = fromTuple.getLength();
+		tuple_offset = 0;
+		fldCnt = fromTuple.noOfFlds();
+		fldOffset = fromTuple.copyFldOffset();
+	}
 
-   /** This is used when you don't want to use the constructor
-    * @param atuple  a byte array which contains the tuple
-    * @param offset the offset of the tuple in the byte array
-    * @param length the length of the tuple
-    */
+	/**
+	 * Class constructor Creat a new tuple with length = size,tuple offset = 0.
+	 */
 
-   public void tupleInit(byte [] atuple, int offset, int length)
-   {
-      data = atuple;
-      tuple_offset = offset;
-      tuple_length = length;
-   }
+	public Tuple(int size) {
+		// Creat a new tuple
+		data = new byte[size];
+		tuple_offset = 0;
+		tuple_length = size;
+	}
 
- /**
-  * Set a tuple with the given tuple length and offset
-  * @param	record	a byte array contains the tuple
-  * @param	offset  the offset of the tuple ( =0 by default)
-  * @param	length	the length of the tuple
-  */
- public void tupleSet(byte [] record, int offset, int length)  
-  {
-      System.arraycopy(record, offset, data, 0, length);
-      tuple_offset = 0;
-      tuple_length = length;
-  }
-  
- /** get the length of a tuple, call this method if you did not 
-  *  call setHdr () before
-  * @return 	length of this tuple in bytes
-  */   
-  public int getLength()
-   {
-      return tuple_length;
-   }
+	/**
+	 * Copy a tuple to the current tuple position you must make sure the tuple
+	 * lengths must be equal
+	 * 
+	 * @param fromTuple
+	 *            the tuple being copied
+	 */
+	public void tupleCopy(Tuple fromTuple) {
+		byte[] temparray = fromTuple.getTupleByteArray();
+		// System.out.println("in Tuple "+temparray.length+" "+data.length+ " "+
+		// tuple_length);//debug
+		System.arraycopy(temparray, 0, data, tuple_offset, tuple_length);
+		// fldCnt = fromTuple.noOfFlds();
+		// fldOffset = fromTuple.copyFldOffset();
+	}
 
-/** get the length of a tuple, call this method if you did 
-  *  call setHdr () before
-  * @return     size of this tuple in bytes
-  */
-  public short size()
-   {
-      return ((short) (fldOffset[fldCnt] - tuple_offset));
-   }
- 
-   /** get the offset of a tuple
-    *  @return offset of the tuple in byte array
-    */   
-   public int getOffset()
-   {
-      return tuple_offset;
-   }   
-   
-   /** Copy the tuple byte array out
-    *  @return  byte[], a byte array contains the tuple
-    *		the length of byte[] = length of the tuple
-    */
-    
-   public byte [] getTupleByteArray() 
-   {
-       byte [] tuplecopy = new byte [tuple_length];
-       System.arraycopy(data, tuple_offset, tuplecopy, 0, tuple_length);
-       return tuplecopy;
-   }
-   
-   /** return the data byte array 
-    *  @return  data byte array 		
-    */
-    
-   public byte [] returnTupleByteArray()
-   {
-       return data;
-   }
-   
-   /**
-    * Zongkun
-    * Task2
-    */
-   public Vector100Dtype get100DVectFld(int fldNo) throws IOException, FieldNumberOutOfBoundException{
-	   Vector100Dtype val;
-	   
-	    if ( (fldNo > 0) && (fldNo <= fldCnt))
-	     {
-	    	//System.out.println("offset in  get100DVectFld "+fldOffset[fldNo -1]);//debug
-	      val = Convert.get100DVectorValue(fldOffset[fldNo -1], data);
-	      //val.printVector();//debug
-	      return val;
-	     }
-	    else 
-	     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
-   }
-   public KeyDataEntryVA get100DVectKeyFld(int fldNo) throws IOException, FieldNumberOutOfBoundException, VAException{
-	   KeyDataEntryVA keydata;
-	   
-	    if ( (fldNo > 0) && (fldNo <= fldCnt))
-	     {
-	    	//System.out.println("offset in  get100DVectFld "+fldOffset[fldNo -1]+" "+fldOffset[fldNo]);//debug
-	    	keydata = Convert.get100DVectorKeyValue(fldOffset[fldNo -1], data, fldOffset[fldNo] - fldOffset[fldNo -1]);
-	      //val.printVector();//debug
-	      return keydata;
-	     }
-	    else 
-	     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
-   }
-   public Tuple set100DVectFld(int fldNo, Vector100Dtype val) throws IOException, FieldNumberOutOfBoundException
-		  { 
-		   if ( (fldNo > 0) && (fldNo <= fldCnt))
-		    {
+	/**
+	 * This is used when you don't want to use the constructor
+	 * 
+	 * @param atuple
+	 *            a byte array which contains the tuple
+	 * @param offset
+	 *            the offset of the tuple in the byte array
+	 * @param length
+	 *            the length of the tuple
+	 */
 
-		     Convert.set100DVectorValue(val, fldOffset[fldNo -1], data);
-		     return this;
-		    }
-		    else  
-		     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND"); 
-		     
-		  }
-   //End
-   public Tuple set100DVectkeyFld(int fldNo, KeyDataEntryVA val) throws IOException, FieldNumberOutOfBoundException
-	  { 
-	   if ( (fldNo > 0) && (fldNo <= fldCnt))
-	    {
-		   
-		 Convert.setIntValue(val.getRid().slotNo, fldOffset[fldNo -1], data);  
-		 Convert.setIntValue(val.getRid().pageNo.pid, fldOffset[fldNo -1]+4, data);
-	     Convert.set100DVectorKeyValue(val.getKey(), fldOffset[fldNo -1]+8, data);
-	     return this;
-	    }
-	    else  
-	     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND"); 
-	     
-	  }
-   
-   /**
-    * Convert this field into integer 
-    * 
-    * @param	fldNo	the field number
-    * @return		the converted integer if success
-    *			
-    * @exception   IOException I/O errors
-    * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
-    */
+	public void tupleInit(byte[] atuple, int offset, int length) {
+		data = atuple;
+		tuple_offset = offset;
+		tuple_length = length;
+	}
 
-  public int getIntFld(int fldNo) 
-  	throws IOException, FieldNumberOutOfBoundException
-  {           
-    int val;
-    if ( (fldNo > 0) && (fldNo <= fldCnt))
-     {
-      val = Convert.getIntValue(fldOffset[fldNo -1], data);
-      return val;
-     }
-    else 
-     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
-  }
-    
-   /**
-    * Convert this field in to float
-    *
-    * @param    fldNo   the field number
-    * @return           the converted float number  if success
-    *			
-    * @exception   IOException I/O errors
-    * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
-    */
+	/**
+	 * Set a tuple with the given tuple length and offset
+	 * 
+	 * @param record
+	 *            a byte array contains the tuple
+	 * @param offset
+	 *            the offset of the tuple ( =0 by default)
+	 * @param length
+	 *            the length of the tuple
+	 */
+	public void tupleSet(byte[] record, int offset, int length) {
+		System.arraycopy(record, offset, data, 0, length);
+		tuple_offset = 0;
+		tuple_length = length;
+	}
 
-    public float getFloFld(int fldNo) 
-    	throws IOException, FieldNumberOutOfBoundException
-     {
-	float val;
-      if ( (fldNo > 0) && (fldNo <= fldCnt))
-       {
-        val = Convert.getFloValue(fldOffset[fldNo -1], data);
-        return val;
-       }
-      else 
-       throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
-     }
+	/**
+	 * get the length of a tuple, call this method if you did not call setHdr ()
+	 * before
+	 * 
+	 * @return length of this tuple in bytes
+	 */
+	public int getLength() {
+		return tuple_length;
+	}
 
+	/**
+	 * get the length of a tuple, call this method if you did call setHdr ()
+	 * before
+	 * 
+	 * @return size of this tuple in bytes
+	 */
+	public short size() {
+		return ((short) (fldOffset[fldCnt] - tuple_offset));
+	}
 
-   /**
-    * Convert this field into String
-    *
-    * @param    fldNo   the field number
-    * @return           the converted string if success
-    *			
-    * @exception   IOException I/O errors
-    * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
-    */
+	/**
+	 * get the offset of a tuple
+	 * 
+	 * @return offset of the tuple in byte array
+	 */
+	public int getOffset() {
+		return tuple_offset;
+	}
 
-   public String getStrFld(int fldNo) 
-   	throws IOException, FieldNumberOutOfBoundException 
-   { 
-         String val;
-    if ( (fldNo > 0) && (fldNo <= fldCnt))      
-     {
-        val = Convert.getStrValue(fldOffset[fldNo -1], data, 
-		fldOffset[fldNo] - fldOffset[fldNo -1]); //strlen+2
-        return val;
-     }
-    else 
-     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
-  }
- 
-   /**
-    * Convert this field into a character
-    *
-    * @param    fldNo   the field number
-    * @return           the character if success
-    *			
-    * @exception   IOException I/O errors
-    * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
-    */
+	/**
+	 * Copy the tuple byte array out
+	 * 
+	 * @return byte[], a byte array contains the tuple the length of byte[] =
+	 *         length of the tuple
+	 */
 
-   public char getCharFld(int fldNo) 
-   	throws IOException, FieldNumberOutOfBoundException 
-    {   
-       char val;
-      if ( (fldNo > 0) && (fldNo <= fldCnt))      
-       {
-        val = Convert.getCharValue(fldOffset[fldNo -1], data);
-        return val;
-       }
-      else 
-       throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
- 
-    }
+	public byte[] getTupleByteArray() {
+		byte[] tuplecopy = new byte[tuple_length];
+		System.arraycopy(data, tuple_offset, tuplecopy, 0, tuple_length);
+		return tuplecopy;
+	}
 
-  /**
-   * Set this field to integer value
-   *
-   * @param	fldNo	the field number
-   * @param	val	the integer value
-   * @exception   IOException I/O errors
-   * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
-   */
+	/**
+	 * return the data byte array
+	 * 
+	 * @return data byte array
+	 */
 
-  public Tuple setIntFld(int fldNo, int val) 
-  	throws IOException, FieldNumberOutOfBoundException
-  { 
-    if ( (fldNo > 0) && (fldNo <= fldCnt))
-     {
-	Convert.setIntValue (val, fldOffset[fldNo -1], data);
-	return this;
-     }
-    else 
-     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND"); 
-  }
+	public byte[] returnTupleByteArray() {
+		return data;
+	}
 
-  /**
-   * Set this field to float value
-   *
-   * @param     fldNo   the field number
-   * @param     val     the float value
-   * @exception   IOException I/O errors
-   * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
-   */
+	/**
+	 * Zongkun Task2
+	 */
+	public Vector100Dtype get100DVectFld(int fldNo) throws IOException,
+			FieldNumberOutOfBoundException {
+		Vector100Dtype val;
 
-  public Tuple setFloFld(int fldNo, float val) 
-  	throws IOException, FieldNumberOutOfBoundException
-  { 
-   if ( (fldNo > 0) && (fldNo <= fldCnt))
-    {
-     Convert.setFloValue (val, fldOffset[fldNo -1], data);
-     return this;
-    }
-    else  
-     throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND"); 
-     
-  }
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
+			// System.out.println("offset in  get100DVectFld "+fldOffset[fldNo
+			// -1]);//debug
+			val = Convert.get100DVectorValue(fldOffset[fldNo - 1], data);
+			// val.printVector();//debug
+			return val;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+	}
 
-  /**
-   * Set this field to String value
-   *
-   * @param     fldNo   the field number
-   * @param     val     the string value
-   * @exception   IOException I/O errors
-   * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
-   */
+	public KeyDataEntryVA get100DVectKeyFld(int fldNo) throws IOException,
+			FieldNumberOutOfBoundException, VAException {
+		KeyDataEntryVA keydata;
 
-   public Tuple setStrFld(int fldNo, String val) 
-		throws IOException, FieldNumberOutOfBoundException  
-   {
-     if ( (fldNo > 0) && (fldNo <= fldCnt))        
-      {
-         Convert.setStrValue (val, fldOffset[fldNo -1], data);
-         return this;
-      }
-     else 
-       throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
-    }
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
+			// System.out.println("offset in  get100DVectFld "+fldOffset[fldNo
+			// -1]+" "+fldOffset[fldNo]);//debug
+			keydata = Convert.get100DVectorKeyValue(fldOffset[fldNo - 1], data,
+					fldOffset[fldNo] - fldOffset[fldNo - 1]);
+			// val.printVector();//debug
+			return keydata;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+	}
 
+	public Tuple set100DVectFld(int fldNo, Vector100Dtype val)
+			throws IOException, FieldNumberOutOfBoundException {
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
 
-   /**
-    * setHdr will set the header of this tuple.   
-    *
-    * @param	numFlds	  number of fields
-    * @param	types[]	  contains the types that will be in this tuple
-    * @param	strSizes[]      contains the sizes of the string 
-    *				
-    * @exception IOException I/O errors
-    * @exception InvalidTypeException Invalid tupe type
-    * @exception InvalidTupleSizeException Tuple size too big
-    *
-    */
+			Convert.set100DVectorValue(val, fldOffset[fldNo - 1], data);
+			return this;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
 
-public void setHdr (short numFlds,  AttrType types[], short strSizes[])
- throws IOException, InvalidTypeException, InvalidTupleSizeException		
-{
-  if((numFlds +2)*2 > max_size)
-    throw new InvalidTupleSizeException (null, "TUPLE: TUPLE_TOOBIG_ERROR");
-  
-  fldCnt = numFlds;
-  Convert.setShortValue(numFlds, tuple_offset, data);
-  fldOffset = new short[numFlds+1];
-  int pos = tuple_offset+2;  // start position for fldOffset[]
-  
-  //sizeof short =2  +2: array siaze = numFlds +1 (0 - numFilds) and
-  //another 1 for fldCnt
-  fldOffset[0] = (short) ((numFlds +2) * 2 + tuple_offset);   
-   
-  Convert.setShortValue(fldOffset[0], pos, data);
-  pos +=2;
-  short strCount =0;
-  short incr;
-  int i;
+	}
 
-  for (i=1; i<numFlds; i++)
-  {
-    switch(types[i-1].attrType) {
-    case AttrType.attrVector100Dkey:
-    	incr = (short) (strSizes[strCount] );//??? no +2 compare to string?
-    	// 8 bytes for RID
-    	strCount++;
-    	break;
-    case AttrType.attrVector100D:
-    	incr = 200;
-    	break;
-    
-   case AttrType.attrInteger:
-     incr = 4;
-     break;
+	// End
+	public Tuple set100DVectkeyFld(int fldNo, KeyDataEntryVA val)
+			throws IOException, FieldNumberOutOfBoundException {
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
 
-   case AttrType.attrReal:
-     incr =4;
-     break;
+			int keylen = val.getKey().getDataLength();
+			Convert.set100DVectorKeyValue(val.getKey(), fldOffset[fldNo - 1],
+					data);
+			Convert.setIntValue(val.getRid().pageNo.pid, fldOffset[fldNo - 1]
+					+ keylen, data);
+			Convert.setIntValue(val.getRid().slotNo, fldOffset[fldNo - 1]
+					+ keylen + 4, data);
 
-   case AttrType.attrString:
-     incr = (short) (strSizes[strCount] +2);  //strlen in bytes = strlen +2
-     strCount++;
-     break;       
- 
-   default:
-    throw new InvalidTypeException (null, "TUPLE: TUPLE_TYPE_ERROR");
-   }
-  fldOffset[i]  = (short) (fldOffset[i-1] + incr);
-  Convert.setShortValue(fldOffset[i], pos, data);
-  pos +=2;
- 
+			return this;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+
+	}
+
+	/**
+	 * Convert this field into integer
+	 * 
+	 * @param fldNo
+	 *            the field number
+	 * @return the converted integer if success
+	 * 
+	 * @exception IOException
+	 *                I/O errors
+	 * @exception FieldNumberOutOfBoundException
+	 *                Tuple field number out of bound
+	 */
+
+	public int getIntFld(int fldNo) throws IOException,
+			FieldNumberOutOfBoundException {
+		int val;
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
+			val = Convert.getIntValue(fldOffset[fldNo - 1], data);
+			return val;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+	}
+
+	/**
+	 * Convert this field in to float
+	 * 
+	 * @param fldNo
+	 *            the field number
+	 * @return the converted float number if success
+	 * 
+	 * @exception IOException
+	 *                I/O errors
+	 * @exception FieldNumberOutOfBoundException
+	 *                Tuple field number out of bound
+	 */
+
+	public float getFloFld(int fldNo) throws IOException,
+			FieldNumberOutOfBoundException {
+		float val;
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
+			val = Convert.getFloValue(fldOffset[fldNo - 1], data);
+			return val;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+	}
+
+	/**
+	 * Convert this field into String
+	 * 
+	 * @param fldNo
+	 *            the field number
+	 * @return the converted string if success
+	 * 
+	 * @exception IOException
+	 *                I/O errors
+	 * @exception FieldNumberOutOfBoundException
+	 *                Tuple field number out of bound
+	 */
+
+	public String getStrFld(int fldNo) throws IOException,
+			FieldNumberOutOfBoundException {
+		String val;
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
+			val = Convert.getStrValue(fldOffset[fldNo - 1], data,
+					fldOffset[fldNo] - fldOffset[fldNo - 1]); // strlen+2
+			return val;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+	}
+
+	/**
+	 * Convert this field into a character
+	 * 
+	 * @param fldNo
+	 *            the field number
+	 * @return the character if success
+	 * 
+	 * @exception IOException
+	 *                I/O errors
+	 * @exception FieldNumberOutOfBoundException
+	 *                Tuple field number out of bound
+	 */
+
+	public char getCharFld(int fldNo) throws IOException,
+			FieldNumberOutOfBoundException {
+		char val;
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
+			val = Convert.getCharValue(fldOffset[fldNo - 1], data);
+			return val;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+
+	}
+
+	/**
+	 * Set this field to integer value
+	 * 
+	 * @param fldNo
+	 *            the field number
+	 * @param val
+	 *            the integer value
+	 * @exception IOException
+	 *                I/O errors
+	 * @exception FieldNumberOutOfBoundException
+	 *                Tuple field number out of bound
+	 */
+
+	public Tuple setIntFld(int fldNo, int val) throws IOException,
+			FieldNumberOutOfBoundException {
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
+			Convert.setIntValue(val, fldOffset[fldNo - 1], data);
+			return this;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+	}
+
+	/**
+	 * Set this field to float value
+	 * 
+	 * @param fldNo
+	 *            the field number
+	 * @param val
+	 *            the float value
+	 * @exception IOException
+	 *                I/O errors
+	 * @exception FieldNumberOutOfBoundException
+	 *                Tuple field number out of bound
+	 */
+
+	public Tuple setFloFld(int fldNo, float val) throws IOException,
+			FieldNumberOutOfBoundException {
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
+			Convert.setFloValue(val, fldOffset[fldNo - 1], data);
+			return this;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+
+	}
+
+	/**
+	 * Set this field to String value
+	 * 
+	 * @param fldNo
+	 *            the field number
+	 * @param val
+	 *            the string value
+	 * @exception IOException
+	 *                I/O errors
+	 * @exception FieldNumberOutOfBoundException
+	 *                Tuple field number out of bound
+	 */
+
+	public Tuple setStrFld(int fldNo, String val) throws IOException,
+			FieldNumberOutOfBoundException {
+		if ((fldNo > 0) && (fldNo <= fldCnt)) {
+			Convert.setStrValue(val, fldOffset[fldNo - 1], data);
+			return this;
+		} else
+			throw new FieldNumberOutOfBoundException(null,
+					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+	}
+
+	/**
+	 * setHdr will set the header of this tuple.
+	 * 
+	 * @param numFlds
+	 *            number of fields
+	 * @param types
+	 *            [] contains the types that will be in this tuple
+	 * @param strSizes
+	 *            [] contains the sizes of the string
+	 * 
+	 * @exception IOException
+	 *                I/O errors
+	 * @exception InvalidTypeException
+	 *                Invalid tupe type
+	 * @exception InvalidTupleSizeException
+	 *                Tuple size too big
+	 * 
+	 */
+
+	public void setHdr(short numFlds, AttrType types[], short strSizes[])
+			throws IOException, InvalidTypeException, InvalidTupleSizeException {
+		if ((numFlds + 2) * 2 > max_size)
+			throw new InvalidTupleSizeException(null,
+					"TUPLE: TUPLE_TOOBIG_ERROR");
+
+		fldCnt = numFlds;
+		Convert.setShortValue(numFlds, tuple_offset, data);
+		fldOffset = new short[numFlds + 1];
+		int pos = tuple_offset + 2; // start position for fldOffset[]
+
+		// sizeof short =2 +2: array siaze = numFlds +1 (0 - numFilds) and
+		// another 1 for fldCnt
+		fldOffset[0] = (short) ((numFlds + 2) * 2 + tuple_offset);
+
+		Convert.setShortValue(fldOffset[0], pos, data);
+		pos += 2;
+		short strCount = 0;
+		short incr;
+		int i;
+
+		for (i = 1; i < numFlds; i++) {
+			switch (types[i - 1].attrType) {
+			case AttrType.attrVector100Dkey:
+				incr = (short) (strSizes[strCount]);// ??? no +2 compare to
+													// string?
+				// 8 bytes for RID
+				strCount++;
+				break;
+			case AttrType.attrVector100D:
+				incr = 200;
+				break;
+
+			case AttrType.attrInteger:
+				incr = 4;
+				break;
+
+			case AttrType.attrReal:
+				incr = 4;
+				break;
+
+			case AttrType.attrString:
+				incr = (short) (strSizes[strCount] + 2); // strlen in bytes =
+															// strlen +2
+				strCount++;
+				break;
+
+			default:
+				throw new InvalidTypeException(null, "TUPLE: TUPLE_TYPE_ERROR");
+			}
+			fldOffset[i] = (short) (fldOffset[i - 1] + incr);
+			Convert.setShortValue(fldOffset[i], pos, data);
+			pos += 2;
+
+		}
+		switch (types[numFlds - 1].attrType) {
+
+		case AttrType.attrVector100Dkey:
+			incr = (short) (strSizes[strCount]);// ??? no +2 compare to string?
+			strCount++;
+			break;
+
+		case AttrType.attrVector100D:
+			incr = 200;
+			break;
+
+		case AttrType.attrInteger:
+			incr = 4;
+			break;
+
+		case AttrType.attrReal:
+			incr = 4;
+			break;
+
+		case AttrType.attrString:
+			incr = (short) (strSizes[strCount] + 2); // strlen in bytes = strlen
+														// +2
+			break;
+
+		default:
+			throw new InvalidTypeException(null, "TUPLE: TUPLE_TYPE_ERROR");
+		}
+
+		fldOffset[numFlds] = (short) (fldOffset[i - 1] + incr);
+		Convert.setShortValue(fldOffset[numFlds], pos, data);
+
+		tuple_length = fldOffset[numFlds] - tuple_offset;
+
+		if (tuple_length > max_size)
+			throw new InvalidTupleSizeException(null,
+					"TUPLE: TUPLE_TOOBIG_ERROR");
+	}
+
+	/**
+	 * Returns number of fields in this tuple
+	 * 
+	 * @return the number of fields in this tuple
+	 * 
+	 */
+
+	public short noOfFlds() {
+		return fldCnt;
+	}
+
+	/**
+	 * Makes a copy of the fldOffset array
+	 * 
+	 * @return a copy of the fldOffset arrray
+	 * 
+	 */
+
+	public short[] copyFldOffset() {
+		short[] newFldOffset = new short[fldCnt + 1];
+		for (int i = 0; i <= fldCnt; i++) {
+			newFldOffset[i] = fldOffset[i];
+		}
+
+		return newFldOffset;
+	}
+
+	/**
+	 * Print out the tuple
+	 * 
+	 * @param type
+	 *            the types in the tuple
+	 * @Exception IOException I/O exception
+	 */
+	public void print(AttrType type[]) throws IOException {
+		int i, val;
+		float fval;
+		String sval;
+
+		System.out.print("[");
+		for (i = 0; i < fldCnt - 1; i++) {
+			switch (type[i].attrType) {
+
+			case AttrType.attrInteger:
+				val = Convert.getIntValue(fldOffset[i], data);
+				System.out.print(val);
+				break;
+
+			case AttrType.attrReal:
+				fval = Convert.getFloValue(fldOffset[i], data);
+				System.out.print(fval);
+				break;
+
+			case AttrType.attrString:
+				sval = Convert.getStrValue(fldOffset[i], data, fldOffset[i + 1]
+						- fldOffset[i]);
+				System.out.print(sval);
+				break;
+
+			case AttrType.attrNull:
+			case AttrType.attrSymbol:
+				break;
+			}
+			System.out.print(", ");
+		}
+
+		switch (type[fldCnt - 1].attrType) {
+
+		case AttrType.attrInteger:
+			val = Convert.getIntValue(fldOffset[i], data);
+			System.out.print(val);
+			break;
+
+		case AttrType.attrReal:
+			fval = Convert.getFloValue(fldOffset[i], data);
+			System.out.print(fval);
+			break;
+
+		case AttrType.attrString:
+			sval = Convert.getStrValue(fldOffset[i], data, fldOffset[i + 1]
+					- fldOffset[i]);
+			System.out.print(sval);
+			break;
+
+		case AttrType.attrNull:
+		case AttrType.attrSymbol:
+			break;
+		}
+		System.out.println("]");
+
+	}
+
+	/**
+	 * private method Padding must be used when storing different types.
+	 * 
+	 * @param offset
+	 * @param type
+	 *            the type of tuple
+	 * @return short typle
+	 */
+
+	private short pad(short offset, AttrType type) {
+		return 0;
+	}
 }
- switch(types[numFlds -1].attrType) {
- 
- 	case AttrType.attrVector100Dkey:
-	 	incr = (short) (strSizes[strCount] );//??? no +2 compare to string?
-	 	strCount++;
-	 	break;
- 
- 	case AttrType.attrVector100D:
- 		incr = 200;
- 		break;
-
-   case AttrType.attrInteger:
-     incr = 4;
-     break;
-
-   case AttrType.attrReal:
-     incr =4;
-     break;
-
-   case AttrType.attrString:
-     incr =(short) ( strSizes[strCount] +2);  //strlen in bytes = strlen +2
-     break;
-
-   default:
-    throw new InvalidTypeException (null, "TUPLE: TUPLE_TYPE_ERROR");
-   }
-
-  fldOffset[numFlds] = (short) (fldOffset[i-1] + incr);
-  Convert.setShortValue(fldOffset[numFlds], pos, data);
-  
-  tuple_length = fldOffset[numFlds] - tuple_offset;
-
-  if(tuple_length > max_size)
-   throw new InvalidTupleSizeException (null, "TUPLE: TUPLE_TOOBIG_ERROR");
-}
-     
-  
-  /**
-   * Returns number of fields in this tuple
-   *
-   * @return the number of fields in this tuple
-   *
-   */
-
-  public short noOfFlds() 
-   {
-     return fldCnt;
-   }
-
-  /**
-   * Makes a copy of the fldOffset array
-   *
-   * @return a copy of the fldOffset arrray
-   *
-   */
-
-  public short[] copyFldOffset() 
-   {
-     short[] newFldOffset = new short[fldCnt + 1];
-     for (int i=0; i<=fldCnt; i++) {
-       newFldOffset[i] = fldOffset[i];
-     }
-     
-     return newFldOffset;
-   }
-
- /**
-  * Print out the tuple
-  * @param type  the types in the tuple
-  * @Exception IOException I/O exception
-  */
- public void print(AttrType type[])
-    throws IOException 
- {
-  int i, val;
-  float fval;
-  String sval;
-
-  System.out.print("[");
-  for (i=0; i< fldCnt-1; i++)
-   {
-    switch(type[i].attrType) {
-
-   case AttrType.attrInteger:
-     val = Convert.getIntValue(fldOffset[i], data);
-     System.out.print(val);
-     break;
-
-   case AttrType.attrReal:
-     fval = Convert.getFloValue(fldOffset[i], data);
-     System.out.print(fval);
-     break;
-
-   case AttrType.attrString:
-     sval = Convert.getStrValue(fldOffset[i], data,fldOffset[i+1] - fldOffset[i]);
-     System.out.print(sval);
-     break;
-  
-   case AttrType.attrNull:
-   case AttrType.attrSymbol:
-     break;
-   }
-   System.out.print(", ");
- } 
- 
- switch(type[fldCnt-1].attrType) {
-
-   case AttrType.attrInteger:
-     val = Convert.getIntValue(fldOffset[i], data);
-     System.out.print(val);
-     break;
-
-   case AttrType.attrReal:
-     fval = Convert.getFloValue(fldOffset[i], data);
-     System.out.print(fval);
-     break;
-
-   case AttrType.attrString:
-     sval = Convert.getStrValue(fldOffset[i], data,fldOffset[i+1] - fldOffset[i]);
-     System.out.print(sval);
-     break;
-
-   case AttrType.attrNull:
-   case AttrType.attrSymbol:
-     break;
-   }
-   System.out.println("]");
-
- }
-
-  /**
-   * private method
-   * Padding must be used when storing different types.
-   * 
-   * @param	offset
-   * @param type   the type of tuple
-   * @return short typle
-   */
-
-  private short pad(short offset, AttrType type)
-   {
-      return 0;
-   }
-}
-
