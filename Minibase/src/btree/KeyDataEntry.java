@@ -144,6 +144,14 @@ public class KeyDataEntry {
 		else if (key instanceof StringKey)
 			st1 = ((StringKey) key).getKey().equals(
 					((StringKey) entry.key).getKey());
+		else if (key instanceof Vector100Key){
+			Vector100Key k1 = (Vector100Key)key;
+			Vector100Key k2 = (Vector100Key)entry.key;
+			if (Vector100Key.keyCompare(k1, k2) == 0)
+				st1 = true;
+			else
+				st1 = false;
+		}
 		else
 			throw new KeyNotMatchException(null, "key types do not match");
 

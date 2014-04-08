@@ -1185,9 +1185,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		attrType[0] = new AttrType(AttrType.attrVector100D);
 		short[] attrSize = new short[1];
 		attrSize[0] = 200;
-		TupleOrder[] order = new TupleOrder[2];
-		order[0] = new TupleOrder(TupleOrder.Ascending);
-		order[1] = new TupleOrder(TupleOrder.Descending);
+
 
 		FldSpec[] projlist = new FldSpec[1];
 		RelSpec rel = new RelSpec(RelSpec.outer);
@@ -1278,6 +1276,18 @@ class IndexDriver extends TestDriver implements GlobalConst {
 				status = FAIL;
 				e.printStackTrace();
 			}
+			// try delete
+			if (i==3)
+			{
+				try {
+					btf.Delete(vkey, rid);
+
+				} catch (Exception e) {
+					status = FAIL;
+					e.printStackTrace();
+				}
+				
+			}
 		}
 		
 		
@@ -1286,16 +1296,18 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		try {
 			iscan = new IndexScan(new IndexType(IndexType.B_Index), "test6.in",
 					"VA_BTreeIndex", attrType, attrSize, 1, 1, projlist, null, 1,
-					true);
+					false);
 		} catch (Exception e) {
 			status = FAIL;
 			e.printStackTrace();
 		}
 		
 		
-		Tuple t2 = new Tuple();
+		//Tuple t2 = new Tuple();
+		Tuple tmptuple = null;
 		try {
-			t2 = iscan.get_next();
+			tmptuple = iscan.get_next();
+			
 		} catch (Exception e) {
 			status = FAIL;
 			e.printStackTrace();
@@ -1303,16 +1315,29 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		
 		
 		int cnt=0;
-		while (t2 != null && cnt<5) {
+		Vector100Dtype tmpVec = null;
+		while (tmptuple != null) {
 			cnt++;
+			try {
+				t1.tupleCopy(tmptuple);
+
+				tmpVec = t1.get100DVectFld(1);
+//				System.out.println("in index test 4 ");// debug
+				tmpVec.printVector();// debug
+			} catch (Exception e) {
+				status = FAIL;
+				e.printStackTrace();
+			}
 
 			try {
-				t2 = iscan.get_next();
+				tmptuple = iscan.get_next();
 			} catch (Exception e) {
 				status = FAIL;
 				e.printStackTrace();
 			}
 		}
+		
+		
 		return true;
 	}
 
