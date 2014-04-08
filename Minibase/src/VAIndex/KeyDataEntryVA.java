@@ -16,6 +16,11 @@ public class KeyDataEntryVA {
 		this.key = key;
 		this.rid = rid;
 	}
+//	public KeyDataEntryVA(Vector100Key key){
+//		this.key = key;
+//		RID r = new RID(new PageId(-1),-1);
+//		this.rid = r;
+//	}
 	/**
 	 * construct from bytes 4-7
 	 * @param data
@@ -29,8 +34,9 @@ public class KeyDataEntryVA {
 		int pid;
 		int slotNo;
 		int keylen=Vector100Key.getVAKeyLength(b);
-		pid = Convert.getIntValue(keylen, data);
-		slotNo = Convert.getIntValue(keylen+4, data);
+		
+		slotNo = Convert.getIntValue(keylen, data);
+		pid = Convert.getIntValue(keylen+4, data);
 		PageId pageid = new PageId(pid);
 		this.rid = new RID(pageid,slotNo);	
 	}
@@ -40,6 +46,8 @@ public class KeyDataEntryVA {
 		return key;
 	}
 	public RID getRid() {
+		if (rid == null)
+			System.out.println("error rid is null in getRid()");
 		return rid;
 	}
 	
@@ -53,8 +61,8 @@ public class KeyDataEntryVA {
 		byte[] data = new byte[datalength];
 
 		Convert.set100DVectorKeyValue(this.key, 0, data);
-		Convert.setIntValue(this.rid.pageNo.pid, datalength-8, data);
-		Convert.setIntValue(this.rid.slotNo, datalength-4, data);
+		Convert.setIntValue(this.rid.slotNo, datalength-8, data);
+		Convert.setIntValue(this.rid.pageNo.pid, datalength-4, data);
 		
 		return data;
 	}
@@ -72,8 +80,8 @@ public class KeyDataEntryVA {
 		int pid;
 		int slotNo;
 		int keylen=Vector100Key.getVAKeyLength(b);
-		pid = Convert.getIntValue(keylen, data);
-		slotNo = Convert.getIntValue(keylen+4, data);
+		slotNo = Convert.getIntValue(keylen, data);
+		pid = Convert.getIntValue(keylen+4, data);
 		PageId pageid = new PageId(pid);
 		RID rid = new RID(pageid,slotNo);
 		KeyDataEntryVA kde = new KeyDataEntryVA(vkey,rid);

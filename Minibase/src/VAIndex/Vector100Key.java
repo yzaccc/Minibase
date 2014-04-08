@@ -8,6 +8,8 @@ import btree.KeyClass;
 public class Vector100Key extends KeyClass{
 	
 	public int getDataLength() {
+		if (this.dataLength == 0)
+			System.out.println("erro datalength is 0");
 		return dataLength;
 	}
 
@@ -19,8 +21,21 @@ public class Vector100Key extends KeyClass{
 	private Vector100Dtype _vector;
 	private int []_regionnum ;
 	private boolean isAllRegionSet;
-	
+	public static int keyCompare(Vector100Key v1,Vector100Key v2){
+		int i;
+		v1.setAllRegionNumber();
+		v2.setAllRegionNumber();
+		for (i=0;i<100;i++){
+			if (v1.get_regionnumAt(i)>v2.get_regionnumAt(i))
+				return 1;
+			else if (v1.get_regionnumAt(i)<v2.get_regionnumAt(i))
+				return -1;
+		}
+		return 0;
+	}
 	public int get_b() {
+		if (_b == 0)
+			System.out.println("error b is 0 in Vector100Key");
 		return _b;
 	}
 	public void set_b(int _b) {
@@ -51,7 +66,7 @@ public class Vector100Key extends KeyClass{
 			regionsize = VAFile.MAXRANGE / (double)totalregionnum; //divide one dimention into 2^b parts
 		}
 		else
-			throw new VAException(null, "bit number should be even");
+			throw new VAException(null, "bit number should be even not "+b);
 	}
 	public Vector100Key(int datalen,byte[] da){
 		this.dataLength = datalen;
@@ -126,9 +141,14 @@ public class Vector100Key extends KeyClass{
 	}
 	public void setAllRegionNumber(){
 
+		if (this._b == 0)
+		{
+			System.out.println("************* error bit number is 0 in setAllRegionNumber");
+			return;
+		}
 		StringBuffer sb = new StringBuffer();
 		//concate all bits to one string
-		for (int i=0;i<this.dataLength;i++)
+		for (int i=0;i<this.getDataLength();i++)
 		{
 			String s1 = String.format("%8s", Integer.toBinaryString(data[i] & 0xFF)).replace(' ', '0');
 			//System.out.println("in setAllRegionNumber1 "+i+" "+s1);//debug
@@ -148,6 +168,7 @@ public class Vector100Key extends KeyClass{
 		for (int i=0;i<100;i++){
 			System.out.print(this._regionnum[i]+" ");
 		}
+		System.out.println("");
 	}
 	public int get_regionnumAt(int i){
 		return this._regionnum[i];

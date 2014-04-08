@@ -87,7 +87,7 @@ public class VAFile extends Heapfile
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		t1.set100DVectkeyFld(1, kdva);
+		t1.set100DVectkeyridFld(1, kdva);
 //		System.out.println("key size "+t1.size());
 		insertRecord(t1.getTupleByteArray());
   }

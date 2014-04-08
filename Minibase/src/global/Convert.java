@@ -23,18 +23,38 @@ public class Convert{
   */
 public static KeyDataEntryVA get100DVectorKeyValue(int position, byte[] data, int length) throws IOException, VAException{
 
+	  System.out.println("in Convert get100DVectorKeyValue position = "+ position);//debug
+	  System.out.println("in Convert get100DVectorKeyValue length="+length);//debug
 	  KeyDataEntryVA keydata;
 	  int b = (length-8)*8/100;
 	  byte tmp[] = new byte[length];
 	  System.arraycopy (data, position, tmp, 0, length);
 	  keydata = new KeyDataEntryVA(tmp,b);
-//	  System.out.println("int Convert get100DVectorKeyValue length="+length);//debug
+	  
 //	  System.out.println(Arrays.toString(tmp));//debug
 //	  keydata=new KeyDataEntryVA();
-//	  System.out.println("in get100DVectorKeyValue position = "+ position);//debug
+
 //	  keydata
 //	  //.setDataBytes(data, position+8);//??? not sure need arrycopy
 	  return keydata;
+}
+public static Vector100Key get100DVectorKeyValue2(int position, byte[] data, int length) throws IOException, VAException{
+
+//	  System.out.println("in Convert get100DVectorKeyValue2 position = "+ position);//debug
+//	  System.out.println("in Convert get100DVectorKeyValue2 length="+length);//debug
+	  
+	  int b = (length)*8/100;
+//	  byte tmp[] = new byte[length];
+//	  System.arraycopy (data, position, tmp, 0, length);
+	  Vector100Key vkey = new Vector100Key(b);
+	  vkey.setDataBytes(data,position);
+	  
+//	  System.out.println(Arrays.toString(tmp));//debug
+//	  keydata=new KeyDataEntryVA();
+
+//	  keydata
+//	  //.setDataBytes(data, position+8);//??? not sure need arrycopy
+	  return vkey;
 }
 public static Vector100Dtype get100DVectorValue(int position, byte[] data) throws IOException{
 	  //InputStream in;

@@ -247,17 +247,21 @@ public class Tuple implements GlobalConst {
 	}
 
 	// End
-	public Tuple set100DVectkeyFld(int fldNo, KeyDataEntryVA val)
+	public Tuple set100DVectkeyridFld(int fldNo, KeyDataEntryVA val)
 			throws IOException, FieldNumberOutOfBoundException {
 		if ((fldNo > 0) && (fldNo <= fldCnt)) {
 
 			int keylen = val.getKey().getDataLength();
 			Convert.set100DVectorKeyValue(val.getKey(), fldOffset[fldNo - 1],
 					data);
-			Convert.setIntValue(val.getRid().pageNo.pid, fldOffset[fldNo - 1]
-					+ keylen, data);
+			
+			
+			
+//			System.out.println("in Tuple set100DVectkeyridFld "+val.getRid().slotNo);
 			Convert.setIntValue(val.getRid().slotNo, fldOffset[fldNo - 1]
-					+ keylen + 4, data);
+					+ keylen, data);
+			Convert.setIntValue(val.getRid().pageNo.pid, fldOffset[fldNo - 1]
+					+ keylen+4, data);
 
 			return this;
 		} else
@@ -265,6 +269,7 @@ public class Tuple implements GlobalConst {
 					"TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
 
 	}
+
 
 	/**
 	 * Convert this field into integer
