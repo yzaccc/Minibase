@@ -53,6 +53,8 @@ public class AttrType {
       return "attrSymbol";
     case attrNull:
       return "attrNull";
+    case attrVector100D:
+    	return "attrVector100D";
     }
     return ("Unexpected AttrType " + attrType);
   }

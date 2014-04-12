@@ -1,2 +1,15 @@
-/tests
+/META-INF
+/Makefile
+/VAIndex
+/btree
+/bufmgr
+/catalog
+/chainexception
 /diskmgr
+/global
+/heap
+/index
+/iterator
+/javadoc
+/tests
+/typescript
