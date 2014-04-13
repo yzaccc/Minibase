@@ -21,6 +21,7 @@ public class RSBTIndexScan {
 	private Tuple Jtuple;// result tuple
 	Vector100Dtype _query;
 	int _distance;
+	int profld;// field number after projection
 
 	/**
 	 * 
@@ -42,6 +43,15 @@ public class RSBTIndexScan {
 			AttrType[] types, short[] str_sizes, int noInFlds, int noOutFlds,
 			FldSpec[] outFlds, CondExpr[] selects, int fldNum,
 			Vector100Dtype query, int distance, int b) {
+		
+		for (int i=0;i<noOutFlds;i++)
+		{
+			if (outFlds[i].offset == fldNum)
+			{
+				profld = i+1;
+//				System.out.println("in range scan btree profld ="+profld);
+			}
+		}
 		this._distance = distance;
 		this._query = new Vector100Dtype(query.getVectorValue());
 
@@ -126,7 +136,7 @@ public class RSBTIndexScan {
 			}
 			Vector100Dtype tmpVec = null;
 			try {
-				tmpVec = Jtuple.get100DVectFld(1);// ??? which field
+				tmpVec = Jtuple.get100DVectFld(profld);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
