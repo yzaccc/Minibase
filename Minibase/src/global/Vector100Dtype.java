@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
+import VAIndex.VAFile;
+
 /**
  * Zongkun
  * task 1
@@ -41,8 +43,14 @@ public class Vector100Dtype {
 	}
 	
 	public Vector100Dtype(short[] vectorValue){
-		VectorValue = vectorValue;
+		for (int i=0;i<100;i++)
+		{
+			this.VectorValue[i] = vectorValue[i];
+			
+		}
 	}
+	
+
 	public static Vector100Dtype getMaxVector100D(Vector100Dtype v){
 		//short [] maxarray= {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		Vector100Dtype vector = new Vector100Dtype((short)0);
@@ -103,6 +111,70 @@ public class Vector100Dtype {
 		}
 		distance = (int)Math.sqrt(s);
 		return distance;
+	}
+	
+	
+	/**
+	 *  for phase 3
+	 *  return the lower bound vector from a distance
+	 * @param v
+	 * @param distance
+	 * @return
+	 */
+	public static  Vector100Dtype getLowerBoundVector(Vector100Dtype v, int distance){
+		//Vector100Dtype low_vec = new Vector100Dtype(v);
+		short[] d1short = new short[Max];
+		short[] d2short = v.getVectorValue();
+		for (int i=0;i<100;i++){
+			d1short[i] = d2short[i];
+		}
+		int d;
+		int dsq = distance * distance; //square of distance 
+		for (int i = 0; i < 100;i++){
+			d = d1short[i] - VAFile.LOWERBOUND;
+			if (d*d >= dsq){ // stop here
+				d1short[i] = (short)(d1short[i] - (short)Math.sqrt(dsq));
+				break;
+			}
+			else{
+				d1short[i] = VAFile.LOWERBOUND;
+				dsq = dsq - d*d;
+			}
+			
+		}
+		Vector100Dtype low_vec = new Vector100Dtype(d1short);
+		return low_vec;
+	}
+	/**
+	 *  for phase 3
+	 * @param v
+	 * @param distance
+	 * @return
+	 */
+	
+	public static  Vector100Dtype getUpperBoundVector(Vector100Dtype v, int distance){
+		//Vector100Dtype low_vec = new Vector100Dtype(v);
+		short[] d1short = new short[Max];
+		short[] d2short = v.getVectorValue();
+		for (int i=0;i<100;i++){
+			d1short[i] = d2short[i];
+		}
+		int d;
+		int dsq = distance * distance; //square of distance 
+		for (int i = 0; i < 100;i++){
+			d = VAFile.UPPERBOUND - d1short[i];
+			if (d*d >= dsq){ // stop here
+				d1short[i] = (short)(d1short[i] + (short)Math.sqrt(dsq));
+				break;
+			}
+			else{
+				d1short[i] = VAFile.UPPERBOUND;
+				dsq = dsq + d*d;
+			}
+			
+		}
+		Vector100Dtype low_vec = new Vector100Dtype(d1short);
+		return low_vec;
 	}
 
 	/**

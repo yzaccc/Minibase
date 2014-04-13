@@ -9,7 +9,7 @@ public class Vector100Key extends KeyClass{
 	
 	public int getDataLength() {
 		if (this.dataLength == 0)
-			System.out.println("erro datalength is 0");
+			System.out.println("error datalength is 0");
 		return dataLength;
 	}
 
@@ -18,9 +18,20 @@ public class Vector100Key extends KeyClass{
 	private double regionsize;// size of one region in a dimension, same for all dimension
 	private int totalregionnum;// number of region in a dimension
 	private byte []data;
+	public byte[] getData() {
+		return data;
+	}
+
 	private Vector100Dtype _vector;
 	private int []_regionnum ;
 	private boolean isAllRegionSet;
+	public Vector100Key(Vector100Key vk){
+		this._b = vk.get_b();
+		data = new byte [vk.getDataLength()];
+		this.dataLength = vk.getDataLength();
+		System.arraycopy(vk.getData(), 0, this.data, 0, vk.getDataLength());
+		this.setAllRegionNumber();
+	}
 	public static int keyCompare(Vector100Key v1,Vector100Key v2){
 		int i;
 		v1.setAllRegionNumber();
@@ -146,6 +157,11 @@ public class Vector100Key extends KeyClass{
 			System.out.println("************* error bit number is 0 in setAllRegionNumber");
 			return;
 		}
+		if (data == null)
+		{
+			System.out.println("************* error data bytes is null in setAllRegionNumber");
+			return;
+		}
 		StringBuffer sb = new StringBuffer();
 		//concate all bits to one string
 		for (int i=0;i<this.getDataLength();i++)
@@ -158,13 +174,32 @@ public class Vector100Key extends KeyClass{
 		_regionnum = new int [Vector100Dtype.Max];
 		for (int i=0;i<Vector100Dtype.Max;i++){
 //			System.out.println("in setRegionNumber3 b=" + _b+" i="+i);//debug
-			int rgnum = Integer.parseInt(sb.substring(i*_b, i*_b+_b),2);
+			int rgnum = -1;
+			try{
+				 rgnum = Integer.parseInt(sb.substring(i*_b, i*_b+_b),2);
+			}catch(Exception e)
+			{
+				System.out.println(e.getMessage());
+				System.out.println("in Vector100key***");
+				e.printStackTrace();
+				System.out.println("string index out of range "+sb.length()+" "+(i*_b+_b));
+				System.out.println(Arrays.toString(data));
+				return;
+			}
+//			if (i==0)System.out.println("debug data bytes in Vector100key "+Arrays.toString(data));
+			if (rgnum == -1)
+			{
+				System.out.println("error rgnum = -1 in setAllRegion");
+				return;
+			}
+				
 			this._regionnum[i] = rgnum;
 
 		}
 		isAllRegionSet = true;
 	}
 	public void printAllRegionNumber(){
+		this.setAllRegionNumber();
 		for (int i=0;i<100;i++){
 			System.out.print(this._regionnum[i]+" ");
 		}

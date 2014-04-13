@@ -1191,16 +1191,34 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		RelSpec rel = new RelSpec(RelSpec.outer);
 		projlist[0] = new FldSpec(rel, 1);
 
-		Vector100Dtype vector1 = new Vector100Dtype((short) 1300);// data
+		Vector100Dtype vector1 = new Vector100Dtype((short) 1);// data
 		Vector100Dtype vector2 = new Vector100Dtype((short) 2);// data
-		Vector100Dtype vector3 = new Vector100Dtype((short) 10000);// data
-		Vector100Dtype vector4 = new Vector100Dtype((short) -500);// data
+		Vector100Dtype vector3 = new Vector100Dtype((short) 3);// data
+		Vector100Dtype vector4 = new Vector100Dtype((short) 4);// data
 		Vector100Dtype target = new Vector100Dtype((short) 5);// target
 		Vector100Dtype[] vectorObject = new Vector100Dtype[4];
 		vectorObject[0] = vector1;
 		vectorObject[1] = vector2;
 		vectorObject[2] = vector3;
 		vectorObject[3] = vector4;
+		
+		Vector100Key vkey = null;
+		
+		try {
+			vkey = new Vector100Key(vectorObject[0], bitnum);
+		} catch (Exception e) {
+			status = FAIL;
+			e.printStackTrace();
+		}		
+		CondExpr[] expr = new CondExpr[2];
+		expr[0] = new CondExpr();
+		expr[0].op = new AttrOperator(AttrOperator.aopEQ);
+		expr[0].type1 = new AttrType(AttrType.attrSymbol);
+		expr[0].type2 = new AttrType(AttrType.attrVector100Dkey);
+		expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 1);
+		expr[0].operand2.vectorkey=vkey;
+		expr[0].next = null;
+		expr[1] = null;
 
 		// set tuple header for vector 100
 		Tuple t1 = new Tuple();
@@ -1229,7 +1247,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			status = FAIL;
 			e.printStackTrace();
 		}
-		Vector100Key vkey = null;
+		
 
 		BTreeFile btf = null;
 		try {
@@ -1277,7 +1295,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 				e.printStackTrace();
 			}
 			// try delete
-			if (i==3)
+			if (i==3 && i==4)
 			{
 				try {
 					btf.Delete(vkey, rid);
@@ -1295,7 +1313,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		IndexScan iscan = null;
 		try {
 			iscan = new IndexScan(new IndexType(IndexType.B_Index), "test6.in",
-					"VA_BTreeIndex", attrType, attrSize, 1, 1, projlist, null, 1,
+					"VA_BTreeIndex", attrType, attrSize, 1, 1, projlist, expr, 1,
 					false);
 		} catch (Exception e) {
 			status = FAIL;
@@ -1305,8 +1323,9 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		
 		//Tuple t2 = new Tuple();
 		Tuple tmptuple = null;
+		RID rid1  = new RID(new PageId(-1),-1);
 		try {
-			tmptuple = iscan.get_next();
+			tmptuple = iscan.get_next(rid1);
 			
 		} catch (Exception e) {
 			status = FAIL;
@@ -1323,6 +1342,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 
 				tmpVec = t1.get100DVectFld(1);
 //				System.out.println("in index test 4 ");// debug
+				System.out.println(" index test3 rid "+rid1.pageNo+" "+rid1.slotNo);
 				tmpVec.printVector();// debug
 			} catch (Exception e) {
 				status = FAIL;
@@ -1330,7 +1350,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			}
 
 			try {
-				tmptuple = iscan.get_next();
+				tmptuple = iscan.get_next(rid1);
 			} catch (Exception e) {
 				status = FAIL;
 				e.printStackTrace();

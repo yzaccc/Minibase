@@ -1,5 +1,6 @@
 package iterator;
 
+import VAIndex.Vector100Key;
 import global.Vector100Dtype;
 
 
@@ -14,4 +15,5 @@ public class Operand {
    * Task 3
    */
   public Vector100Dtype vector;
+  public Vector100Key  vectorkey;
 }
