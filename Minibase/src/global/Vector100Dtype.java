@@ -121,8 +121,9 @@ public class Vector100Dtype {
 	 * @param distance
 	 * @return
 	 */
-	public static  Vector100Dtype getLowerBoundVector(Vector100Dtype v, int distance){
+	public static  Vector100Dtype getLowerBoundVector(Vector100Dtype v, int distance,int b){
 		//Vector100Dtype low_vec = new Vector100Dtype(v);
+		int psize = 20000 / (1<<b) ; //partition size
 		short[] d1short = new short[Max];
 		short[] d2short = v.getVectorValue();
 		for (int i=0;i<100;i++){
@@ -134,6 +135,7 @@ public class Vector100Dtype {
 			d = d1short[i] - VAFile.LOWERBOUND;
 			if (d*d >= dsq){ // stop here
 				d1short[i] = (short)(d1short[i] - (short)Math.sqrt(dsq));
+				
 				break;
 			}
 			else{
@@ -141,6 +143,12 @@ public class Vector100Dtype {
 				dsq = dsq - d*d;
 			}
 			
+		}
+		for (int i = 0; i < 100;i++){
+			if (d1short[i]+10000>psize){
+				d1short[i] = (short)(d1short[i] - psize);
+				break;
+			}
 		}
 		Vector100Dtype low_vec = new Vector100Dtype(d1short);
 		return low_vec;
@@ -152,8 +160,9 @@ public class Vector100Dtype {
 	 * @return
 	 */
 	
-	public static  Vector100Dtype getUpperBoundVector(Vector100Dtype v, int distance){
+	public static  Vector100Dtype getUpperBoundVector(Vector100Dtype v, int distance,int b){
 		//Vector100Dtype low_vec = new Vector100Dtype(v);
+		int psize = 20000 / (1<<b) ; //partition size
 		short[] d1short = new short[Max];
 		short[] d2short = v.getVectorValue();
 		for (int i=0;i<100;i++){
@@ -172,6 +181,12 @@ public class Vector100Dtype {
 				dsq = dsq + d*d;
 			}
 			
+		}
+		for (int i = 0; i < 100;i++){
+			if (d1short[i]+10000>psize){
+				d1short[i] = (short)(d1short[i] + psize);
+				break;
+			}
 		}
 		Vector100Dtype low_vec = new Vector100Dtype(d1short);
 		return low_vec;

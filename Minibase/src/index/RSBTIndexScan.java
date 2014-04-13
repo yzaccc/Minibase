@@ -67,9 +67,9 @@ public class RSBTIndexScan {
 		}
 
 		Vector100Dtype low_vec = Vector100Dtype.getLowerBoundVector(query,
-				distance);
+				distance,b);
 		Vector100Dtype high_vec = Vector100Dtype.getUpperBoundVector(query,
-				distance);
+				distance,b);
 		Vector100Key lowkey = null;
 		Vector100Key highkey = null;
 		try {
