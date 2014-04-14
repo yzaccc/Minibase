@@ -183,7 +183,7 @@ public class Vector100Dtype {
 			
 		}
 		for (int i = 0; i < 100;i++){
-			if (d1short[i]+10000>psize){
+			if (d1short[i] + psize > 10000){
 				d1short[i] = (short)(d1short[i] + psize);
 				break;
 			}
