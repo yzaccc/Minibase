@@ -79,6 +79,7 @@ class BatchCreateDriver extends TestDriver
 		brStr = br.readLine();
 		numColumns = Short.parseShort(brStr.trim());
 		specfile.print(brStr.trim());
+		specfile.print("\n");
 	} catch (IOException e)
 	{
 		e.printStackTrace();

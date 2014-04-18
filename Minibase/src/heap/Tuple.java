@@ -203,8 +203,7 @@ public class Tuple implements GlobalConst {
 	/**
 	 * Zongkun Task2
 	 */
-	public Vector100Dtype get100DVectFld(int fldNo) throws IOException,
-			FieldNumberOutOfBoundException {
+	public Vector100Dtype get100DVectFld(int fldNo) throws IOException,FieldNumberOutOfBoundException {
 		Vector100Dtype val;
 
 		if ((fldNo > 0) && (fldNo <= fldCnt)) {

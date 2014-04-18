@@ -1250,15 +1250,17 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		
 
 		BTreeFile btf = null;
+		
+		//Create Btree file index
 		try {
 			btf = new BTreeFile("VA_BTreeIndex", AttrType.attrVector100Dkey,
 					Vector100Key.getVAKeyLength(bitnum), 1/* delete */);
+			System.out.println("BTreeIndex created successfully.\n");
 		} catch (Exception e) {
 			status = FAIL;
 			e.printStackTrace();
 			Runtime.getRuntime().exit(1);
 		}
-		System.out.println("BTreeIndex created successfully.\n");
 
 		for (int i = 0; i < 4; i++) {
 			try {

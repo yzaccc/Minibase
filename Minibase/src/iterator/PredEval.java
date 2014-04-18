@@ -61,12 +61,12 @@ public class PredEval
 	      /**
 	       * Zongkun
 	       */
-	      case AttrType.attrVector100D:
-	    	  value.setHdr((short)1, val_type, null);
-	    	  value.set100DVectFld(1, temp_ptr.operand1.vector);
-	    	  tuple1 = value;
-	    	  comparison_type.attrType = AttrType.attrVector100D;
-	    	  break;
+		case AttrType.attrVector100D:
+    	  value.setHdr((short)1, val_type, null);
+    	  value.set100DVectFld(1, temp_ptr.operand1.vector);
+    	  tuple1 = value;
+    	  comparison_type.attrType = AttrType.attrVector100D;
+    	  break;
 	      //End
 		case AttrType.attrInteger:
 		  value.setHdr((short)1, val_type, null);

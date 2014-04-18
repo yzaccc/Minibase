@@ -91,8 +91,5 @@ public class VAFile extends Heapfile
 //		System.out.println("key size "+t1.size());
 		insertRecord(t1.getTupleByteArray());
   }
-	
-	
-	
 
 }
