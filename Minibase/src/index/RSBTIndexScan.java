@@ -1,13 +1,25 @@
 package index;
 
+import java.io.IOException;
+
+import bufmgr.PageNotReadException;
 import VAIndex.Vector100Key;
+import heap.InvalidTupleSizeException;
+import heap.InvalidTypeException;
 import heap.Tuple;
 import iterator.CondExpr;
 import iterator.FldSpec;
 import iterator.InvalidRelation;
+import iterator.Iterator;
+import iterator.JoinsException;
+import iterator.LowMemException;
+import iterator.PredEvalException;
 import iterator.RelSpec;
+import iterator.SortException;
 import iterator.TupleUtils;
 import iterator.TupleUtilsException;
+import iterator.UnknowAttrType;
+import iterator.UnknownKeyTypeException;
 import global.AttrOperator;
 import global.AttrType;
 import global.IndexType;
@@ -15,7 +27,7 @@ import global.PageId;
 import global.RID;
 import global.Vector100Dtype;
 
-public class RSBTIndexScan {
+public class RSBTIndexScan extends Iterator{
 
 	IndexScan iscan = null;
 	private Tuple Jtuple;// result tuple
@@ -152,6 +164,25 @@ public class RSBTIndexScan {
 
 		return null;
 
+	}
+
+	@Override
+	public Tuple get_next() throws IOException, JoinsException, IndexException,
+			InvalidTupleSizeException, InvalidTypeException,
+			PageNotReadException, TupleUtilsException, PredEvalException,
+			SortException, LowMemException, UnknowAttrType,
+			UnknownKeyTypeException, Exception
+	{
+	// TODO Auto-generated method stub
+	return null;
+	}
+
+	@Override
+	public void close() throws IOException, JoinsException, SortException,
+			IndexException
+	{
+	// TODO Auto-generated method stub
+	
 	}
 
 }

@@ -23,6 +23,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import bufmgr.BufMgrException;
+import bufmgr.HashOperationException;
+import bufmgr.PageNotFoundException;
+import bufmgr.PagePinnedException;
+import bufmgr.PageUnpinnedException;
 import diskmgr.PCounter;
 import diskmgr.PCounterPinPage;
 import diskmgr.PCounterw;
@@ -34,7 +39,7 @@ class BatchCreateDriver extends TestDriver
 	private AttrType[] attrArray;
 	Heapfile f = null;
 	private Tuple t = new Tuple();
-
+	private String[] brStrArray;
 	public BatchCreateDriver()
 		{
 		super("");
@@ -47,13 +52,13 @@ class BatchCreateDriver extends TestDriver
 	PCounterw.setZero();
 	PCounterPinPage.setZero();
 	SystemDefs sysdef = new SystemDefs(dbpath, 300, GlobalConst.NUMBUF, "Clock");
-	System.out.print("Batch insert Begin.\n");
+	System.out.print("Batch Create Begin.\n");
 	boolean success = false;
 	// br is used to read in the data file.
 	BufferedReader br = null;
 	// brStr is used to store on line read from br.
 	String brStr = null;
-	String[] brStrArray;
+	
 	try
 	{
 		br = new BufferedReader(new FileReader(dataFileName));
@@ -79,6 +84,7 @@ class BatchCreateDriver extends TestDriver
 		brStr = br.readLine();
 		numColumns = Short.parseShort(brStr.trim());
 		specfile.print(brStr.trim());
+		specfile.print("\n");
 	} catch (IOException e)
 	{
 		e.printStackTrace();
@@ -137,7 +143,10 @@ class BatchCreateDriver extends TestDriver
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-
+	
+	if (SystemDefs.JavabaseBM.getNumUnpinnedBuffers() != SystemDefs.JavabaseBM.getNumBuffers()) {
+		System.err.println("*** The heap file has left pages pinned\n");
+	}
 	/*
 	 * Set Tuple header, ready to insert records into Heapfile.
 	 */
@@ -228,17 +237,61 @@ class BatchCreateDriver extends TestDriver
 	}
 	System.out.print("write page(data insertion) is " + PCounterPinPage.counter
 			+ "\n");
-	// Scan scan = null;
-	// try
-	// {
-	// scan = new Scan(f);
-	// } catch (InvalidTupleSizeException | IOException e)
-	// {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
+//			Scan scan = null;
+//			try
+//			{
+//				scan = new Scan(f);
+//			} catch (InvalidTupleSizeException | IOException e)
+//			{
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+	 Scan scan = null;
+	 try
+	 {
+	 scan = new Scan(f);
+	 } catch (InvalidTupleSizeException | IOException e)
+	 {
+	 // TODO Auto-generated catch block
+	 e.printStackTrace();
+	 }
+	 RID rid = new RID();
+	 Tuple tmp=null;
+	 try
+	{
+		tmp = scan.getNext(rid);
+		t.tupleCopy(tmp);
+	} catch (InvalidTupleSizeException | IOException e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	Vector100Dtype v1=null;
+	try
+	{
+		v1 = t.get100DVectFld(2);
+	} catch (FieldNumberOutOfBoundException | IOException e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	v1.printVector();
 	success = true;
 	specfile.close();
+	scan.closescan();
+	if (SystemDefs.JavabaseBM.getNumUnpinnedBuffers() != SystemDefs.JavabaseBM.getNumBuffers()) {
+		System.err.println("*** Insertion left a page pinned\n");
+	}
+	try
+	{
+		SystemDefs.JavabaseBM.flushAllPages();
+	} catch (HashOperationException | PageUnpinnedException
+			| PagePinnedException | PageNotFoundException | BufMgrException
+			| IOException e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	return success;
 	}
 }
@@ -253,11 +306,11 @@ public class BatchCreate
 	createStatus = batchInsert.runTest(argv[0], argv[1]);
 	if (createStatus == false)
 	{
-		System.out.print("Batch Insert Failed.\n");
+		System.out.print("Batch Create Failed.\n");
 	}
 	else
 	{
-		System.out.print("Bathch Insert Success.\n");
+		System.out.print("Bathch Create Success.\n");
 	}
 	}
 }

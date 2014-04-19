@@ -7,8 +7,11 @@ import index.IndexException;
 import iterator.CondExpr;
 import iterator.FldSpec;
 import iterator.InvalidRelation;
+import iterator.Iterator;
+import iterator.JoinsException;
 import iterator.PredEval;
 import iterator.Projection;
+import iterator.SortException;
 import iterator.TupleUtils;
 import iterator.TupleUtilsException;
 import global.AttrType;
@@ -22,7 +25,7 @@ import heap.Scan;
 import heap.Tuple;
 
 
-public class NNIndexScan {
+public class NNIndexScan extends Iterator{
 	private Vector100Dtype target;
 	private Heapfile hf;// data file
 	private VAFile vaf;
@@ -366,6 +369,13 @@ public class NNIndexScan {
 			}
 		}
 		
+	}
+	@Override
+	public void close() throws IOException, JoinsException, SortException,
+			IndexException
+	{
+	// TODO Auto-generated method stub
+	
 	}
 
 }

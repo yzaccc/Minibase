@@ -504,7 +504,7 @@ public class BufMgr implements GlobalConst {
 
 		frameNo = hashTable.lookup(pin_pgid);
 
-		//System.out.println("Current pin"+pin_pgid);
+		System.out.println("Current pin"+pin_pgid);
 		if (frameNo < 0) { // Not in the buffer pool
 			
 			frameNo = replacer.pick_victim(); // frameNo is pinned
@@ -611,7 +611,7 @@ public class BufMgr implements GlobalConst {
 	public void unpinPage(PageId PageId_in_a_DB, boolean dirty)
 			throws ReplacerException, PageUnpinnedException,
 			HashEntryNotFoundException, InvalidFrameNumberException {
-		//System.out.println("Current unpin"+PageId_in_a_DB);
+		System.out.println("Current unpin"+PageId_in_a_DB);
 		int frameNo;
 
 		frameNo = hashTable.lookup(PageId_in_a_DB);
@@ -682,6 +682,7 @@ public class BufMgr implements GlobalConst {
 		allocate_page(firstPageId, howmany);
 
 		try {
+			System.out.println("Pinpage invoke by newPage(),firstpageid is "+firstPageId);
 			pinPage(firstPageId, firstpage, true);
 		}
 
@@ -697,7 +698,7 @@ public class BufMgr implements GlobalConst {
 
 			return null;
 		}
-
+		System.out.println("new page's first page is "+firstPageId);
 		return firstPageId;
 
 	}

@@ -257,7 +257,7 @@ public class Scan implements GlobalConst{
 
     /** copy data about first directory page */
  
-    dirpageId.pid = _hf._firstDirPageId.pid;  
+    dirpageId.pid = _hf._firstDirPageId.pid;
     nextUserStatus = true;
 
     /** get first directory page and pin it */
@@ -631,6 +631,7 @@ public class Scan implements GlobalConst{
     throws HFBufMgrException {
 
     try {
+      System.out.println("pinpage Called by Scan");
       SystemDefs.JavabaseBM.pinPage(pageno, page, emptyPage);
     }
     catch (Exception e) {

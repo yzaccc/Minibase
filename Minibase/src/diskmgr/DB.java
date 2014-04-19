@@ -3,6 +3,7 @@
 package diskmgr;
 
 import java.io.*;
+
 import bufmgr.*;
 import global.*;
 
@@ -38,7 +39,7 @@ public class DB implements GlobalConst {
 		pageId.pid = 0;
 
 		num_pages = 1; // temporary num_page value for pinpage to work
-
+		System.out.println("pinPage called by openDB without numpage(Open an existing DB)");
 		pinPage(pageId, apage, false /* read disk */);
 
 		DBFirstPage firstpg = new DBFirstPage();
@@ -95,10 +96,11 @@ public class DB implements GlobalConst {
 		Page apage = new Page();
 		PageId pageId = new PageId();
 		pageId.pid = 0;
+		System.out.println("pinPage called by openDB with numpage or Craete DB, first pageid is "+pageId);
 		pinPage(pageId, apage, true /* no diskIO */);
 
 		DBFirstPage firstpg = new DBFirstPage(apage);
-
+		System.out.println("numpage is "+num_pages);
 		firstpg.setNumDBPages(num_pages);
 		unpinPage(pageId, true /* dirty */);
 
@@ -281,6 +283,7 @@ public class DB implements GlobalConst {
 			// Pin the space-map page.
 
 			Page apage = new Page();
+			System.out.println("Called by allocate_page");
 			pinPage(pgid, apage, false /* read disk */);
 
 			pagebuf = apage.getpage();
@@ -448,6 +451,7 @@ public class DB implements GlobalConst {
 			hpid.pid = nexthpid.pid;
 
 			// Pin the header page
+			System.out.println("Pin page called by add file entry");
 			pinPage(hpid, apage, false /* read disk */);
 
 			// This complication is because the first page has a different
@@ -624,6 +628,7 @@ public class DB implements GlobalConst {
 			hpid.pid = nexthpid.pid;
 
 			// Pin the header page.
+			System.out.println("Called by get_file_entry to pin the header page");
 			pinPage(hpid, apage, false /* no diskIO */);
 
 			// This complication is because the first page has a different
@@ -640,10 +645,10 @@ public class DB implements GlobalConst {
 			int entry = 0;
 			PageId tmppid = new PageId();
 			String tmpname;
-
+			System.out.println("entrynum is"+dp.getNumOfEntries());
 			while (entry < dp.getNumOfEntries()) {
 				tmpname = dp.getFileEntry(tmppid, entry);
-
+				System.out.println("tmpname is"+tmpname);
 				if ((tmppid.pid != INVALID_PAGE)
 						&& (tmpname.compareTo(name) == 0))
 					break;
@@ -660,7 +665,7 @@ public class DB implements GlobalConst {
 
 		if (!found) // Entry not found - don't post error, just fail.
 		{
-			// System.out.println("entry NOT found");
+			System.out.println("entry NOT found");
 			return null;
 		}
 
@@ -715,6 +720,7 @@ public class DB implements GlobalConst {
 			pgid.pid = 1 + i; // space map starts at page1
 			// Pin the space-map page.
 			Page apage = new Page();
+			System.out.println("pin Page called by dump_space_map");
 			pinPage(pgid, apage, false/* read disk */);
 
 			// How many bits should we examine on this page?
@@ -834,7 +840,7 @@ public class DB implements GlobalConst {
 			}// end of forloop02
 
 			// Unpin the space-map page.
-
+			System.out.println("space-map page id is "+pgid);
 			unpinPage(pgid, true /* dirty */);
 
 		}// end of forloop01
@@ -850,6 +856,7 @@ public class DB implements GlobalConst {
 			throws DiskMgrException {
 
 		try {
+			System.out.println("Called by DB.java");
 			SystemDefs.JavabaseBM.pinPage(pageno, page, emptyPage);
 		} catch (Exception e) {
 			throw new DiskMgrException(e, "DB.java: pinPage() failed");

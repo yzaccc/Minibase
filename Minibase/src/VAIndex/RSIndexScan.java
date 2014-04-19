@@ -12,8 +12,11 @@ import index.IndexException;
 import iterator.CondExpr;
 import iterator.FldSpec;
 import iterator.InvalidRelation;
+import iterator.Iterator;
+import iterator.JoinsException;
 import iterator.PredEval;
 import iterator.Projection;
+import iterator.SortException;
 import iterator.TupleUtils;
 import iterator.TupleUtilsException;
 import global.AttrType;
@@ -21,7 +24,7 @@ import global.IndexType;
 import global.RID;
 import global.Vector100Dtype;
 
-public class RSIndexScan{
+public class RSIndexScan extends Iterator{
 	
 	private Vector100Dtype target;
 	private Heapfile hf;// data file
@@ -340,6 +343,14 @@ public class RSIndexScan{
     		return Jtuple;
 	   }
       return null;
+	}
+
+	@Override
+	public void close() throws IOException, JoinsException, SortException,
+			IndexException
+	{
+	// TODO Auto-generated method stub
+	
 	}
 
 }

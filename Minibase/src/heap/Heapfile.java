@@ -1,6 +1,7 @@
 package heap;
 
 import java.io.*;
+
 import diskmgr.*;
 import bufmgr.*;
 import global.*;
@@ -232,16 +233,18 @@ public class Heapfile implements Filetype, GlobalConst {
 
 		Page apage = new Page();
 		_firstDirPageId = null;
+		System.out.println("Get first dir pageid");
 		if (_ftype == ORDINARY)
 			_firstDirPageId = get_file_entry(_fileName);
-
+		System.out.println("after get file entry, first pid is "+_firstDirPageId);
 		if (_firstDirPageId == null) {
 			// file doesn't exist. First create it.
+			System.out.println("first pageid is null");
 			_firstDirPageId = newPage(apage, 1);
 			// check error
 			if (_firstDirPageId == null)
 				throw new HFException(null, "can't new page");
-
+			System.out.println("add file entry, firstdirpage id is " + _firstDirPageId);
 			add_file_entry(_fileName, _firstDirPageId);
 			// check error(new exception: Could not add file entry
 
@@ -251,6 +254,7 @@ public class Heapfile implements Filetype, GlobalConst {
 
 			firstDirPage.setNextPage(pageId);
 			firstDirPage.setPrevPage(pageId);
+			System.out.println("Invoke by Heapfile constructor, unpin first page id");
 			unpinPage(_firstDirPageId, true /* dirty */);
 
 		}
