@@ -42,6 +42,11 @@ public class KeyDataEntry {
 			this.key = new IntegerKey(((IntegerKey) key).getKey());
 		else if (key instanceof StringKey)
 			this.key = new StringKey(((StringKey) key).getKey());
+		else if (key instanceof Vector100Key) {
+			this.key = new Vector100Key(
+					((Vector100Key) key).getDataLength(),
+					((Vector100Key) key).getData());
+		}
 		else
 			throw new KeyNotMatchException(null, "key types do not match");
 	};
@@ -118,15 +123,9 @@ public class KeyDataEntry {
 		else if (key instanceof StringKey)
 			this.key = new StringKey(((StringKey) key).getKey());
 		else if (key instanceof Vector100Key) {
-			try {
-				this.key = key;
-			} catch (Exception e) {
-				for (StackTraceElement ste : Thread.currentThread()
-						.getStackTrace()) {
-					System.out.println("in keyDataEntry***");
-					System.out.println(ste);
-				}
-			}
+			this.key = new Vector100Key(
+					((Vector100Key) key).getDataLength(),
+					((Vector100Key) key).getData());
 		} else
 			throw new KeyNotMatchException(null, "key types do not match");
 

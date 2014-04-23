@@ -427,7 +427,7 @@ public class IndexScan extends Iterator {
 			rid = ((LeafData) nextentry.data).getData();
 			rerid.pageNo.pid = ((LeafData) nextentry.data).getData().pageNo.pid;
 			rerid.slotNo = ((LeafData) nextentry.data).getData().slotNo;
-			System.out.println("in indexscan after rerid "+rerid.pageNo+" "+rerid.slotNo);
+//			System.out.println("in indexscan after rerid "+rerid.pageNo+" "+rerid.slotNo);
 			
 			try {
 				tuple1 = f.getRecord(rid);

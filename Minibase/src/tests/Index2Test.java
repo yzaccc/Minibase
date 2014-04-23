@@ -143,10 +143,10 @@ class Index2Driver extends TestDriver implements GlobalConst {
 		RelSpec rel = new RelSpec(RelSpec.outer);
 		projlist[0] = new FldSpec(rel, 1);
 
-		Vector100Dtype vector1 = new Vector100Dtype((short) 1);// data
-		Vector100Dtype vector2 = new Vector100Dtype((short) 9999);// data
-		Vector100Dtype vector3 = new Vector100Dtype((short) 6666);// data
-		Vector100Dtype vector4 = new Vector100Dtype((short) 888);// data
+		Vector100Dtype vector1 = new Vector100Dtype((short) 999);// data
+		Vector100Dtype vector2 = new Vector100Dtype((short) 8888);// data
+		Vector100Dtype vector3 = new Vector100Dtype((short) 7777);// data
+		Vector100Dtype vector4 = new Vector100Dtype((short) 1);// data
 		Vector100Dtype vector5 = new Vector100Dtype((short) -1);
 		Vector100Dtype target = new Vector100Dtype((short) 0);// target
 		Vector100Dtype[] vectorObject = new Vector100Dtype[4];
@@ -260,39 +260,39 @@ class Index2Driver extends TestDriver implements GlobalConst {
 				
 			}
 		}
-		// insert one more
-		try {
-			t1.set100DVectFld(1, vector5);
-			// System.out.println("offset "+t.getOffset());
-		} catch (Exception e) {
-			status = FAIL;
-			e.printStackTrace();
-		}
-		try {
-			// System.out.println("fldCnt in test5 "+t.getLength());
-			// System.out.println("before ");
-			// System.out.println("before "+
-			// Arrays.toString(t.returnTupleByteArray()));
-			rid = hf.insertRecord(t1.returnTupleByteArray());
-			System.out.println("in IndexTest rid " + rid.slotNo + " "
-					+ rid.pageNo.pid);// debug
-		} catch (Exception e) {
-			status = FAIL;
-			e.printStackTrace();
-		}
-		try {
-			vkey = new Vector100Key(vector5, bitnum);
-		} catch (Exception e) {
-			status = FAIL;
-			e.printStackTrace();
-		}
-		try {
-			btf.insert(vkey, rid);
-
-		}catch (Exception e) {
-			status = FAIL;
-			e.printStackTrace();
-		}
+//		// insert one more
+//		try {
+//			t1.set100DVectFld(1, vector5);
+//			// System.out.println("offset "+t.getOffset());
+//		} catch (Exception e) {
+//			status = FAIL;
+//			e.printStackTrace();
+//		}
+//		try {
+//			// System.out.println("fldCnt in test5 "+t.getLength());
+//			// System.out.println("before ");
+//			// System.out.println("before "+
+//			// Arrays.toString(t.returnTupleByteArray()));
+//			rid = hf.insertRecord(t1.returnTupleByteArray());
+//			System.out.println("in IndexTest rid " + rid.slotNo + " "
+//					+ rid.pageNo.pid);// debug
+//		} catch (Exception e) {
+//			status = FAIL;
+//			e.printStackTrace();
+//		}
+//		try {
+//			vkey = new Vector100Key(vector5, bitnum);
+//		} catch (Exception e) {
+//			status = FAIL;
+//			e.printStackTrace();
+//		}
+//		try {
+//			btf.insert(vkey, rid);
+//
+//		}catch (Exception e) {
+//			status = FAIL;
+//			e.printStackTrace();
+//		}
 		RSBTIndexScan rsscan = new RSBTIndexScan(new IndexType(IndexType.B_Index), "test1.in",
 					"VA_BTreeIndex", attrType, attrSize, 1, 1, projlist, expr, 1,
 					target,11,bitnum);
