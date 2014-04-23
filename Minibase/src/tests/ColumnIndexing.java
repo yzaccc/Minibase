@@ -42,10 +42,13 @@ import btree.NodeNotMatchException;
 import btree.PinPageException;
 import btree.UnpinPageException;
 import bufmgr.BufMgrException;
+import bufmgr.HashEntryNotFoundException;
 import bufmgr.HashOperationException;
+import bufmgr.InvalidFrameNumberException;
 import bufmgr.PageNotFoundException;
 import bufmgr.PagePinnedException;
 import bufmgr.PageUnpinnedException;
+import bufmgr.ReplacerException;
 import diskmgr.PCounter;
 import diskmgr.PCounterPinPage;
 import diskmgr.PCounterw;
@@ -196,13 +199,6 @@ class ColumnIndexingDriver extends TestDriver
 		{
 			e.printStackTrace();
 		}
-		try
-		{
-			scan = new Scan(f);
-		} catch (InvalidTupleSizeException | IOException e1)
-		{
-			e1.printStackTrace();
-		}
 		RID rid = new RID();
 		Vector100Key key = null;
 		Vector100Dtype[] vectorforIndex = new Vector100Dtype[1];
@@ -294,7 +290,16 @@ class ColumnIndexingDriver extends TestDriver
 		} catch (FieldNumberOutOfBoundException e)
 		{
 			e.printStackTrace();
-		}		
+		}
+		try
+		{
+			btf.close();
+		} catch (PageUnpinnedException | InvalidFrameNumberException
+				| HashEntryNotFoundException | ReplacerException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 	else if (indexType == "H" || indexType.equals("H"))
 	{
@@ -426,6 +431,7 @@ class ColumnIndexingDriver extends TestDriver
 	 * Set Tuple header, ready to insert records into Heapfile.
 	 */
 	scan.closescan();
+	
 	try
 	{
 		SystemDefs.JavabaseBM.flushAllPages();

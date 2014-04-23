@@ -252,9 +252,12 @@ public class BT implements GlobalConst {
 				// entry.key)==null));
 				Vector100Key vkey = null;
 				try {
-					vkey = new Vector100Key(
-							((Vector100Key) entry.key).get_vector(),
-							((Vector100Key) entry.key).get_b());
+//					vkey = new Vector100Key(
+//							((Vector100Key) entry.key).get_vector(),
+//							((Vector100Key) entry.key).get_b());
+					 vkey = new Vector100Key(
+	                            ((Vector100Key) entry.key).getDataLength(),
+	                            ((Vector100Key) entry.key).getData());
 				} catch (Exception e) {
 					for (StackTraceElement ste : Thread.currentThread()
 							.getStackTrace()) {

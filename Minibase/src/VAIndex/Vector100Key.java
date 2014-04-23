@@ -13,6 +13,19 @@ public class Vector100Key extends KeyClass{
 		return dataLength;
 	}
 
+	public void printDebug(){
+		System.out.println("*********************************");
+		System.out.println("vector key ");
+		System.out.println("dataLength = "+dataLength);
+		System.out.println("bytes "+(data==null));
+		if (data!=null){
+			System.out.println("bytes len="+this.data.length);
+			
+		}
+			
+		System.out.println("bit number "+this._b);
+		System.out.println("*********************************");
+	}
 	private int _b;// bits per dimension
 	private int dataLength;// length of key in bytes
 	private double regionsize;// size of one region in a dimension, same for all dimension
@@ -58,31 +71,34 @@ public class Vector100Key extends KeyClass{
 	}
 	public Vector100Dtype get_vector() {
 		if (_vector == null)
+		{
 			System.out.println("error vector null in Vector100Key");
+			for (StackTraceElement ste : Thread.currentThread()
+					.getStackTrace()) {
+				System.out.println(ste);
+			}
+		}
 		return _vector;
 	}
 	public static int getVAKeyLength(int b){
 		int len=b*100/8;
+		if (b%2==1)// for odd bit number
+			len+=1;
 		return len;
 	}
 	public Vector100Key(int b) throws VAException{
 		_b = b;
 		
-		//Check if the bit number is even.
-		if (b%2 == 0)
-		{ 
-			dataLength = b*100/8;// convert to byte
-			data = new byte [dataLength];
-			totalregionnum = 1<<b;
-			regionsize = VAFile.MAXRANGE / (double)totalregionnum; //divide one dimention into 2^b parts
-		}
-		else
-			throw new VAException(null, "bit number should be even not "+b);
+		dataLength = Vector100Key.getVAKeyLength(b);
+
+		data = new byte [dataLength];
+		totalregionnum = 1<<b;
+		regionsize = VAFile.MAXRANGE / (double)totalregionnum; //divide one dimention into 2^b parts
 	}
 	public Vector100Key(int datalen,byte[] da){
 		this.dataLength = datalen;
 		this.setDataBytes(da, 0);
-		this._b = datalen*8/100;
+		this._b = datalen*8/100;// works for bit number odd
 		this.setAllRegionNumber();
 		this.totalregionnum = 1<<this._b;
 		this.regionsize = VAFile.MAXRANGE / (double)totalregionnum;
@@ -96,15 +112,12 @@ public class Vector100Key extends KeyClass{
 		_b = b;
 		_vector = v;
 		//System.out.println("in Vector100Key");//debug
-		if (b%2 == 0)
-		{ 
-			dataLength = b*100/8;// convert to byte
-			data = new byte [dataLength];
-			totalregionnum = 1<<b;
-			regionsize = VAFile.MAXRANGE / (double)totalregionnum; //divide one dimention into 2^b parts
-		}
-		else
-			throw new VAException(null, "bit number should be even");
+		dataLength = Vector100Key.getVAKeyLength(b);
+		data = new byte [dataLength];
+		totalregionnum = 1<<b;
+		regionsize = VAFile.MAXRANGE / (double)totalregionnum; //divide one dimention into 2^b parts
+		
+		
 		_regionnum = new int [Vector100Dtype.Max];
 		short [] vecvalue = v.getVectorValue();
 		int tmpregionnum;
@@ -121,7 +134,7 @@ public class Vector100Key extends KeyClass{
 			_regionnum[i] = tmpregionnum;
 			String binaryregion = Integer.toBinaryString(tmpregionnum);// binary number of region
 			StringBuffer tmpsb = new StringBuffer();
-			if (binaryregion.length() < _b){// padding zero
+			if (binaryregion.length() < _b){// padding zero before the binary number
 				
 				for (int j=binaryregion.length();j<_b;j++){
 					tmpsb.append("0");
@@ -130,6 +143,8 @@ public class Vector100Key extends KeyClass{
 			tmpsb.append(binaryregion);
 			binarydata.append(tmpsb);		
 		}
+		if (this._b%2 == 1)// add 4 zero for odd 
+			binarydata.append("0000");
 		// convert string to bytes
 		for (int i=0;i<dataLength;i++){
 			String tmpstr = new String(binarydata.substring(i*8, i*8+8));
@@ -148,6 +163,8 @@ public class Vector100Key extends KeyClass{
 		return data;
 	}
 	public void setDataBytes(byte [] data, int position){
+		if (this.data == null)
+			this.data = new byte [this.dataLength];
 		System.arraycopy(data, position, this.data, 0, this.dataLength);
 	}
 	public void setAllRegionNumber(){
@@ -167,10 +184,10 @@ public class Vector100Key extends KeyClass{
 		for (int i=0;i<this.getDataLength();i++)
 		{
 			String s1 = String.format("%8s", Integer.toBinaryString(data[i] & 0xFF)).replace(' ', '0');
-			//System.out.println("in setAllRegionNumber1 "+i+" "+s1);//debug
+//			System.out.println("in setAllRegionNumber1 "+i+" "+s1);//debug
 			sb.append(s1);
 		}
-		//System.out.println("in setAllRegionNumber2 "+sb);//debug
+//		System.out.println("in setAllRegionNumber2 "+sb);//debug
 		_regionnum = new int [Vector100Dtype.Max];
 		for (int i=0;i<Vector100Dtype.Max;i++){
 //			System.out.println("in setRegionNumber3 b=" + _b+" i="+i);//debug

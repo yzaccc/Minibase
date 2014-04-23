@@ -740,6 +740,7 @@ public class BTreeFile extends IndexFile implements GlobalConst {
 			// we have to allocate a new LEAF page and
 			// to redistribute the data entries entries
 			newLeafPage = new BTLeafPage(headerPage.get_keyType());
+			System.out.println("Allocate new page, key teyps is"+headerPage.get_keyType());
 			newLeafPageId = newLeafPage.getCurPage();
 
 			newLeafPage.setNextPage(currentLeafPage.getNextPage());
