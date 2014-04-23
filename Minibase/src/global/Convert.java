@@ -23,8 +23,13 @@ public class Convert{
   */
 public static KeyDataEntryVA get100DVectorKeyValue(int position, byte[] data, int length) throws IOException, VAException{
 
-	  System.out.println("in Convert get100DVectorKeyValue position = "+ position);//debug
-	  System.out.println("in Convert get100DVectorKeyValue length="+length);//debug
+	
+//	  System.out.println("in Convert get100DVectorKeyValue position = "+ position);//debug
+//	  System.out.println("in Convert get100DVectorKeyValue length="+length);//debug
+//	  for (StackTraceElement ste : Thread.currentThread()
+//				.getStackTrace()) {
+//			System.out.println(ste);
+//		}
 	  KeyDataEntryVA keydata;
 	  int b = (length-8)*8/100;
 	  byte tmp[] = new byte[length];

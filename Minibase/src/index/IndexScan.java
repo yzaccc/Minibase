@@ -18,6 +18,7 @@ import java.io.*;
  * calls <code>get_next()</code> to get the tuples.
  */
 public class IndexScan extends Iterator {
+	boolean vflag = false;
 
 	/**
 	 * class constructor. set up the index scan.
@@ -61,6 +62,9 @@ public class IndexScan extends Iterator {
 			final int fldNum, final boolean indexOnly) throws IndexException,
 			InvalidTypeException, InvalidTupleSizeException,
 			UnknownIndexTypeException, IOException {
+		if (types[fldNum-1].attrType == AttrType.attrVector100D)
+			this.vflag = true;
+		
 		_fldNum = fldNum;
 		_noInFlds = noInFlds;
 		_types = types;
@@ -440,10 +444,12 @@ public class IndexScan extends Iterator {
 			boolean eval;
 			try {
 				// eval = PredEval.Eval(_selects, tuple1, null, _types, null);
-				eval = true;// Meng Yang
+				if (this.vflag)
+					eval = true;// Meng Yang
+				else
+					eval = PredEval.Eval(_selects, tuple1, null, _types, null);
 				// if the index matched, output the data and compare the data
-				// with condition
-				// after output
+				// with condition after output
 			} catch (Exception e) {
 				throw new IndexException(e, "IndexScan.java: Heapfile error");
 			}

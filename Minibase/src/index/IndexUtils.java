@@ -150,7 +150,11 @@ public class IndexUtils {
 				return indScan;
 				
 			case AttrType.attrVector100Dkey:
-				//no need compare, assume selects[0] is lower bound, selects[1] is upper bound
+				//no need compare, assume selects[0] is lower bound, selects[1] is upper bound , Meng Yang
+				for (StackTraceElement ste : Thread.currentThread()
+						.getStackTrace()) {
+					System.out.println(ste);
+				}
 				indScan = ((BTreeFile) indFile).new_scan(key1, key2);
 				return indScan;
 

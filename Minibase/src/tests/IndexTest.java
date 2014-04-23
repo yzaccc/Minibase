@@ -69,7 +69,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		System.out
 				.println("\n" + "Running " + testName() + " tests...." + "\n");
 
-		SystemDefs sysdef = new SystemDefs(dbpath, 300, NUMBUF, "Clock");
+		SystemDefs sysdef = new SystemDefs(dbpath, 300, 5, "Clock");
 
 		// Kill anything that might be hanging around
 		String newdbpath;
@@ -702,14 +702,14 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		// conditions
 		CondExpr[] expr = new CondExpr[3];
 		expr[0] = new CondExpr();
-		expr[0].op = new AttrOperator(AttrOperator.aopGE);
+		expr[0].op = new AttrOperator(AttrOperator.aopEQ);
 		expr[0].type1 = new AttrType(AttrType.attrSymbol);
 		expr[0].type2 = new AttrType(AttrType.attrInteger);
 		expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 3);
 		expr[0].operand2.integer = 100;
 		expr[0].next = null;
 		expr[1] = new CondExpr();
-		expr[1].op = new AttrOperator(AttrOperator.aopLE);
+		expr[1].op = new AttrOperator(AttrOperator.aopEQ);
 		expr[1].type1 = new AttrType(AttrType.attrSymbol);
 		expr[1].type2 = new AttrType(AttrType.attrInteger);
 		expr[1].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 3);
@@ -797,6 +797,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 				.println("------------------------ NN Scan test--------------------------");
 
 		boolean status = OK;
+		int bitnum=3;
 
 		AttrType[] attrType = new AttrType[1];
 		attrType[0] = new AttrType(AttrType.attrVector100D);
@@ -809,11 +810,12 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		FldSpec[] projlist = new FldSpec[1];
 		RelSpec rel = new RelSpec(RelSpec.outer);
 		projlist[0] = new FldSpec(rel, 1);
+//		projlist[1] = new FldSpec(rel, 1);
 
 		Vector100Dtype vector1 = new Vector100Dtype((short) 1);// data
-		Vector100Dtype vector2 = new Vector100Dtype((short) 6);// data
-		Vector100Dtype vector3 = new Vector100Dtype((short) 9999);// data
-		Vector100Dtype vector4 = new Vector100Dtype((short) 1300);// data
+		Vector100Dtype vector2 = new Vector100Dtype((short) 2);// data
+		Vector100Dtype vector3 = new Vector100Dtype((short) 3);// data
+		Vector100Dtype vector4 = new Vector100Dtype((short) 4);// data
 		Vector100Dtype target = new Vector100Dtype((short) 5);// data
 		Vector100Dtype[] vectorObject = new Vector100Dtype[4];
 		vectorObject[0] = vector1;
@@ -860,9 +862,9 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		}
 		// insert into heapfile & va file at same time
 		Vector100Key vkey = null;
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 80; i++) {
 			try {
-				t.set100DVectFld(1, vectorObject[i]);
+				t.set100DVectFld(1, vectorObject[i%4]);
 				// System.out.println("offset "+t.getOffset());
 			} catch (Exception e) {
 				status = FAIL;
@@ -875,19 +877,20 @@ class IndexDriver extends TestDriver implements GlobalConst {
 				// System.out.println("before "+
 				// Arrays.toString(t.returnTupleByteArray()));
 				rid = f.insertRecord(t.returnTupleByteArray());
-				System.out.println("in IndexTest rid " + rid.slotNo + " "
+				System.out.println("in IndexTest insert data rid " + rid.slotNo + " "
 						+ rid.pageNo.pid);// debug
 			} catch (Exception e) {
 				status = FAIL;
 				e.printStackTrace();
 			}
 			try {
-				vkey = new Vector100Key(vectorObject[i], 4);
+				vkey = new Vector100Key(vectorObject[i%4], bitnum);
 			} catch (Exception e) {
 				status = FAIL;
 				e.printStackTrace();
 			}
 			try {
+				System.out.println("in IndexTest insert key");
 				vaf.insertKey(vkey, rid);
 
 			} catch (Exception e) {
@@ -896,9 +899,18 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			}
 		}
 
+		try
+		{
+			SystemDefs.JavabaseBM.flushAllPages();
+			System.out.println("flush in index test4");
+		} catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// open NN scan
 		try {
-			vkey = new Vector100Key(target, 4);
+			vkey = new Vector100Key(target, bitnum);
 		} catch (Exception e) {
 			status = FAIL;
 			e.printStackTrace();
@@ -907,7 +919,7 @@ class IndexDriver extends TestDriver implements GlobalConst {
 		try {
 			nnscan = new NNIndexScan(new IndexType(IndexType.VAIndex),
 					"test4.in", "vafile1", attrType, attrSize, 1, 1, projlist,
-					null, 1, target, 2, 4);
+					null, 1, target, 4, bitnum);
 
 		} catch (Exception e) {
 			status = FAIL;
@@ -1122,7 +1134,17 @@ class IndexDriver extends TestDriver implements GlobalConst {
 			}
 		}
 
-		// open NN scan
+		
+		try
+		{
+			SystemDefs.JavabaseBM.flushAllPages();
+			System.out.println("flush in index test5");
+		} catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// open range scan
 		try {
 			vkey = new Vector100Key(target, 4);
 		} catch (Exception e) {

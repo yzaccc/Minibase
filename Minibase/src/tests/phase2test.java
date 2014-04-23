@@ -1050,8 +1050,8 @@ class Phase2Driver extends TestDriver implements GlobalConst
 					{
 						e.printStackTrace();
 					}
-					while (tmpra != null)
-						sortra.get_next();
+//					while (tmpra != null)
+//						sortra.get_next();
 					sortra.close();
 					SystemDefs.JavabaseBM.flushAllPages();
 					// Begin Sort NN, and add it to NNList

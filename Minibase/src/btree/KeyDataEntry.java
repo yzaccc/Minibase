@@ -74,16 +74,25 @@ public class KeyDataEntry {
 		else if (key instanceof StringKey)
 			this.key = new StringKey(((StringKey) key).getKey());
 		else if (key instanceof Vector100Key) {
-			try {
-				this.key = new Vector100Key(((Vector100Key) key).get_vector(),
-						((Vector100Key) key).get_b());
-			} catch (Exception e) {
-				for (StackTraceElement ste : Thread.currentThread()
-						.getStackTrace()) {
-					System.out.println("in keyDataEntry***");
-					System.out.println(ste);
-				}
-			}
+//			 ((Vector100Key) key).psrintDebug();
+			this.key = new Vector100Key(
+					((Vector100Key) key).getDataLength(),
+					((Vector100Key) key).getData());
+//			try {
+//				// this.key = new Vector100Key(((Vector100Key)
+//				// key).get_vector(),
+//				// ((Vector100Key) key).get_b());
+//				this.key = new Vector100Key(
+//						((Vector100Key) key).getDataLength(),
+//						((Vector100Key) key).getData());
+//			} catch (Exception e) {
+//				
+//				for (StackTraceElement ste : Thread.currentThread()
+//						.getStackTrace()) {
+//					System.out.println("in keyDataEntry*** "+e.getMessage());
+//					System.out.println(ste);
+//				}
+//			}
 
 		} else
 			throw new KeyNotMatchException(null, "key types do not match");
@@ -144,15 +153,14 @@ public class KeyDataEntry {
 		else if (key instanceof StringKey)
 			st1 = ((StringKey) key).getKey().equals(
 					((StringKey) entry.key).getKey());
-		else if (key instanceof Vector100Key){
-			Vector100Key k1 = (Vector100Key)key;
-			Vector100Key k2 = (Vector100Key)entry.key;
+		else if (key instanceof Vector100Key) {
+			Vector100Key k1 = (Vector100Key) key;
+			Vector100Key k2 = (Vector100Key) entry.key;
 			if (Vector100Key.keyCompare(k1, k2) == 0)
 				st1 = true;
 			else
 				st1 = false;
-		}
-		else
+		} else
 			throw new KeyNotMatchException(null, "key types do not match");
 
 		if (data instanceof IndexData)

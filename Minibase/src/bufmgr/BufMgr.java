@@ -4,6 +4,7 @@ package bufmgr;
 
 import java.io.*;
 import java.util.*;
+
 import diskmgr.*;
 import global.*;
 
@@ -514,7 +515,11 @@ public class BufMgr implements GlobalConst {
 				throw new ReplacerException(null, "BUFMGR: REPLACER_ERROR.");
 
 			}
-			
+//			if (pin_pgid.pid == 3 || pin_pgid.pid ==2)
+//				for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+//				    System.out.println(ste);
+//				}
+//			System.out.println("in BufMgr pinpage  out "+frmeTable[frameNo].pageNo.pid+" in "+pin_pgid);
 			if (emptyPage)  PCounterPinPage.increment();
 			if ((frmeTable[frameNo].pageNo.pid != INVALID_PAGE)
 					&& (frmeTable[frameNo].dirty == true)) {

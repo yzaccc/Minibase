@@ -114,22 +114,25 @@ public class Heapfile implements Filetype, GlobalConst {
 				}
 
 				DataPageInfo dpinfo = new DataPageInfo(atuple);
-				try {
-					pinPage(dpinfo.pageId, currentDataPage, false/* Rddisk */);
 
-					// check error;need unpin currentDirPage
-				} catch (Exception e) {
-					unpinPage(currentDirPageId, false/* undirty */);
-					dirpage = null;
-					datapage = null;
-					throw e;
-				}
 
 				// ASSERTIONS:
 				// - currentDataPage, currentDataPageRid, dpinfo valid
 				// - currentDataPage pinned
 
 				if (dpinfo.pageId.pid == rid.pageNo.pid) {
+					
+					try {
+						pinPage(dpinfo.pageId, currentDataPage, false/* Rddisk */);
+
+//						System.out.println("in heapfile _findDataPage dpinfo "+dpinfo.pageId);
+						// check error;need unpin currentDirPage
+					} catch (Exception e) {
+						unpinPage(currentDirPageId, false/* undirty */);
+						dirpage = null;
+						datapage = null;
+						throw e;
+					}
 					atuple = currentDataPage.returnRecord(rid);
 					// found user's record on the current datapage which itself
 					// is indexed on the current dirpage. Return both of these.
@@ -146,7 +149,7 @@ public class Heapfile implements Filetype, GlobalConst {
 				} else {
 					// user record not found on this datapage; unpin it
 					// and try the next one
-					unpinPage(dpinfo.pageId, false /* undirty */);
+//					unpinPage(dpinfo.pageId, false /* undirty */);
 
 				}
 
@@ -804,8 +807,13 @@ public class Heapfile implements Filetype, GlobalConst {
 		PageId currentDataPageId = new PageId();
 		RID currentDataPageRid = new RID();
 
+		// System.out.println("in Heapfile before "+rid.pageNo.pid+" currentDirPageId "+currentDirPageId.pid+" currentDataPageRid "+currentDataPageRid.pageNo.pid);
 		status = _findDataPage(rid, currentDirPageId, dirPage,
 				currentDataPageId, dataPage, currentDataPageRid);
+//		System.out.println("in Heapfile after " + rid.pageNo.pid
+//				+ " currentDirPageId " + currentDirPageId.pid
+//				+ " \ncurrentDataPageRid " + currentDataPageRid.pageNo.pid
+//				+ " currentDataPageId " + currentDataPageId.pid+"\n");
 
 		if (status != true)
 			return null; // record not found

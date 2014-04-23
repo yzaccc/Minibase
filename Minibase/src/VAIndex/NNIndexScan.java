@@ -234,7 +234,7 @@ public class NNIndexScan {
 		AttrType[] attrType = new AttrType[1];
 		attrType[0] = new AttrType(AttrType.attrVector100Dkey);
 		short[] attrSize = new short[1];
-		attrSize[0] = (short)(_b*100/8+8);		
+		attrSize[0] = (short)(Vector100Key.getVAKeyLength(this._b)+8);
 		try {
 			t1.setHdr((short) 1, attrType, attrSize);
 		} catch (Exception e) {
@@ -295,6 +295,7 @@ public class NNIndexScan {
 			{
 
 				try{
+					System.out.println("in NN get data rid "+rid2.pageNo.pid+" "+rid2.slotNo);
 					temp2 = hf.getRecord(rid2);
 					tuplein.tupleCopy(temp2);
 					
