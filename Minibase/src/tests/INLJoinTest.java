@@ -70,7 +70,7 @@ class INLJoinTestDriver extends TestDriver
 //		t.get100DVectFld(2).printVector();
 		String relationName = "rel2";
 		IndexType indextype =new IndexType(1);
-		String indexName = "VA_BTreeIndex1B16";
+		String indexName = "VABTreeIndex_1_B_16";
 		CondExpr[] expr = new CondExpr[3];
 		expr[0] = new CondExpr();
 		expr[0].op = new AttrOperator(AttrOperator.aopLE);
@@ -95,10 +95,10 @@ class INLJoinTestDriver extends TestDriver
 				expr, projlist, 5);
 		Tuple t1 = inlj.get_next();
 		AttrType [] in11 = new AttrType[5];
-		in11[0] = new AttrType(5);
-		in11[1] = new AttrType(2);
-		in11[2] = new AttrType(5);
-		in11[3] = new AttrType(2);
+		in11[0] = new AttrType(2);
+		in11[1] = new AttrType(5);
+		in11[2] = new AttrType(2);
+		in11[3] = new AttrType(5);
 		in11[4] = new AttrType(5);
 		t1.setHdr((short) 5, in11, null);
 		t1.get100DVectFld(2).printVector();

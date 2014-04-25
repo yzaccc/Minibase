@@ -268,7 +268,7 @@ public class INLJoins extends Iterator
 		} while (true);
 	}
 	// Using BTree Index;
-	else if (IndexType.B_Index == _indextype.indexType && _indexname.contains("VA_BTreeIndex"))
+	else if (IndexType.B_Index == _indextype.indexType && _indexname.contains("VABTreeIndex"))
 	{
 		if (done)
 			return null;
