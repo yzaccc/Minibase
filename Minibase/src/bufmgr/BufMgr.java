@@ -368,7 +368,11 @@ public class BufMgr implements GlobalConst {
 			if ((all_pages != 0) || (frmeTable[i].pageNo.pid == pageid.pid)) {
 
 				if (frmeTable[i].pin_count() != 0)
+				{
 					unpinned++;
+					System.out.println("in Bufmug pin page rid "+frmeTable[i].pageNo.pid );
+				}
+					
 
 				if (frmeTable[i].dirty != false) {
 
