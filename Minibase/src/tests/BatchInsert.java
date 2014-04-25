@@ -344,50 +344,50 @@ class BatchInsertDriver extends TestDriver {
 				}
 			}
 		}
-		Scan scan = null;
-		 try
-		 {
-		 scan = new Scan(f);
-		 } catch (InvalidTupleSizeException | IOException e)
-		 {
-		 // TODO Auto-generated catch block
-		 e.printStackTrace();
-		 }
-		 RID rid1 = new RID();
-		 Tuple tmp=null;
-		 try
-		{
-			tmp = scan.getNext(rid1);
-			
-		} catch (InvalidTupleSizeException | IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		while(tmp!=null){
-			t.tupleCopy(tmp);
-		Vector100Dtype v1=null;
-		try
-		{
-			v1 = t.get100DVectFld(2);
-		} catch (FieldNumberOutOfBoundException | IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		v1.printVector();
-		 try
-		{
-			tmp = scan.getNext(rid1);
-			
-		} catch (InvalidTupleSizeException | IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}
-		success = true;
-		scan.closescan();		
+//		Scan scan = null;
+//		 try
+//		 {
+//		 scan = new Scan(f);
+//		 } catch (InvalidTupleSizeException | IOException e)
+//		 {
+//		 // TODO Auto-generated catch block
+//		 e.printStackTrace();
+//		 }
+//		 RID rid1 = new RID();
+//		 Tuple tmp=null;
+//		 try
+//		{
+//			tmp = scan.getNext(rid1);
+//			
+//		} catch (InvalidTupleSizeException | IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		while(tmp!=null){
+//			t.tupleCopy(tmp);
+//		Vector100Dtype v1=null;
+//		try
+//		{
+//			v1 = t.get100DVectFld(2);
+//		} catch (FieldNumberOutOfBoundException | IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		v1.printVector();
+//		 try
+//		{
+//			tmp = scan.getNext(rid1);
+//			
+//		} catch (InvalidTupleSizeException | IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		}
+//		success = true;
+//		scan.closescan();		
 		try
 		{
 			SystemDefs.JavabaseBM.flushAllPages();

@@ -246,39 +246,39 @@ class BatchCreateDriver extends TestDriver
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
-	 Scan scan = null;
-	 try
-	 {
-	 scan = new Scan(f);
-	 } catch (InvalidTupleSizeException | IOException e)
-	 {
-	 // TODO Auto-generated catch block
-	 e.printStackTrace();
-	 }
-	 RID rid = new RID();
-	 Tuple tmp=null;
-	 try
-	{
-		tmp = scan.getNext(rid);
-		t.tupleCopy(tmp);
-	} catch (InvalidTupleSizeException | IOException e)
-	{
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	Vector100Dtype v1=null;
-	try
-	{
-		v1 = t.get100DVectFld(2);
-	} catch (FieldNumberOutOfBoundException | IOException e)
-	{
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	v1.printVector();
+//	 Scan scan = null;
+//	 try
+//	 {
+//	 scan = new Scan(f);
+//	 } catch (InvalidTupleSizeException | IOException e)
+//	 {
+//	 // TODO Auto-generated catch block
+//	 e.printStackTrace();
+//	 }
+//	 RID rid = new RID();
+//	 Tuple tmp=null;
+//	 try
+//	{
+//		tmp = scan.getNext(rid);
+//		t.tupleCopy(tmp);
+//	} catch (InvalidTupleSizeException | IOException e)
+//	{
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+//	Vector100Dtype v1=null;
+//	try
+//	{
+//		v1 = t.get100DVectFld(2);
+//	} catch (FieldNumberOutOfBoundException | IOException e)
+//	{
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+//	v1.printVector();
 	success = true;
 	specfile.close();
-	scan.closescan();
+//	scan.closescan();
 	if (SystemDefs.JavabaseBM.getNumUnpinnedBuffers() != SystemDefs.JavabaseBM.getNumBuffers()) {
 		System.err.println("*** Insertion left a page pinned\n");
 	}

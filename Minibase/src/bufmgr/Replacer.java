@@ -44,15 +44,15 @@ abstract class Replacer implements GlobalConst
     (mgr.frameTable())[frameNo].pin();
     state_bit[frameNo].state = Pinned;
     
-    if (mgr.frameTable()[frameNo].pageNo.pid == 2  || mgr.frameTable()[frameNo].pageNo.pid ==3)
-    {
-    	System.out.println("in replaer pid "+mgr.frameTable()[frameNo].pageNo.pid);
-    	for (StackTraceElement ste : Thread.currentThread()
-				.getStackTrace()) {
-			System.out.println(ste);
-		}
-    	
-    }
+//    if (mgr.frameTable()[frameNo].pageNo.pid == 2  || mgr.frameTable()[frameNo].pageNo.pid ==3)
+//    {
+//    	System.out.println("in replaer pid "+mgr.frameTable()[frameNo].pageNo.pid);
+//    	for (StackTraceElement ste : Thread.currentThread()
+//				.getStackTrace()) {
+//			System.out.println(ste);
+//		}
+//    	
+//    }
   }
 
   /** Unpins a page in the buffer pool.
