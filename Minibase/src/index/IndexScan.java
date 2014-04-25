@@ -62,9 +62,9 @@ public class IndexScan extends Iterator {
 			final int fldNum, final boolean indexOnly) throws IndexException,
 			InvalidTypeException, InvalidTupleSizeException,
 			UnknownIndexTypeException, IOException {
-		if (types[fldNum-1].attrType == AttrType.attrVector100D)
+		if (types[fldNum - 1].attrType == AttrType.attrVector100D)
 			this.vflag = true;
-		
+
 		_fldNum = fldNum;
 		_noInFlds = noInFlds;
 		_types = types;
@@ -307,7 +307,8 @@ public class IndexScan extends Iterator {
 	/**
 	 * new get_next with rid return Meng Yang
 	 * 
-	 * @param rerid  return rid
+	 * @param rerid
+	 *            return rid
 	 * @return
 	 * @throws IndexException
 	 * @throws UnknownKeyTypeException
@@ -325,7 +326,7 @@ public class IndexScan extends Iterator {
 			throw new IndexException(e, "IndexScan.java: BTree error");
 		}
 
-//		System.out.println("in index scan index only="+index_only);
+		// System.out.println("in index scan index only="+index_only);
 		while (nextentry != null) {
 			if (index_only) {
 				// only need to return the key
@@ -427,8 +428,8 @@ public class IndexScan extends Iterator {
 			rid = ((LeafData) nextentry.data).getData();
 			rerid.pageNo.pid = ((LeafData) nextentry.data).getData().pageNo.pid;
 			rerid.slotNo = ((LeafData) nextentry.data).getData().slotNo;
-//			System.out.println("in indexscan after rerid "+rerid.pageNo+" "+rerid.slotNo);
-			
+			// System.out.println("in indexscan after rerid "+rerid.pageNo+" "+rerid.slotNo);
+
 			try {
 				tuple1 = f.getRecord(rid);
 			} catch (Exception e) {
@@ -472,6 +473,54 @@ public class IndexScan extends Iterator {
 			} catch (Exception e) {
 				throw new IndexException(e, "IndexScan.java: BTree error");
 			}
+		}
+
+		return null;
+	}
+
+	public KeyClass get_nextKey(RID rerid) throws IndexException,
+			UnknownKeyTypeException, IOException {
+		RID rid;
+		int unused;
+		KeyDataEntry nextentry = null;
+
+		try {
+			nextentry = indScan.get_next();
+		} catch (Exception e) {
+			throw new IndexException(e, "IndexScan.java: BTree error");
+		}
+
+		// System.out.println("in index scan index only="+index_only);
+		while (nextentry != null) {
+			rid = ((LeafData) nextentry.data).getData();
+			rerid.pageNo.pid = ((LeafData) nextentry.data).getData().pageNo.pid;
+			rerid.slotNo = ((LeafData) nextentry.data).getData().slotNo;
+			if (index_only) {
+				// only need to return the key
+
+				AttrType[] attrType = new AttrType[1];
+				short[] s_sizes = new short[1];
+
+				if (_types[_fldNum - 1].attrType == AttrType.attrInteger) {
+					
+					return (IntegerKey) nextentry.key;
+					
+				} else if (_types[_fldNum - 1].attrType == AttrType.attrString) {
+
+					return (StringKey) nextentry.key;
+				}
+
+				else if (_types[_fldNum - 1].attrType == AttrType.attrVector100D) {
+					
+						Vector100Key vkey = (Vector100Key) nextentry.key;
+						return vkey;
+				} else {
+					// attrReal not supported for now
+					throw new UnknownKeyTypeException(
+							"Only Integer and String keys are supported so far");
+				}
+			}
+
 		}
 
 		return null;

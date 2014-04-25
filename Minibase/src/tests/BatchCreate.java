@@ -40,6 +40,7 @@ class BatchCreateDriver extends TestDriver
 	Heapfile f = null;
 	private Tuple t = new Tuple();
 	private String[] brStrArray;
+
 	public BatchCreateDriver()
 		{
 		super("");
@@ -58,7 +59,7 @@ class BatchCreateDriver extends TestDriver
 	BufferedReader br = null;
 	// brStr is used to store on line read from br.
 	String brStr = null;
-	
+
 	try
 	{
 		br = new BufferedReader(new FileReader(dataFileName));
@@ -143,8 +144,10 @@ class BatchCreateDriver extends TestDriver
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	
-	if (SystemDefs.JavabaseBM.getNumUnpinnedBuffers() != SystemDefs.JavabaseBM.getNumBuffers()) {
+
+	if (SystemDefs.JavabaseBM.getNumUnpinnedBuffers() != SystemDefs.JavabaseBM
+			.getNumBuffers())
+	{
 		System.err.println("*** The heap file has left pages pinned\n");
 	}
 	/*
@@ -237,27 +240,19 @@ class BatchCreateDriver extends TestDriver
 	}
 	System.out.print("write page(data insertion) is " + PCounterPinPage.counter
 			+ "\n");
-//			Scan scan = null;
-//			try
-//			{
-//				scan = new Scan(f);
-//			} catch (InvalidTupleSizeException | IOException e)
-//			{
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//	 Scan scan = null;
-//	 try
-//	 {
-//	 scan = new Scan(f);
-//	 } catch (InvalidTupleSizeException | IOException e)
-//	 {
-//	 // TODO Auto-generated catch block
-//	 e.printStackTrace();
-//	 }
-//	 RID rid = new RID();
-//	 Tuple tmp=null;
-//	 try
+//	Scan scan = null;
+//	try
+//	{
+//		scan = new Scan(f);
+//	} catch (InvalidTupleSizeException | IOException e)
+//	{
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+//
+//	RID rid = new RID();
+//	Tuple tmp = null;
+//	try
 //	{
 //		tmp = scan.getNext(rid);
 //		t.tupleCopy(tmp);
@@ -266,7 +261,7 @@ class BatchCreateDriver extends TestDriver
 //		// TODO Auto-generated catch block
 //		e.printStackTrace();
 //	}
-//	Vector100Dtype v1=null;
+//	Vector100Dtype v1 = null;
 //	try
 //	{
 //		v1 = t.get100DVectFld(2);
@@ -279,7 +274,9 @@ class BatchCreateDriver extends TestDriver
 	success = true;
 	specfile.close();
 //	scan.closescan();
-	if (SystemDefs.JavabaseBM.getNumUnpinnedBuffers() != SystemDefs.JavabaseBM.getNumBuffers()) {
+	if (SystemDefs.JavabaseBM.getNumUnpinnedBuffers() != SystemDefs.JavabaseBM
+			.getNumBuffers())
+	{
 		System.err.println("*** Insertion left a page pinned\n");
 	}
 	try
