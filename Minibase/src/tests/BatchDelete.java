@@ -449,8 +449,8 @@ class BatchDeleteDriver extends TestDriver {
 	}
 
 	public void printFile(String relname) {
-		int cnt=0;
-		System.out.println("after delete");
+		int cnt = 0;
+		System.out.println("after create");
 
 		Scan scan = null;
 		try {
@@ -464,18 +464,20 @@ class BatchDeleteDriver extends TestDriver {
 		Tuple tmp = null;
 		try {
 			tmp = scan.getNext(rid);
+			
 		} catch (InvalidTupleSizeException | IOException e) {
 			e.printStackTrace();
 		}
 		Vector100Dtype v1 = null;
-		while(tmp != null)
-		{
+		while (tmp != null) {
 			cnt++;
 			try {
+				t.tupleCopy(tmp);
 				v1 = t.get100DVectFld(2);
 			} catch (FieldNumberOutOfBoundException | IOException e) {
 				e.printStackTrace();
 			}
+			System.out.println("rid="+rid.pageNo.pid+" "+rid.slotNo);
 			v1.printVector();
 			try {
 				tmp = scan.getNext(rid);
@@ -483,10 +485,9 @@ class BatchDeleteDriver extends TestDriver {
 				e.printStackTrace();
 			}
 		}
-		
-		
+
 		scan.closescan();
-		System.out.println(" total "+cnt+" tuples");
+		System.out.println(" total " + cnt + " tuples");
 	}
 
 }
