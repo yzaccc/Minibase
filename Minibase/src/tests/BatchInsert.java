@@ -273,7 +273,7 @@ class BatchInsertDriver extends TestDriver
 	short[] vectorData = new short[100];
 	Vector100Dtype vector = new Vector100Dtype((short) 0);
 	RID rid = new RID();
-	while (brStr != null)
+aaa:	while (brStr != null)
 	{
 		for (int i = 0; i < numColumns; i++)
 		{
@@ -281,7 +281,7 @@ class BatchInsertDriver extends TestDriver
 			{
 				brStr = updatefileReader.readLine();
 				if (brStr == null)
-					break;
+					break aaa;
 			} catch (IOException e)
 			{
 				e.printStackTrace();
@@ -461,6 +461,47 @@ class BatchInsertDriver extends TestDriver
 	success = true;
 	return success;
 	}
+	public void printFile(String relname) {
+		int cnt = 0;
+		System.out.println("after create");
+
+		Scan scan = null;
+		try {
+			scan = new Scan(f);
+		} catch (InvalidTupleSizeException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		RID rid = new RID();
+		Tuple tmp = null;
+		try {
+			tmp = scan.getNext(rid);
+			
+		} catch (InvalidTupleSizeException | IOException e) {
+			e.printStackTrace();
+		}
+		Vector100Dtype v1 = null;
+		while (tmp != null) {
+			cnt++;
+			try {
+				t.tupleCopy(tmp);
+				v1 = t.get100DVectFld(2);
+			} catch (FieldNumberOutOfBoundException | IOException e) {
+				e.printStackTrace();
+			}
+			System.out.println("rid="+rid.pageNo.pid+" "+rid.slotNo);
+			v1.printVector();
+			try {
+				tmp = scan.getNext(rid);
+			} catch (InvalidTupleSizeException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		scan.closescan();
+		System.out.println(" total " + cnt + " tuples");
+	}
 }
 
 public class BatchInsert
@@ -470,6 +511,7 @@ public class BatchInsert
 	boolean insertStatus = false;
 	BatchInsertDriver batchInsert = new BatchInsertDriver();
 	insertStatus = batchInsert.runTest(argv[0], argv[1]);
+//	batchInsert.printFile(argv[1]);
 	if (insertStatus == false)
 	{
 		System.out.print("Batch Insert Failed.\n");
