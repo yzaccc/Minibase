@@ -291,6 +291,49 @@ class BatchCreateDriver extends TestDriver
 	}
 	return success;
 	}
+	public void printFile(String relname) {
+		int cnt=0;
+		System.out.println("after create");
+
+
+		Scan scan = null;
+		try {
+			scan = new Scan(f);
+		} catch (InvalidTupleSizeException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		RID rid = new RID();
+		Tuple tmp = null;
+		try {
+			tmp = scan.getNext(rid);
+			t.tupleCopy(tmp);
+		} catch (InvalidTupleSizeException | IOException e) {
+			e.printStackTrace();
+		}
+		Vector100Dtype v1 = null;
+		while(tmp != null)
+		{
+			cnt++;
+			try {
+				v1 = t.get100DVectFld(2);
+			} catch (FieldNumberOutOfBoundException | IOException e) {
+				e.printStackTrace();
+			}
+			v1.printVector();
+			try {
+				tmp = scan.getNext(rid);
+			} catch (InvalidTupleSizeException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		scan.closescan();
+		System.out.println(" total "+cnt+" tuples");
+	}
+	
 }
 
 public class BatchCreate
@@ -301,13 +344,14 @@ public class BatchCreate
 	boolean createStatus = false;
 	BatchCreateDriver batchInsert = new BatchCreateDriver();
 	createStatus = batchInsert.runTest(argv[0], argv[1]);
+	batchInsert.printFile(argv[1]);
 	if (createStatus == false)
 	{
 		System.out.print("Batch Create Failed.\n");
 	}
 	else
 	{
-		System.out.print("Bathch Create Success.\n");
+		System.out.print("Batch Create Success.\n");
 	}
 	}
 }

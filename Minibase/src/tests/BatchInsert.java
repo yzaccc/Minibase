@@ -461,6 +461,48 @@ class BatchInsertDriver extends TestDriver
 	success = true;
 	return success;
 	}
+	public void printFile(String relname) {
+		int cnt=0;
+		System.out.println("after insert");
+
+
+		Scan scan = null;
+		try {
+			scan = new Scan(f);
+		} catch (InvalidTupleSizeException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		RID rid = new RID();
+		Tuple tmp = null;
+		try {
+			tmp = scan.getNext(rid);
+			t.tupleCopy(tmp);
+		} catch (InvalidTupleSizeException | IOException e) {
+			e.printStackTrace();
+		}
+		Vector100Dtype v1 = null;
+		while(tmp != null)
+		{
+			cnt++;
+			try {
+				v1 = t.get100DVectFld(2);
+			} catch (FieldNumberOutOfBoundException | IOException e) {
+				e.printStackTrace();
+			}
+			v1.printVector();
+			try {
+				tmp = scan.getNext(rid);
+			} catch (InvalidTupleSizeException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		scan.closescan();
+		System.out.println(" total "+cnt+" tuples");
+	}
 }
 
 public class BatchInsert
@@ -470,6 +512,7 @@ public class BatchInsert
 	boolean insertStatus = false;
 	BatchInsertDriver batchInsert = new BatchInsertDriver();
 	insertStatus = batchInsert.runTest(argv[0], argv[1]);
+	batchInsert.printFile(argv[1]);
 	if (insertStatus == false)
 	{
 		System.out.print("Batch Insert Failed.\n");
