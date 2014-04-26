@@ -17,8 +17,14 @@ import btree.LeafInsertRecException;
 import btree.NodeNotMatchException;
 import btree.PinPageException;
 import btree.UnpinPageException;
+import bufmgr.BufMgrException;
+import bufmgr.HashOperationException;
+import bufmgr.PageNotFoundException;
+import bufmgr.PagePinnedException;
+import bufmgr.PageUnpinnedException;
 import global.AttrType;
 import global.RID;
+import global.SystemDefs;
 import heap.FieldNumberOutOfBoundException;
 import heap.HFBufMgrException;
 import heap.HFDiskMgrException;
@@ -148,7 +154,19 @@ public class VAFile extends Heapfile {
 				e.printStackTrace();
 			}
 		}
+	
+
 		scan.closescan();
+		try
+		{
+			System.out.println("flush all pages in VAFile");
+			SystemDefs.JavabaseBM.flushAllPages();
+		} catch (HashOperationException | PageUnpinnedException
+				| PagePinnedException | PageNotFoundException | BufMgrException
+				| IOException e)
+		{
+			e.printStackTrace();
+		}
 
 	}
 

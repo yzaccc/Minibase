@@ -32,10 +32,13 @@ import btree.ConstructPageException;
 import btree.GetFileEntryException;
 import btree.IntegerKey;
 import bufmgr.BufMgrException;
+import bufmgr.HashEntryNotFoundException;
 import bufmgr.HashOperationException;
+import bufmgr.InvalidFrameNumberException;
 import bufmgr.PageNotFoundException;
 import bufmgr.PagePinnedException;
 import bufmgr.PageUnpinnedException;
+import bufmgr.ReplacerException;
 
 class BatchDeleteDriver extends TestDriver {
 
@@ -342,6 +345,21 @@ class BatchDeleteDriver extends TestDriver {
 
 			}
 		}
+		if (haveindex)
+		{
+			for (int i = 0; i < BTreeFileList.size(); i++)
+			{
+				try
+				{
+					BTreeFileList.get(i).close();
+				} catch (PageUnpinnedException | InvalidFrameNumberException
+						| HashEntryNotFoundException | ReplacerException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		try
 		{
 			SystemDefs.JavabaseBM.flushAllPages();
@@ -401,7 +419,7 @@ class BatchDeleteDriver extends TestDriver {
 				e.printStackTrace();
 			}
 		}
-
+		scan.closescan();
 		return null;
 	}
 
