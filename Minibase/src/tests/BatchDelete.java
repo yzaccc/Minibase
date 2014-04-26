@@ -11,6 +11,7 @@ import heap.HFBufMgrException;
 import heap.HFDiskMgrException;
 import heap.HFException;
 import heap.Heapfile;
+import heap.InvalidSlotNumberException;
 import heap.InvalidTupleSizeException;
 import heap.InvalidTypeException;
 import heap.Scan;
@@ -55,6 +56,12 @@ class BatchDeleteDriver extends TestDriver {
 	private ArrayList<String> BTreeindexFileColumnIDList = new ArrayList<String>();
 	private ArrayList<BTreeFile> BTreeFileList = new ArrayList<BTreeFile>();
 
+	// delete key
+	private int gi1;
+	private float gf1;
+	private Vector100Dtype gvector = new Vector100Dtype((short) 0);
+	private ArrayList<RID> ridlist = new ArrayList<RID>();
+
 	private Heapfile f = null;
 
 	public BatchDeleteDriver() {
@@ -79,7 +86,7 @@ class BatchDeleteDriver extends TestDriver {
 			}
 		}
 		BufferedReader updatefileReader = null;
-		// brStr is used to store on line read from br.
+		// brStr is used to store one line read from br.
 		String brStr = null;
 		String[] brStrArray;
 		try {
@@ -225,72 +232,53 @@ class BatchDeleteDriver extends TestDriver {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		short[] vectorData = new short[100];
-		Vector100Dtype vector = new Vector100Dtype((short) 0);
+
 		RID rid = null;
 
 aaa:		while (brStr != null) {
 			// read in data
-			for (int i = 0; i < numColumns; i++) {
-				try {
-					brStr = updatefileReader.readLine();
-					if (brStr == null)
-						break aaa;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				switch (columnsType[i]) {
-				case 1:
-					try {
-						t.setIntFld(i + 1, Integer.parseInt(brStr));
-					} catch (NumberFormatException
-							| FieldNumberOutOfBoundException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					break;
-				case 2:
-					try {
-						t.setFloFld(i + 1, Float.parseFloat(brStr.trim()));
-					} catch (NumberFormatException
-							| FieldNumberOutOfBoundException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					break;
-				case 3:
-					attrArray[i] = new AttrType(AttrType.attrString);
-					break;
-				case 4:
-					brStrArray = brStr.split(" ");
-					for (int i1 = 0; i1 < 100; i1++) {
-						vectorData[i1] = Short.parseShort(brStrArray[i1]);
-					}
-					vector.setVectorValue(vectorData);
-					try {
-						t.set100DVectFld(i + 1, vector);
-					} catch (FieldNumberOutOfBoundException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					break;
-				default:
-					System.out.print("Type not supported\n");
-					break;
-				}
+
+			try {
+				brStr = updatefileReader.readLine();
+				if (brStr == null || brStr.equals(""))
+					break aaa;
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			RID rid1 = this.findRID(t);
-			if (rid1 != null) {
-				// detele from heap file
-				try {
-					f.deleteRecord(rid1);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			brStrArray = brStr.split(" ");
+			int colnum = Integer.parseInt(brStrArray[0]);
+			// colnum--;// columnsType start from 0
+			switch (columnsType[colnum - 1]) {
+			case 1:
+				gi1 = Integer.parseInt(brStrArray[1]);
+				IntegerKey ikey = new IntegerKey(gi1);
+				break;
+			case 2:
+				gf1 = new Float(Float.parseFloat(brStrArray[1]));
+				break;
+			// case 3:
+			// // attrArray[i] = new AttrType(AttrType.attrString);
+			// break;
+			case 4:
+				short[] vectorData = new short[100];
+				for (int i2 = 0; i2 < 100; i2++) {
+					vectorData[i2] = Short.parseShort(brStrArray[i2 + 1]);
 				}
+				gvector.setVectorValue(vectorData);
+				break;
+			default:
+				System.out.print("Type not supported\n");
+				break;
+			}
+
+			this.findRID(colnum);
+			RID rid1 = null;
+			for (int jj = 0; jj < ridlist.size(); jj++) {
+				rid1 = ridlist.get(jj);
+
 				if (haveindex) {
 
-					// for va file
+					// delete from va file
 					for (int i = 0; i < vaindexFileList.size(); i++) {
 						try {
 							vaindexFileList.get(i).deleteKey(rid1);
@@ -299,81 +287,89 @@ aaa:		while (brStr != null) {
 						}
 
 					}
-					// for btree file
+					// delete from btree file
 					for (int i = 0; i < BTreeFileList.size(); i++) {
-						int column = Integer
+						int bcolumn = Integer
 								.parseInt(BTreeindexFileColumnIDList.get(i));
-						if (columnsType[column - 1] == 4) {
+						Tuple tmptuple = new Tuple();
+						try {
+							tmptuple = f.getRecord(rid1);
+							t.tupleCopy(tmptuple);
+						} catch (Exception e2) {
+							e2.printStackTrace();
+						}
+						if (columnsType[bcolumn - 1] == 4) {
+							// for vector key
+
+							Vector100Key vkey = null;
 							Vector100Dtype vectorForIndex = null;
-							Vector100Key key = null;
 							try {
-								vectorForIndex = t.get100DVectFld(column);
-							} catch (FieldNumberOutOfBoundException
-									| IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							try {
-								key = new Vector100Key(vectorForIndex,
+								vectorForIndex = t.get100DVectFld(bcolumn);
+								vkey = new Vector100Key(vectorForIndex,
 										BTreeindexFileBitNUmList.get(i));
 							} catch (Exception e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
 							try {
-								BTreeFileList.get(i).insert(key, rid1);
+								BTreeFileList.get(i).Delete(vkey, rid1);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
-						} else if (columnsType[column - 1] == 1) {
-							int i1 = -1;
-							try {
-								i1 = t.getIntFld(column);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							IntegerKey ikey = new IntegerKey(i1);
-							try {
-								BTreeFileList.get(i).insert(ikey, rid1);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-
 						}
+						// no intger key
+						// else if (columnsType[bcolumn - 1] == 1) {
+						// int i1 = -1;
+						// try {
+						// i1 = t.getIntFld(bcolumn);
+						// } catch (Exception e) {
+						// e.printStackTrace();
+						// }
+						// IntegerKey ikey = new IntegerKey(i1);
+						// try {
+						// BTreeFileList.get(i).insert(ikey, rid1);
+						// } catch (Exception e) {
+						// e.printStackTrace();
+						// }
+						//
+						// }
 					}
+					// delete from heap file
+
+				}
+				try {
+					f.deleteRecord(rid1);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
 			}
 		}
-		if (haveindex)
-		{
-			for (int i = 0; i < BTreeFileList.size(); i++)
-			{
-				try
-				{
+		if (haveindex) {
+			for (int i = 0; i < BTreeFileList.size(); i++) {
+				try {
 					BTreeFileList.get(i).close();
 				} catch (PageUnpinnedException | InvalidFrameNumberException
-						| HashEntryNotFoundException | ReplacerException e)
-				{
+						| HashEntryNotFoundException | ReplacerException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
-		try
-		{
+		try {
+			System.out.println("before flush all ");
 			SystemDefs.JavabaseBM.flushAllPages();
 		} catch (HashOperationException | PageUnpinnedException
 				| PagePinnedException | PageNotFoundException | BufMgrException
-				| IOException e)
-		{
+				| IOException e) {
 			e.printStackTrace();
 		}
 
 		return true;
 	}
 
-	public RID findRID(Tuple t1) {
+	public void findRID(int colnum) {
 		RID rid0 = new RID(new PageId(-1), -1);
 		Scan scan = null;
 		Tuple temp = null;
@@ -406,9 +402,10 @@ aaa:		while (brStr != null) {
 		while (tmp != null) {
 			t2.tupleCopy(tmp);
 			// compare two tuple
-			if (this.compareTuple(t1, t2) == true) {
-				scan.closescan();
-				return rid1;
+			if (this.compare(t2, colnum) == true) {
+				System.out.println("find rid " + rid1.pageNo.pid + " "
+						+ rid1.slotNo);
+				ridlist.add(rid1);
 			}
 			// get next tuple
 			try {
@@ -420,62 +417,56 @@ aaa:		while (brStr != null) {
 			}
 		}
 		scan.closescan();
-		return null;
+
 	}
 
-	public boolean compareTuple(Tuple t1, Tuple t2) {
+	public boolean compare(Tuple t2, int colnum) {
 		Vector100Dtype v1 = null;
-		Vector100Dtype v2 = null;
+
 		int i1 = -1;
-		int i2 = -1;
 		float f1 = -1;
-		float f2 = -1;
+
 		String s1 = null;
-		String s2 = null;
-		for (int i = 0; i < numColumns; i++) {
-			switch (columnsType[i]) {
-			case 1:
-				try {
-					i1 = t1.getIntFld(i + 1);
-					i2 = t2.getIntFld(i + 1);
-				} catch (FieldNumberOutOfBoundException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (i1 != i2)
-					return false;
-				break;
-			case 2:
-				try {
-					f1 = t1.getFloFld(i + 1);
-					f2 = t1.getFloFld(i + 1);
-				} catch (FieldNumberOutOfBoundException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (f1 != f2)
-					return false;
-				break;
-			case 3:
-				// no string
-				break;
-			case 4:
-				try {
-					v1 = t1.get100DVectFld(i + 1);
-					v2 = t2.get100DVectFld(i + 1);
-				} catch (FieldNumberOutOfBoundException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (Vector100Dtype.distance(v1, v2) != 0)
-					return false;
-				break;
-			default:
-				System.out.print("Type not supported\n");
-				break;
+
+		switch (columnsType[colnum - 1]) {
+		case 1:
+			try {
+				i1 = t2.getIntFld(colnum);
+			} catch (FieldNumberOutOfBoundException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			if (i1 != gi1)
+				return false;
+			break;
+		case 2:
+			try {
+				f1 = t2.getFloFld(colnum);
+
+			} catch (FieldNumberOutOfBoundException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (f1 != gf1)
+				return false;
+			break;
+		// case 3:
+		// // no string
+		// break;
+		case 4:
+			try {
+				v1 = t2.get100DVectFld(colnum);
+			} catch (FieldNumberOutOfBoundException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (Vector100Dtype.distance(v1, gvector) != 0)
+				return false;
+			break;
+		default:
+			System.out.print("Type not supported\n");
+			break;
 		}
-	
 
 		return true;
 
@@ -497,7 +488,7 @@ aaa:		while (brStr != null) {
 		Tuple tmp = null;
 		try {
 			tmp = scan.getNext(rid);
-			
+
 		} catch (InvalidTupleSizeException | IOException e) {
 			e.printStackTrace();
 		}
@@ -510,7 +501,7 @@ aaa:		while (brStr != null) {
 			} catch (FieldNumberOutOfBoundException | IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println("rid="+rid.pageNo.pid+" "+rid.slotNo);
+			System.out.println("rid=" + rid.pageNo.pid + " " + rid.slotNo);
 			v1.printVector();
 			try {
 				tmp = scan.getNext(rid);
