@@ -69,8 +69,8 @@ class INLJoinTestDriver extends TestDriver
 //		t.setHdr((short)4, in1, null);
 //		t.get100DVectFld(2).printVector();
 		String relationName = "rel2";
-		IndexType indextype =new IndexType(1);
-		String indexName = "VABTreeIndex_1_B_16";
+		IndexType indextype =new IndexType(3);
+		String indexName = "vaindexfilerel2_1_H_16";
 		CondExpr[] expr = new CondExpr[3];
 		expr[0] = new CondExpr();
 		expr[0].op = new AttrOperator(AttrOperator.aopLE);

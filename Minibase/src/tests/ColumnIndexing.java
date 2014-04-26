@@ -139,7 +139,7 @@ class ColumnIndexingDriver extends TestDriver
 		// Create Btree file index
 		try
 		{
-			String btreefilename = "VABTreeIndex"+"_"+columnIdString+"_"+indexType+"_"+bitnum;
+			String btreefilename = "VABTreeIndex"+relName+"_"+columnIdString+"_"+indexType+"_"+bitnum;
 			btf = new BTreeFile(btreefilename, AttrType.attrVector100Dkey,
 					Vector100Key.getVAKeyLength(bitnum), 1/* delete */);
 			System.out.println("BTreeIndex created successfully.\n");
@@ -324,7 +324,7 @@ class ColumnIndexingDriver extends TestDriver
 		System.out.println("open a vafile");// debug
 		try
 		{
-			String heapindexfilename = "vaindexfile"+"_"+columnIdString+"_"+indexType+"_"+bitnum;
+			String heapindexfilename = "vaindexfile"+relName+"_"+columnIdString+"_"+indexType+"_"+bitnum;
 			specfile.println(heapindexfilename);
 			vaf = new VAFile(heapindexfilename, bitnum);
 		} catch (Exception e)

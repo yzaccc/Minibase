@@ -63,6 +63,7 @@ public class INLJoins extends Iterator
 	private int bitnum;
 	private Tuple tmpInnerTuple = null;
 	private Vector100Dtype outerVector, innerVector;
+	private int _b;
 
 	/**
 	 * constructor Initialize the two relations which are joined, including
@@ -179,6 +180,7 @@ public class INLJoins extends Iterator
 			else if (IndexType.VAIndex == index.indexType)
 			{
 				vaf = new VAFile(_indexname, bitnum);
+				_b = Integer.parseInt(_indexname.split("_")[3]);
 			}
 			else
 			{
@@ -400,26 +402,38 @@ public class INLJoins extends Iterator
 			int realDistance = 0;
 			while ((inner_tuple = inner.getNext(rid)) != null)
 			{
-				inner_tuple.setHdr((short) 1, vaindex, null);
-				Vector100Dtype vector = outer_tuple
+				short[] attrSize = new short[1];
+				attrSize[0] = (short)(Vector100Key.getVAKeyLength(this._b)+8);
+				inner_tuple.setHdr((short) 1, vaindex, attrSize);
+				outerVector = outer_tuple
 						.get100DVectFld(RightFilter[0].operand1.symbol.offset);
-				int indexApproximateDistance = inner_tuple.get100DVectKeyFld(1).key
-						.getLowerBoundDistance(vector);
-				if (indexApproximateDistance < RightFilter[0].distance)
+				Vector100Key key = inner_tuple.get100DVectKeyFld(1).key;
+				key.setAllRegionNumber();
+				int indexApproximateDistance = key.getLowerBoundDistance(outerVector);
+				if (indexApproximateDistance <= RightFilter[0].distance)
 				{
-					tmpInnerTuple = hf.getRecord(rid);
+					tmpInnerTuple = hf.getRecord(inner_tuple.get100DVectKeyFld(1).rid);
 					tmpInnerTuple.setHdr((short) _in2.length, _in2, null);
 					innerVector = tmpInnerTuple
 							.get100DVectFld(RightFilter[0].operand2.symbol.offset);
+					System.out.print("innerVector is");
+					innerVector.printVector();
 					realDistance = Vector100Dtype.distance(outerVector,
 							innerVector);
-					if (realDistance < RightFilter[0].distance)
+					if (realDistance <= RightFilter[0].distance)
 					{
 						if (PredEval.Eval(OutputFilter, outer_tuple,
 								inner_tuple, _in1, _in2) == true)
 						{
 							// Apply a projection on the outer and inner tuples.
-							Projection.Join(outer_tuple, _in1, inner_tuple,
+							System.out.println("Real distance is "+realDistance);
+							System.out.print("innerVector is");
+							innerVector.printVector();
+							System.out.print("\n");
+							System.out.print("outerVector is");
+							outerVector.printVector();
+							System.out.print("\n");
+							Projection.Join(outer_tuple, _in1, tmpInnerTuple,
 									_in2, Jtuple, perm_mat, nOutFlds);
 							return Jtuple;
 						}
