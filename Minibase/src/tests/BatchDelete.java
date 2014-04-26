@@ -229,13 +229,13 @@ class BatchDeleteDriver extends TestDriver {
 		Vector100Dtype vector = new Vector100Dtype((short) 0);
 		RID rid = null;
 
-		while (brStr != null) {
+aaa:		while (brStr != null) {
 			// read in data
 			for (int i = 0; i < numColumns; i++) {
 				try {
 					brStr = updatefileReader.readLine();
 					if (brStr == null)
-						break;
+						break aaa;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
