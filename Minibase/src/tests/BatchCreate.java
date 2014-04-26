@@ -60,6 +60,8 @@ class BatchCreateDriver extends TestDriver {
 
 		try {
 			br = new BufferedReader(new FileReader(dataFileName));
+			System.out.println("open "+dataFileName+" in batch create");
+			System.out.println("relation name "+relName);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -200,7 +202,7 @@ aaa:		while (brStr != null) {
 			}
 			try {
 				f.insertRecord(t.getTupleByteArray());
-				System.out.println("insert in batch create");
+//				System.out.println("insert in batch create");
 			} catch (InvalidSlotNumberException | InvalidTupleSizeException
 					| SpaceNotAvailableException | HFException
 					| HFBufMgrException | HFDiskMgrException | IOException e) {
@@ -312,7 +314,7 @@ public class BatchCreate {
 		boolean createStatus = false;
 		BatchCreateDriver batchInsert = new BatchCreateDriver();
 		createStatus = batchInsert.runTest(argv[0], argv[1]);
-		 batchInsert.printFile(argv[1]);
+//		 batchInsert.printFile(argv[1]);
 		if (createStatus == false) {
 			System.out.print("Batch Create Failed.\n");
 		} else {

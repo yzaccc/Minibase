@@ -511,7 +511,7 @@ public class BatchInsert
 	boolean insertStatus = false;
 	BatchInsertDriver batchInsert = new BatchInsertDriver();
 	insertStatus = batchInsert.runTest(argv[0], argv[1]);
-	batchInsert.printFile(argv[1]);
+//	batchInsert.printFile(argv[1]);
 	if (insertStatus == false)
 	{
 		System.out.print("Batch Insert Failed.\n");

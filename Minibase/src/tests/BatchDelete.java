@@ -31,6 +31,11 @@ import btree.BTreeFile;
 import btree.ConstructPageException;
 import btree.GetFileEntryException;
 import btree.IntegerKey;
+import bufmgr.BufMgrException;
+import bufmgr.HashOperationException;
+import bufmgr.PageNotFoundException;
+import bufmgr.PagePinnedException;
+import bufmgr.PageUnpinnedException;
 
 class BatchDeleteDriver extends TestDriver {
 
@@ -337,6 +342,15 @@ class BatchDeleteDriver extends TestDriver {
 
 			}
 		}
+		try
+		{
+			SystemDefs.JavabaseBM.flushAllPages();
+		} catch (HashOperationException | PageUnpinnedException
+				| PagePinnedException | PageNotFoundException | BufMgrException
+				| IOException e)
+		{
+			e.printStackTrace();
+		}
 
 		return true;
 	}
@@ -443,6 +457,7 @@ class BatchDeleteDriver extends TestDriver {
 				break;
 			}
 		}
+	
 
 		return true;
 
@@ -450,7 +465,7 @@ class BatchDeleteDriver extends TestDriver {
 
 	public void printFile(String relname) {
 		int cnt = 0;
-		System.out.println("after create");
+		System.out.println("after delete");
 
 		Scan scan = null;
 		try {
