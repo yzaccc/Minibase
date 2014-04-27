@@ -1,10 +1,12 @@
 package tests;
 
+import global.AttrOperator;
 import global.AttrType;
 import global.GlobalConst;
 import global.IndexType;
 import global.RID;
 import global.SystemDefs;
+import global.TupleOrder;
 import global.Vector100Dtype;
 import heap.FieldNumberOutOfBoundException;
 import heap.HFBufMgrException;
@@ -17,12 +19,23 @@ import heap.InvalidTypeException;
 import heap.Tuple;
 import index.IndexException;
 import index.IndexScan;
+import index.RangeScan;
 import index.UnknownIndexTypeException;
 import iterator.CondExpr;
+import iterator.FileScan;
+import iterator.FileScanException;
 import iterator.FldSpec;
+import iterator.INLJoins;
+import iterator.InvalidRelation;
+import iterator.JoinsException;
+import iterator.LowMemException;
 import iterator.PredEval;
 import iterator.Projection;
 import iterator.RelSpec;
+import iterator.Sort;
+import iterator.SortException;
+import iterator.TupleUtilsException;
+import iterator.UnknowAttrType;
 import iterator.UnknownKeyTypeException;
 
 import java.io.BufferedReader;
@@ -32,6 +45,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import btree.KeyClass;
+import bufmgr.BufMgrException;
+import bufmgr.HashOperationException;
+import bufmgr.PageNotFoundException;
+import bufmgr.PagePinnedException;
+import bufmgr.PageUnpinnedException;
 import VAIndex.RSIndexScan;
 import VAIndex.VAException;
 import VAIndex.Vector100Key;
@@ -55,7 +73,134 @@ public class Query extends TestDriver
 		{
 		super("");
 		}
+	public Sort sortIndex(int QA, String T, ArrayList<Integer> sequenceOfNum)
+	{
+	System.out.print("In Sort\n");
+	Vector100Dtype TargetforSort;
+	BufferedReader Targetbr = null;
+	BufferedReader relInfoReader=null;
+	try
+	{
+		relInfoReader = new BufferedReader(new FileReader(
+				dbpath + RELNAME1 + ".spec"));
+	} catch (FileNotFoundException e1)
+	{
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+	try
+	{
+		numColumns = Short.parseShort(relInfoReader.readLine());
+	} catch (NumberFormatException | IOException e1)
+	{
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+	String brStr = null;
+	try
+	{
+		brStr = relInfoReader.readLine();
+	} catch (IOException e2)
+	{
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+	brStrArray = brStr.split(" ");
+	columnsType = new int[numColumns];
+	attrArray = new AttrType[numColumns];
+	for (int i = 0; i < numColumns; i++)
+	{
+		columnsType[i] = Integer.parseInt(brStrArray[i]);
+	}
+	for (int i = 0; i < numColumns; i++)
+	{
+		switch (columnsType[i])
+			{
+			case 1:
+			attrArray[i] = new AttrType(AttrType.attrInteger);
+			break;
+			case 2:
+			attrArray[i] = new AttrType(AttrType.attrReal);
+			break;
+			case 3:
+			attrArray[i] = new AttrType(AttrType.attrString);
+			break;
+			case 4:
+			attrArray[i] = new AttrType(AttrType.attrVector100D);
+			break;
+			default:
+			System.out.print("Type not supported\n");
+			break;
+			}
+	}
+	try
+	{
+		Targetbr = new BufferedReader(new FileReader(T));
+	} catch (FileNotFoundException e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	String[] TargetStr = new String[100];
+	try
+	{
+		TargetStr = Targetbr.readLine().trim().split(" ");
+	} catch (IOException e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	short[] Targetarray = new short[100];
+	for (int i = 0; i < 100; i++)
+	{
+		Targetarray[i] = Short.parseShort(TargetStr[i]);
+	}
+	TargetforSort = new Vector100Dtype(Targetarray);// Target
+	// Vector
 
+	try
+	{
+		Targetbr.close();
+	} catch (IOException e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
+	// Create ProjectList, Or output flds
+	FldSpec[] projlist = new FldSpec[attrArray.length];
+	FileScan fscan = null;
+	for (int i = 0; i < attrArray.length; i++)
+	{
+		projlist[i] = new FldSpec(new RelSpec(RelSpec.outer), i + 1);
+	}
+	try
+	{
+		fscan = new FileScan(RELNAME1, attrArray, null, (short) attrArray.length,
+				attrArray.length, projlist, null);
+	} catch (FileScanException | TupleUtilsException | InvalidRelation
+			| IOException e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
+	TupleOrder[] order = new TupleOrder[2];
+	order[0] = new TupleOrder(TupleOrder.Ascending);
+	order[1] = new TupleOrder(TupleOrder.Descending);
+	Sort sort = null;
+	try
+	{
+		sort = new Sort(attrArray, (short) attrArray.length, null, fscan, QA,
+				order[0], Vector100Dtype.Max * 2, 4,
+				TargetforSort, 0);
+	} catch (SortException | IOException e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return sort;
+	}
 	@SuppressWarnings("resource")
 	public boolean run() throws InvalidSlotNumberException, HFException, HFDiskMgrException, HFBufMgrException, Exception
 	{
@@ -96,6 +241,54 @@ public class Query extends TestDriver
 			{
 				sequenceOfNum.add(Integer.parseInt(paraList[i]));
 			}
+			Sort s = sortIndex(QA,T,sequenceOfNum);
+			Tuple t=null;
+			
+				try {
+					t = s.get_next();
+				} catch (SortException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (UnknowAttrType e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (LowMemException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (JoinsException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			
+			AttrType[] attr = new AttrType[4];
+			attr[0] = new AttrType(2);
+			attr[1] = new AttrType(5);
+			attr[2] = new AttrType(2);
+			attr[3] = new AttrType(5);
+			try {
+				t.setHdr((short)4, attr, null);
+			} catch (InvalidTypeException | InvalidTupleSizeException
+					| IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				t.get100DVectFld(2).printVector();
+			} catch (FieldNumberOutOfBoundException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			};
+			while(t!=null){
+				t = s.get_next();
+			}
+			s.close();
+			SystemDefs.JavabaseBM.flushAllPages();
 		}
 		else if (operationType.equals("Range") || operationType == "Range")
 		{
@@ -277,6 +470,7 @@ public class Query extends TestDriver
 			else if (I.equals("B"))
 			{
 				//VABTreeIndexrel1_2_B_16
+				TupleCount = 0;
 				String _indexname = "VABTreeIndex"+ RELNAME1 + "_" + QA + "_"
 						+ "B" + "_" + bitnumstr;
 				short[] attrSize = new short[1];
@@ -284,8 +478,10 @@ public class Query extends TestDriver
 				FldSpec[] projlist = new FldSpec[1];
 				projlist[0] = new FldSpec(new RelSpec(RelSpec.outer), 1);
 				hf = new Heapfile(RELNAME1);
+				AttrType[] attrIndexType = new AttrType[1];
+				attrIndexType[0] = new AttrType(AttrType.attrVector100D);
 				IndexScan iscan = new IndexScan(new IndexType(IndexType.B_Index),
-						RELNAME1,_indexname, attrArray, attrSize, 1, 1, projlist,
+						RELNAME1,_indexname, attrIndexType, attrSize, 1, 1, projlist,
 						null, 1, true);
 				RID rid = new RID();
 				KeyClass key1 = null;
@@ -300,7 +496,7 @@ public class Query extends TestDriver
 					}
 					indexApproximateDistance = vkey2
 							.getLowerBoundDistance(TargetVector);
-					if(indexApproximateDistance < D)
+					if(indexApproximateDistance <= D)
 					{
 						Tuple tmp = hf.getRecord(rid);
 						t.tupleCopy(tmp);
@@ -308,13 +504,53 @@ public class Query extends TestDriver
 								TargetVector);
 						if (realDistance <= D)
 						{
-							System.out.println("Real distance is "+realDistance);
-							System.out.print("innerVector is");
-							t.get100DVectFld(QA).printVector();
-							System.out.print("\n");
-							System.out.print("outerVector is");
-							TargetVector.printVector();
-							System.out.print("\n");
+							System.out.print("Tuple" + TupleCount+":\n{");
+							TupleCount ++;
+							for(int i=0;i<sequenceOfNum.size();i++)
+							{
+								switch(attrArray[i].attrType){
+								case 1:
+								try
+								{
+									System.out.print("\t"+t.getIntFld(i + 1));
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								System.out.print(",\n");
+								break;
+								case 2:
+								try
+								{
+									System.out.print("\t"+t.getFloFld(i + 1));
+									System.out.print(",\n");
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e1)
+								{
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								break;
+								case 5:
+								System.out.print("\t");
+								try
+								{
+									t.get100DVectFld(i + 1).printVector();
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								break;
+								}
+							}
+							System.out.println("}");
 						}
 					}
 				}
@@ -326,8 +562,7 @@ public class Query extends TestDriver
 					0, queryCommandSplit[2].length() - 1);
 			String[] temp2 = parameterStringTmp.split("\\)");
 			String[] rangeParaList = temp2[0].trim().split(",");
-			String[] paraList = temp2[1].substring(1, temp2[1].length()).split(
-					",");
+			String[] paraList = temp2[1].substring(1, temp2[1].length()).split(",");
 
 			int QA1 = Integer.parseInt(rangeParaList[0].trim());
 			String T1 = rangeParaList[1].trim();
@@ -337,20 +572,297 @@ public class Query extends TestDriver
 				System.out.println("Non negative integer D!!!!");
 			}
 			String I1 = rangeParaList[3].trim();
-			ArrayList<Integer> DJOINinRangeSequenceOfNum = new ArrayList<Integer>();
-			for (int i = 4; i < rangeParaList.length; i++)
+			String BitStrIndex1 = rangeParaList[4].trim();
+			int bitNumIndex1 = Integer.parseInt(BitStrIndex1);
+			ArrayList<Integer> DJOINoutRangeSequenceOfNum = new ArrayList<Integer>();
+			for (int i = 5; i < rangeParaList.length; i++)
 			{
-				DJOINinRangeSequenceOfNum.add(Integer
+				DJOINoutRangeSequenceOfNum.add(Integer
 						.parseInt(rangeParaList[i]));
 			}
-
 			int QA2 = Integer.parseInt(paraList[0].trim());
 			int D2 = Integer.parseInt(paraList[1].trim());
 			String I2 = paraList[2].trim();
-			ArrayList<Integer> DJOINoutRangeSequenceOfNum = new ArrayList<Integer>();
-			for (int i = 3; i < paraList.length; i++)
+			ArrayList<Integer> DJOINinRangeSequenceOfNum = new ArrayList<Integer>();
+			String BitStrIndex2 = rangeParaList[3].trim();
+			int bitNumIndex2 = Integer.parseInt(BitStrIndex1);
+			for (int i = 4; i < paraList.length; i++)
 			{
-				DJOINoutRangeSequenceOfNum.add(Integer.parseInt(paraList[i]));
+				DJOINinRangeSequenceOfNum.add(Integer.parseInt(paraList[i]));
+			}
+			String indexName = null;
+			if(I1.equals("H"))
+			{
+				indexName = "vaindexfile" + RELNAME1 + "_" + QA1 + "_"
+						+ "H" + "_" + bitNumIndex1;
+			}
+			else if(I1.equals("B")){
+				indexName = "VABTreeIndex"+ RELNAME1 + "_" + QA1 + "_"
+						+ "B" + "_" + bitNumIndex1;	
+			}
+			
+			
+			BufferedReader Targetbr = null;
+			try
+			{
+				Targetbr = new BufferedReader(new FileReader(T1));
+			} catch (FileNotFoundException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String[] TargetStr = new String[100];
+			try
+			{
+				TargetStr = Targetbr.readLine().trim().split(" ");
+			} catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			short[] Targetarray = new short[100];
+			for (int i = 0; i < 100; i++)
+			{
+				Targetarray[i] = Short.parseShort(TargetStr[i]);
+			}
+			TargetVector = new Vector100Dtype(Targetarray);// Target Vector
+			Targetbr.close();
+			BufferedReader relInfoReader = new BufferedReader(new FileReader(
+					dbpath + RELNAME1 + ".spec"));
+			numColumns = Short.parseShort(relInfoReader.readLine());
+			String brStr = null;
+			try
+			{
+				brStr = relInfoReader.readLine();
+			} catch (IOException e2)
+			{
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			brStrArray = brStr.split(" ");
+			columnsType = new int[numColumns];
+			attrArray = new AttrType[numColumns];
+			for (int i = 0; i < numColumns; i++)
+			{
+				columnsType[i] = Integer.parseInt(brStrArray[i]);
+			}
+			for (int i = 0; i < numColumns; i++)
+			{
+				switch (columnsType[i])
+					{
+					case 1:
+					attrArray[i] = new AttrType(AttrType.attrInteger);
+					break;
+					case 2:
+					attrArray[i] = new AttrType(AttrType.attrReal);
+					break;
+					case 3:
+					attrArray[i] = new AttrType(AttrType.attrString);
+					break;
+					case 4:
+					attrArray[i] = new AttrType(AttrType.attrVector100D);
+					break;
+					default:
+					System.out.print("Type not supported\n");
+					break;
+					}
+			}
+			
+			
+			BufferedReader relInfoReader2 = new BufferedReader(new FileReader(
+					dbpath + RELNAME2 + ".spec"));
+			int numColumns2 = Short.parseShort(relInfoReader2.readLine());
+			String brStr2 = null;
+			try
+			{
+				brStr2 = relInfoReader2.readLine();
+			} catch (IOException e2)
+			{
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			String [] brStrArray2 = brStr2.split(" ");
+			int[] columnsType2 = new int[numColumns2];
+			AttrType [] attrArray2 = new AttrType[numColumns2];
+			for (int i = 0; i < numColumns2; i++)
+			{
+				columnsType2[i] = Integer.parseInt(brStrArray2[i]);
+			}
+			for (int i = 0; i < numColumns2; i++)
+			{
+				switch (columnsType2[i])
+					{
+					case 1:
+					attrArray2[i] = new AttrType(AttrType.attrInteger);
+					break;
+					case 2:
+					attrArray2[i] = new AttrType(AttrType.attrReal);
+					break;
+					case 3:
+					attrArray2[i] = new AttrType(AttrType.attrString);
+					break;
+					case 4:
+					attrArray2[i] = new AttrType(AttrType.attrVector100D);
+					break;
+					default:
+					System.out.print("Type not supported\n");
+					break;
+					}
+			}
+			//Create a rscan
+			RangeScan rscan = new RangeScan(indexName, QA1, I1,
+					RELNAME1, attrArray, D1,
+					TargetVector, bitNumIndex1);
+			String indexName2 = null;
+			IndexType indextype = null;
+			if(I2.equals("H"))
+			{
+				indexName2 = "vaindexfile" + RELNAME2 + "_" + QA2 + "_"
+						+ "H" + "_" + bitNumIndex2;
+				indextype = new IndexType(3);
+			}
+			else if(I2.equals("B")){
+				indexName2 = "VABTreeIndex"+ RELNAME2 + "_" + QA2 + "_"
+						+ "B" + "_" + bitNumIndex2;
+				indextype = new IndexType(1);
+			}
+			short t1_str_sizes[]=null;
+			short t2_str_sizes[]=null;
+			
+			//Create expression
+			CondExpr[] expr = new CondExpr[3];
+			expr[0] = new CondExpr();
+			expr[0].op = new AttrOperator(AttrOperator.aopLE);
+			expr[0].type1 = new AttrType(AttrType.attrSymbol);
+			expr[0].type2 = new AttrType(AttrType.attrSymbol);
+			expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 4);
+			expr[0].operand2.symbol = new FldSpec(new RelSpec(RelSpec.innerRel),1);
+			expr[0].distance = D2;
+			expr[0].next = null;
+			expr[1] = null;
+			CondExpr[] expr1 = null;
+			
+			//create projlist
+			int JoinTupleColumnNum = attrArray.length + attrArray2.length;
+			FldSpec[] projlist = new FldSpec[JoinTupleColumnNum];
+			for (int i = 0; i < attrArray.length; i++)
+			{
+				projlist[i] = new FldSpec(new RelSpec(RelSpec.outer), i + 1);
+			}
+			for (int i = attrArray.length; i < JoinTupleColumnNum; i++)
+			{
+				projlist[i] = new FldSpec(new RelSpec(RelSpec.innerRel), i + 1-attrArray.length);
+			}
+			
+			INLJoins inlj = new INLJoins(attrArray, attrArray.length, t1_str_sizes,
+					attrArray2, attrArray2.length, t2_str_sizes, NUMBUF,
+					rscan, RELNAME2, indextype,
+					indexName2, expr1,
+					expr, projlist, 5);
+			Tuple t=new Tuple();
+			t = inlj.get_next();
+			
+			int RangeOuterSize = DJOINoutRangeSequenceOfNum.size();
+			int RangeinnerSize = DJOINinRangeSequenceOfNum.size();
+			int ResultTupleSize = RangeOuterSize+RangeinnerSize;
+			FldSpec[] Resultprojlist = new FldSpec[ResultTupleSize];
+			for (int i = 0; i < RangeOuterSize ; i++)
+			{
+				Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer), DJOINoutRangeSequenceOfNum.get(i));
+			}
+			for (int i = RangeOuterSize; i < ResultTupleSize ; i++)
+			{
+				Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer), attrArray.length+DJOINinRangeSequenceOfNum.get(i-RangeOuterSize));
+			}
+			AttrType [] ResultAttr = new AttrType[ResultTupleSize];
+			int columnId=0;
+			AttrType tmpAttr = null;
+			for(int i=0;i<RangeOuterSize;i++){
+				columnId = DJOINoutRangeSequenceOfNum.get(i);
+				tmpAttr = attrArray[columnId-1];
+				ResultAttr[i] = new AttrType(tmpAttr.attrType);
+			}
+			for(int i=RangeOuterSize;i<ResultTupleSize;i++)
+			{
+				columnId = DJOINinRangeSequenceOfNum.get(i-RangeOuterSize);
+				tmpAttr = attrArray2[columnId-1];
+				ResultAttr[i] = new AttrType(tmpAttr.attrType);
+			}
+			
+			Tuple JTuple = new Tuple();
+			JTuple.setHdr((short)ResultAttr.length, ResultAttr, null);
+			int tSize = attrArray.length+attrArray2.length;
+			AttrType [] AttrArrayAfterNLJ = new AttrType[tSize]; 
+			for(int i=0;i<attrArray.length;i++)
+			{
+				AttrArrayAfterNLJ[i] = new AttrType(attrArray[i].attrType);
+			}
+			for(int i=attrArray.length;i<tSize;i++)
+			{
+				AttrArrayAfterNLJ[i] = new AttrType(attrArray2[i-attrArray.length].attrType);
+			}
+			TupleCount = 0;
+			while(t!=null)
+			{
+				Projection.Project(t, AttrArrayAfterNLJ, JTuple, Resultprojlist, Resultprojlist.length);
+					System.out.print("Tuple" + TupleCount+":\n{");
+					TupleCount ++;
+				for(int i=0;i<Resultprojlist.length;i++)
+				{
+					switch(ResultAttr[i].attrType){
+					case 1:
+					try
+					{
+						System.out.print("\t"+JTuple.getIntFld(i + 1));
+					} catch (NumberFormatException
+							| FieldNumberOutOfBoundException
+							| IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					System.out.print(",\n");
+					break;
+					case 2:
+					try
+					{
+						System.out.print("\t"+JTuple.getFloFld(i + 1));
+						System.out.print(",\n");
+					} catch (NumberFormatException
+							| FieldNumberOutOfBoundException
+							| IOException e1)
+					{
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					break;
+					case 5:
+					System.out.print("\t");
+					try
+					{
+						JTuple.get100DVectFld(i + 1).printVector();
+					} catch (NumberFormatException
+							| FieldNumberOutOfBoundException
+							| IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+					}
+				}
+				System.out.println("}");
+				t = inlj.get_next();
+				
+			}
+			try
+			{
+				SystemDefs.JavabaseBM.flushAllPages();
+			} catch (HashOperationException | PageUnpinnedException
+					| PagePinnedException | PageNotFoundException | BufMgrException
+					| IOException e)
+			{
+				e.printStackTrace();
 			}
 		}
 	}

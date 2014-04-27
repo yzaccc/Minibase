@@ -111,14 +111,13 @@ public class IndexScan extends Iterator {
 			// must be of the type: value op symbol || symbol op value
 			// but not symbol op symbol || value op value
 			try {
-				indFile = new BTreeFile(indName);
+				btreeFile = new BTreeFile(indName);
 			} catch (Exception e) {
 				throw new IndexException(e,
 						"IndexScan.java: BTreeFile exceptions caught from BTreeFile constructor");
 			}
-
 			try {
-				indScan = (BTFileScan) IndexUtils.BTree_scan(selects, indFile);
+				indScan = (BTFileScan) IndexUtils.BTree_scan(selects, btreeFile);
 			} catch (Exception e) {
 				throw new IndexException(e,
 						"IndexScan.java: BTreeFile exceptions caught from IndexUtils.BTree_scan().");
@@ -539,6 +538,8 @@ public class IndexScan extends Iterator {
 		if (!closeFlag) {
 			if (indScan instanceof BTFileScan) {
 				try {
+					btreeFile.close();
+					System.out.println("Btree Index close");
 					((BTFileScan) indScan).DestroyBTreeFileScan();
 				} catch (Exception e) {
 					throw new IndexException(e,
@@ -551,7 +552,8 @@ public class IndexScan extends Iterator {
 	}
 
 	public FldSpec[] perm_mat;
-	private IndexFile indFile;
+	public IndexFile indFile;
+	private BTreeFile btreeFile;
 	private IndexFileScan indScan;
 	private AttrType[] _types;
 	private short[] _s_sizes;

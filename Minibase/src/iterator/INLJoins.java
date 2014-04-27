@@ -173,9 +173,6 @@ public class INLJoins extends Iterator
 			if (IndexType.B_Index == index.indexType)
 			{
 				_indexname = indexName;
-
-				btf = new BTreeFile(_indexname, AttrType.attrVector100Dkey,
-						Vector100Key.getVAKeyLength(bitnum), 1);
 			}
 			else if (IndexType.VAIndex == index.indexType)
 			{
@@ -233,7 +230,8 @@ public class INLJoins extends Iterator
 					done = true;
 					if (inner != null)
 					{
-
+						outer.close();
+						inner.closescan();
 						inner = null;
 					}
 
@@ -298,6 +296,7 @@ public class INLJoins extends Iterator
 				if ((outer_tuple = outer.get_next()) == null)
 				{
 					done = true;
+					outer.close();
 					iscan.close();
 					iscan = null;
 					return null;
@@ -384,7 +383,8 @@ public class INLJoins extends Iterator
 					done = true;
 					if (inner != null)
 					{
-
+						inner.closescan();
+						outer.close();
 						inner = null;
 					}
 
@@ -433,8 +433,20 @@ public class INLJoins extends Iterator
 							System.out.print("outerVector is");
 							outerVector.printVector();
 							System.out.print("\n");
+							AttrType [] JTupleAttr = new AttrType[nOutFlds];
+							for(int i=0;i<_in1.length;i++)
+							{
+								JTupleAttr[i] = new AttrType(_in1[i].attrType);
+							}
+							for(int i=_in1.length;i<nOutFlds;i++)
+							{
+								JTupleAttr[i] = new AttrType(_in2[i-_in1.length].attrType);
+							}
+							Jtuple.setHdr((short)nOutFlds, JTupleAttr, null);
 							Projection.Join(outer_tuple, _in1, tmpInnerTuple,
 									_in2, Jtuple, perm_mat, nOutFlds);
+							System.out.println("JTuple?");
+							Jtuple.get100DVectFld(5).printVector();
 							return Jtuple;
 						}
 					}
@@ -459,18 +471,6 @@ public class INLJoins extends Iterator
 	public void close() throws IOException, JoinsException, SortException,
 			IndexException
 	{
-	if (!closeFlag)
-	{
 
-		try
-		{
-			outer.close();
-		} catch (Exception e)
-		{
-			throw new JoinsException(e,
-					"NestedLoopsJoin.java: error in closing iterator.");
-		}
-		closeFlag = true;
-	}
 	}
 }
