@@ -300,6 +300,7 @@ aaa:		while (brStr != null) {
 						}
 						if (columnsType[bcolumn - 1] == 4) {
 							// for vector key
+							// only vector key for btree
 
 							Vector100Key vkey = null;
 							Vector100Dtype vectorForIndex = null;
@@ -377,6 +378,7 @@ aaa:		while (brStr != null) {
 	}
 
 	public void findRID(int colnum) {
+		ridlist.clear();
 		RID rid0 = new RID(new PageId(-1), -1);
 		Scan scan = null;
 		Tuple temp = null;
