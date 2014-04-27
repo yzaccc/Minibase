@@ -616,7 +616,7 @@ public class HFPage extends Page
 	}
       
       else {   
-        throw new InvalidSlotNumberException (null, "HEAPFILE: INVALID_SLOTNO");
+        throw new InvalidSlotNumberException (null, "HEAPFILE: INVALID_SLOTNO "+rid.slotNo);
       }
       
     }

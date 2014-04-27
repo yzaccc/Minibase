@@ -1,6 +1,7 @@
 package VAIndex;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import btree.ConstructPageException;
 import btree.ConvertException;
@@ -96,6 +97,7 @@ public class VAFile extends Heapfile {
 	}
 
 	public void deleteKey(RID rid1) {
+		ArrayList<RID> ridlist = new ArrayList<RID>();
 		Scan scan = null;
 		RID rid2 = new RID();// va file rid
 		RID rid3 = new RID();// va file rid
@@ -140,12 +142,13 @@ public class VAFile extends Heapfile {
 				e.printStackTrace();
 			}
 			if (rid3.equals(rid1)) {
-				try {
-					this.deleteRecord(rid2);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				break;
+//				try {
+//					this.deleteRecord(rid2);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				break;
+				ridlist.add(rid2);
 			}
 
 			try {
@@ -157,6 +160,13 @@ public class VAFile extends Heapfile {
 	
 
 		scan.closescan();
+		for (int i=0;i<ridlist.size();i++){
+			try {
+				this.deleteRecord(ridlist.get(i));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		try
 		{
 			System.out.println("flush all pages in VAFile");

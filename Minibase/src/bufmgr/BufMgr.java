@@ -523,7 +523,7 @@ public class BufMgr implements GlobalConst {
 //				for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
 //				    System.out.println(ste);
 //				}
-			System.out.println("in BufMgr pinpage  out "+frmeTable[frameNo].pageNo.pid+" in "+pin_pgid);
+//			System.out.println("in BufMgr pinpage  out "+frmeTable[frameNo].pageNo.pid+" in "+pin_pgid);
 			if (emptyPage)  PCounterPinPage.increment();
 			if ((frmeTable[frameNo].pageNo.pid != INVALID_PAGE)
 					&& (frmeTable[frameNo].dirty == true)) {
@@ -625,13 +625,13 @@ public class BufMgr implements GlobalConst {
 
 		frameNo = hashTable.lookup(PageId_in_a_DB);
 
-		System.out.println("in BufMgr unpin pid "+PageId_in_a_DB.pid);
-		if (PageId_in_a_DB.pid == 5){
-			for (StackTraceElement ste : Thread.currentThread()
-					.getStackTrace()) {
-				System.out.println(ste);
-			}
-		}
+//		System.out.println("in BufMgr unpin pid "+PageId_in_a_DB.pid);
+//		if (PageId_in_a_DB.pid == 5){
+//			for (StackTraceElement ste : Thread.currentThread()
+//					.getStackTrace()) {
+//				System.out.println(ste);
+//			}
+//		}
 		if (frameNo < 0) {
 			throw new HashEntryNotFoundException(null,
 					"BUFMGR: HASH_NOT_FOUND. pid "+PageId_in_a_DB+" "+dirty);
