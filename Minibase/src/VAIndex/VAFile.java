@@ -155,16 +155,16 @@ public class VAFile extends Heapfile {
 				e.printStackTrace();
 			}
 		}
-		try
-		{
-			System.out.println("flush all pages in VAFile");
-			SystemDefs.JavabaseBM.flushAllPages();
-		} catch (HashOperationException | PageUnpinnedException
-				| PagePinnedException | PageNotFoundException | BufMgrException
-				| IOException e)
-		{
-			e.printStackTrace();
-		}
+//		try
+//		{
+//			System.out.println("flush all pages in VAFile");
+//			SystemDefs.JavabaseBM.flushAllPages();
+//		} catch (HashOperationException | PageUnpinnedException
+//				| PagePinnedException | PageNotFoundException | BufMgrException
+//				| IOException e)
+//		{
+//			e.printStackTrace();
+//		}
 		try {
 			System.out.println("record cnt in va file "+this.getRecCnt());
 		} catch (Exception e) {
