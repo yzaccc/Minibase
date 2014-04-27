@@ -1,29 +1,7 @@
 package VAIndex;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import btree.ConstructPageException;
-import btree.ConvertException;
-import btree.DeleteRecException;
-import btree.IndexInsertRecException;
-import btree.IndexSearchException;
-import btree.InsertException;
-import btree.IteratorException;
-import btree.KeyClass;
-import btree.KeyNotMatchException;
-import btree.KeyTooLongException;
-import btree.LeafDeleteException;
-import btree.LeafInsertRecException;
-import btree.NodeNotMatchException;
-import btree.PinPageException;
-import btree.UnpinPageException;
-import bufmgr.BufMgrException;
-import bufmgr.HashOperationException;
-import bufmgr.PageNotFoundException;
-import bufmgr.PagePinnedException;
-import bufmgr.PageUnpinnedException;
 import global.AttrType;
+import global.PageId;
 import global.RID;
 import global.SystemDefs;
 import heap.FieldNumberOutOfBoundException;
@@ -36,6 +14,15 @@ import heap.InvalidTupleSizeException;
 import heap.Scan;
 import heap.SpaceNotAvailableException;
 import heap.Tuple;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import bufmgr.BufMgrException;
+import bufmgr.HashOperationException;
+import bufmgr.PageNotFoundException;
+import bufmgr.PagePinnedException;
+import bufmgr.PageUnpinnedException;
 
 public class VAFile extends Heapfile {
 	public static final short LOWERBOUND = -10000;
@@ -148,7 +135,8 @@ public class VAFile extends Heapfile {
 //					e.printStackTrace();
 //				}
 //				break;
-				ridlist.add(rid2);
+				RID rid4 = new RID(new PageId(rid2.pageNo.pid),rid2.slotNo);
+				ridlist.add(rid4);
 			}
 
 			try {
@@ -175,6 +163,12 @@ public class VAFile extends Heapfile {
 				| PagePinnedException | PageNotFoundException | BufMgrException
 				| IOException e)
 		{
+			e.printStackTrace();
+		}
+		try {
+			System.out.println("record cnt in va file "+this.getRecCnt());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

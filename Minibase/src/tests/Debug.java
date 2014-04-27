@@ -2,6 +2,7 @@ package tests;
 
 import global.AttrType;
 import global.GlobalConst;
+import global.PageId;
 import global.RID;
 import global.SystemDefs;
 import global.Vector100Dtype;
@@ -54,6 +55,12 @@ class DebugDriver extends TestDriver {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+//		try {
+//			f.deleteRecord(new RID(new PageId(3),1));
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		int cnt = 0;
 //		System.out.println("after create");
 

@@ -77,14 +77,14 @@ class BatchDeleteDriver extends TestDriver {
 		System.out.println(relname);
 		PrintWriter specfile = null;
 		boolean FileCreated = new File(dbpath + relname + ".spec").exists();
-		if (!FileCreated) {
-
-			try {
-				specfile = new PrintWriter(dbpath + relname + ".spec");
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
+//		if (!FileCreated) {
+//
+//			try {
+//				specfile = new PrintWriter(dbpath + relname + ".spec");
+//			} catch (FileNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
 		BufferedReader updatefileReader = null;
 		// brStr is used to store one line read from br.
 		String brStr = null;
@@ -311,11 +311,17 @@ aaa:		while (brStr != null) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
+							boolean isDelete = false;
 							try {
-								BTreeFileList.get(i).Delete(vkey, rid1);
+								isDelete = BTreeFileList.get(i).Delete(vkey, rid1);
+								
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
+							if (isDelete )
+								System.out.println("delete from btree successful");
+							else
+								System.out.println("delete from btree failed");
 						}
 						// no intger key
 						// else if (columnsType[bcolumn - 1] == 1) {
@@ -338,6 +344,7 @@ aaa:		while (brStr != null) {
 
 				}
 				try {
+//					System.out.println("delete rid "+rid1.pageNo.pid+" "+rid1.slotNo);
 					f.deleteRecord(rid1);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -405,7 +412,8 @@ aaa:		while (brStr != null) {
 			if (this.compare(t2, colnum) == true) {
 				System.out.println("find rid " + rid1.pageNo.pid + " "
 						+ rid1.slotNo);
-				ridlist.add(rid1);
+				RID rid2 = new RID (new PageId(rid1.pageNo.pid),rid1.slotNo);
+				ridlist.add(rid2);
 			}
 			// get next tuple
 			try {
@@ -417,6 +425,14 @@ aaa:		while (brStr != null) {
 			}
 		}
 		scan.closescan();
+//		try {
+//			System.out.println("before flush all ");
+//			SystemDefs.JavabaseBM.flushAllPages();
+//		} catch (HashOperationException | PageUnpinnedException
+//				| PagePinnedException | PageNotFoundException | BufMgrException
+//				| IOException e) {
+//			e.printStackTrace();
+//		}
 
 	}
 
