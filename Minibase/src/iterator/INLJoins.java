@@ -329,13 +329,13 @@ public class INLJoins extends Iterator
 							innerVector);
 					if (realDistance <= RightFilter[0].distance)
 					{
-						System.out.println("Real distance is "+realDistance);
-						System.out.print("innerVector is");
-						innerVector.printVector();
-						System.out.print("\n");
-						System.out.print("outerVector is");
-						outerVector.printVector();
-						System.out.print("\n");
+//						System.out.println("Real distance is "+realDistance);
+//						System.out.print("innerVector is");
+//						innerVector.printVector();
+//						System.out.print("\n");
+//						System.out.print("outerVector is");
+//						outerVector.printVector();
+//						System.out.print("\n");
 						if (PredEval.Eval(OutputFilter, outer_tuple,
 								inner_tuple, _in1, _in2) == true)
 						{
@@ -416,8 +416,8 @@ public class INLJoins extends Iterator
 					tmpInnerTuple.setHdr((short) _in2.length, _in2, null);
 					innerVector = tmpInnerTuple
 							.get100DVectFld(RightFilter[0].operand2.symbol.offset);
-					System.out.print("innerVector is");
-					innerVector.printVector();
+//					System.out.print("innerVector is");
+//					innerVector.printVector();
 					realDistance = Vector100Dtype.distance(outerVector,
 							innerVector);
 					if (realDistance <= RightFilter[0].distance)
@@ -426,13 +426,13 @@ public class INLJoins extends Iterator
 								inner_tuple, _in1, _in2) == true)
 						{
 							// Apply a projection on the outer and inner tuples.
-							System.out.println("Real distance is "+realDistance);
-							System.out.print("innerVector is");
-							innerVector.printVector();
-							System.out.print("\n");
-							System.out.print("outerVector is");
-							outerVector.printVector();
-							System.out.print("\n");
+//							System.out.println("Real distance is "+realDistance);
+//							System.out.print("innerVector is");
+//							innerVector.printVector();
+//							System.out.print("\n");
+//							System.out.print("outerVector is");
+//							outerVector.printVector();
+//							System.out.print("\n");
 							AttrType [] JTupleAttr = new AttrType[nOutFlds];
 							for(int i=0;i<_in1.length;i++)
 							{

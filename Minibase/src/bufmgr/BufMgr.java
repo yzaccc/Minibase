@@ -523,8 +523,10 @@ public class BufMgr implements GlobalConst {
 //				for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
 //				    System.out.println(ste);
 //				}
-//			System.out.println("in BufMgr pinpage  out "+frmeTable[frameNo].pageNo.pid+" in "+pin_pgid);
-			if (emptyPage)  PCounterPinPage.increment();
+//			if (emptyPage)  
+				PCounterPinPage.increment();
+			//System.out.println("in BufMgr pinpagege  out "+frmeTable[frameNo].pageNo.pid+" in "+pin_pgid+" "+PCounterPinPage.counter);
+			
 			if ((frmeTable[frameNo].pageNo.pid != INVALID_PAGE)
 					&& (frmeTable[frameNo].dirty == true)) {
 				needwrite = 1;

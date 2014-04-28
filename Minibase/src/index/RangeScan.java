@@ -166,7 +166,7 @@ public class RangeScan extends Iterator
 		Vector100Key vkey2 = null;
 		int indexApproximateDistance = 0;
 		int realDistance = 0;
-		System.out.println("Range scan begin");
+		//System.out.println("Range scan begin");
 		while ((key1 = iscan.get_nextKey(rid)) != null)
 		{
 			if (key1 instanceof Vector100Key)
@@ -187,7 +187,7 @@ public class RangeScan extends Iterator
 				}
 			}
 		}
-		System.out.println("Range scan finished");
+		//System.out.println("Range scan finished");
 		iscan.close();
 		return null;
 	}

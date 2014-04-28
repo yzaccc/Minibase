@@ -210,8 +210,6 @@ aaa:		while (brStr != null) {
 				e.printStackTrace();
 			}
 		}
-		System.out.print("write page(data insertion) is "
-				+ PCounterPinPage.counter + "\n");
 		// debug
 		// Scan scan = null;
 		// try
@@ -261,6 +259,9 @@ aaa:		while (brStr != null) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.print("The number of write page is "
+				+ PCounterPinPage.counter + "\n");
+		
 		return success;
 	}
 

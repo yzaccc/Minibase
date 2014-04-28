@@ -17,6 +17,9 @@ public class SpoofIbuf implements GlobalConst  {
       
       hf_scan = null;
     }
+  public void close(){
+  	hf_scan.closescan();
+  }
   
  
   /**

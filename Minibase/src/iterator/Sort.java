@@ -88,7 +88,6 @@ public class Sort extends Iterator implements GlobalConst {
 
 			// need iobufs.java
 			i_buf[i].init(temp_files[i], apage, 1, tuple_size, n_tuples[i]);
-
 			cur_node = new pnode();
 			cur_node.run_num = i;
 
@@ -880,6 +879,7 @@ public class Sort extends Iterator implements GlobalConst {
 						"Sort.java: error in closing iterator.");
 			}
 
+
 			if (useBM) {
 				try {
 					free_buffer_pages(_n_pages, bufs_pids);
@@ -889,10 +889,11 @@ public class Sort extends Iterator implements GlobalConst {
 				for (int i = 0; i < _n_pages; i++)
 					bufs_pids[i].pid = INVALID_PAGE;
 			}
-
+			
 			for (int i = 0; i < temp_files.length; i++) {
 				if (temp_files[i] != null) {
 					try {
+						i_buf[i].close();
 						temp_files[i].deleteFile();
 					} catch (Exception e) {
 						throw new SortException(e, "Sort.java: Heapfile error");
@@ -900,6 +901,7 @@ public class Sort extends Iterator implements GlobalConst {
 					temp_files[i] = null;
 				}
 			}
+
 			closeFlag = true;
 		}
 	}

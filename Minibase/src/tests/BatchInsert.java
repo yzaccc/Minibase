@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import diskmgr.PCounter;
+import diskmgr.PCounterPinPage;
+import diskmgr.PCounterw;
 import VAIndex.VAException;
 import VAIndex.VAFile;
 import VAIndex.Vector100Key;
@@ -81,10 +84,11 @@ class BatchInsertDriver extends TestDriver
 	public boolean runTest(String updatefilename, String relname)
 	{
 	SystemDefs sysdef = new SystemDefs(dbpath, 0, GlobalConst.NUMBUF, "Clock");
+	PCounter.setZero();
+	PCounterw.setZero();
+	PCounterPinPage.setZero();
 	System.out.print("Open DB done.\n");
 	boolean success = false;
-	System.out.println(updatefilename);
-	System.out.println(relname);
 	PrintWriter specfile = null;
 	boolean FileCreated = new File(dbpath + relname + ".spec").exists();
 	if (!FileCreated)
@@ -317,7 +321,7 @@ aaa:	while (brStr != null)
 				brStrArray = brStr.split(" ");
 				for (int i1 = 0; i1 < 100; i1++)
 				{
-					vectorData[i1] = Short.parseShort(brStrArray[i1]);
+					vectorData[i1] = Short.parseShort(brStrArray[i1].trim());
 				}
 				vector.setVectorValue(vectorData);
 				try
@@ -449,6 +453,7 @@ aaa:	while (brStr != null)
 	// }
 	// success = true;
 	// scan.closescan();
+	
 	try
 	{
 		SystemDefs.JavabaseBM.flushAllPages();
@@ -458,6 +463,7 @@ aaa:	while (brStr != null)
 	{
 		e.printStackTrace();
 	}
+	specfile.close();
 	success = true;
 	return success;
 	}
@@ -512,12 +518,19 @@ public class BatchInsert
 	BatchInsertDriver batchInsert = new BatchInsertDriver();
 	insertStatus = batchInsert.runTest(argv[0], argv[1]);
 //	batchInsert.printFile(argv[1]);
+
 	if (insertStatus == false)
 	{
 		System.out.print("Batch Insert Failed.\n");
 	}
 	else
 	{
+		System.out.print("The number of write page (key insertion) is "
+				+ PCounterPinPage.counter + "\n");
+		System.out.print("The number of Read page is " + PCounter.counter
+				+ "\n");
+		System.out.print("The number of write page in DB is "
+				+ PCounterw.counter + "\n");
 		System.out.print("Bathch Insert Success.\n");
 	}
 	}

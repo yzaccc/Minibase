@@ -44,6 +44,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import diskmgr.PCounter;
+import diskmgr.PCounterPinPage;
+import diskmgr.PCounterw;
 import btree.KeyClass;
 import bufmgr.BufMgrException;
 import bufmgr.HashOperationException;
@@ -79,6 +82,10 @@ public class Query extends TestDriver
 	Vector100Dtype TargetforSort;
 	BufferedReader Targetbr = null;
 	BufferedReader relInfoReader=null;
+
+	PCounter.setZero();
+	PCounterw.setZero();
+	PCounterPinPage.setZero();
 	try
 	{
 		relInfoReader = new BufferedReader(new FileReader(
@@ -192,7 +199,7 @@ public class Query extends TestDriver
 	try
 	{
 		sort = new Sort(attrArray, (short) attrArray.length, null, fscan, QA,
-				order[0], Vector100Dtype.Max * 2, 4,
+				order[0], Vector100Dtype.Max * 2, NUMBUF/2,
 				TargetforSort, 0);
 	} catch (SortException | IOException e)
 	{
@@ -237,15 +244,60 @@ public class Query extends TestDriver
 			int QA = Integer.parseInt(paraList[0].trim());
 			String T = paraList[1].trim();
 			ArrayList<Integer> sequenceOfNum = new ArrayList<Integer>();
+			
+			BufferedReader relInfoReader = new BufferedReader(new FileReader(
+					dbpath + RELNAME1 + ".spec"));
+			numColumns = Short.parseShort(relInfoReader.readLine());
+			String brStr = null;
+			try
+			{
+				brStr = relInfoReader.readLine();
+			} catch (IOException e2)
+			{
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			brStrArray = brStr.split(" ");
+			columnsType = new int[numColumns];
+			attrArray = new AttrType[numColumns];
+			for (int i = 0; i < numColumns; i++)
+			{
+				columnsType[i] = Integer.parseInt(brStrArray[i]);
+			}
+			for (int i = 0; i < numColumns; i++)
+			{
+				switch (columnsType[i])
+					{
+					case 1:
+					attrArray[i] = new AttrType(AttrType.attrInteger);
+					break;
+					case 2:
+					attrArray[i] = new AttrType(AttrType.attrReal);
+					break;
+					case 3:
+					attrArray[i] = new AttrType(AttrType.attrString);
+					break;
+					case 4:
+					attrArray[i] = new AttrType(AttrType.attrVector100D);
+					break;
+					default:
+					System.out.print("Type not supported\n");
+					break;
+					}
+			}
+			t = new Tuple();
+			t.setHdr(numColumns, attrArray, null);
+			
 			for (int i = 2; i < paraList.length; i++)
 			{
 				sequenceOfNum.add(Integer.parseInt(paraList[i]));
 			}
 			Sort s = sortIndex(QA,T,sequenceOfNum);
-			Tuple t=null;
+			
+			Tuple tmp=null;
 			
 				try {
-					t = s.get_next();
+					tmp = s.get_next();
 				} catch (SortException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -265,28 +317,62 @@ public class Query extends TestDriver
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+			TupleCount = 0; 
+			while(tmp!=null){
+				TupleCount++;
+				System.out.print("Tuple" + TupleCount+":\n{");
+				t.tupleCopy(tmp);
+				
+				for(int i=0;i<sequenceOfNum.size();i++)
+				{
+					switch(attrArray[sequenceOfNum.get(i)-1].attrType){
+					case 1:
+					try
+					{
+						System.out.print("\t"+t.getIntFld(sequenceOfNum.get(i)));
+					} catch (NumberFormatException
+							| FieldNumberOutOfBoundException
+							| IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					System.out.print(",\n");
+					break;
+					case 2:
+					try
+					{
+						System.out.print("\t"+t.getFloFld(sequenceOfNum.get(i)));
+						System.out.print(",\n");
+					} catch (NumberFormatException
+							| FieldNumberOutOfBoundException
+							| IOException e1)
+					{
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					break;
+					case 5:
+					System.out.print("\t");
+					try
+					{
+						t.get100DVectFld(sequenceOfNum.get(i)).printVector();
+					} catch (NumberFormatException
+							| FieldNumberOutOfBoundException
+							| IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+					}
+				}
+				System.out.println("}");
+				tmp = s.get_next();
+			}
 			
-			AttrType[] attr = new AttrType[4];
-			attr[0] = new AttrType(2);
-			attr[1] = new AttrType(5);
-			attr[2] = new AttrType(2);
-			attr[3] = new AttrType(5);
-			try {
-				t.setHdr((short)4, attr, null);
-			} catch (InvalidTypeException | InvalidTupleSizeException
-					| IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				t.get100DVectFld(2).printVector();
-			} catch (FieldNumberOutOfBoundException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			};
-			while(t!=null){
-				t = s.get_next();
-			}
+		
+		
 			s.close();
 			SystemDefs.JavabaseBM.flushAllPages();
 		}
@@ -419,11 +505,11 @@ public class Query extends TestDriver
 					System.out.print("Tuple" + TupleCount+":\n{");
 					for(int i=0;i<sequenceOfNum.size();i++)
 					{
-						switch(attrArray[i].attrType){
+						switch(attrArray[sequenceOfNum.get(i)-1].attrType){
 						case 1:
 						try
 						{
-							System.out.print("\t"+t.getIntFld(i + 1));
+							System.out.print("\t"+t.getIntFld(sequenceOfNum.get(i)));
 						} catch (NumberFormatException
 								| FieldNumberOutOfBoundException
 								| IOException e)
@@ -436,7 +522,7 @@ public class Query extends TestDriver
 						case 2:
 						try
 						{
-							System.out.print("\t"+t.getFloFld(i + 1));
+							System.out.print("\t"+t.getFloFld(sequenceOfNum.get(i)));
 							System.out.print(",\n");
 						} catch (NumberFormatException
 								| FieldNumberOutOfBoundException
@@ -450,7 +536,7 @@ public class Query extends TestDriver
 						System.out.print("\t");
 						try
 						{
-							t.get100DVectFld(i + 1).printVector();
+							t.get100DVectFld(sequenceOfNum.get(i)).printVector();
 						} catch (NumberFormatException
 								| FieldNumberOutOfBoundException
 								| IOException e)
@@ -508,11 +594,11 @@ public class Query extends TestDriver
 							TupleCount ++;
 							for(int i=0;i<sequenceOfNum.size();i++)
 							{
-								switch(attrArray[i].attrType){
+								switch(attrArray[sequenceOfNum.get(i)-1].attrType){
 								case 1:
 								try
 								{
-									System.out.print("\t"+t.getIntFld(i + 1));
+									System.out.print("\t"+t.getIntFld(sequenceOfNum.get(i)));
 								} catch (NumberFormatException
 										| FieldNumberOutOfBoundException
 										| IOException e)
@@ -525,7 +611,7 @@ public class Query extends TestDriver
 								case 2:
 								try
 								{
-									System.out.print("\t"+t.getFloFld(i + 1));
+									System.out.print("\t"+t.getFloFld(sequenceOfNum.get(i)));
 									System.out.print(",\n");
 								} catch (NumberFormatException
 										| FieldNumberOutOfBoundException
@@ -539,7 +625,7 @@ public class Query extends TestDriver
 								System.out.print("\t");
 								try
 								{
-									t.get100DVectFld(i + 1).printVector();
+									t.get100DVectFld(sequenceOfNum.get(i)).printVector();
 								} catch (NumberFormatException
 										| FieldNumberOutOfBoundException
 										| IOException e)
@@ -867,7 +953,12 @@ public class Query extends TestDriver
 		}
 	}
 
-	System.out.println("end");
+	System.out.print("The number of pin page is "
+			+ PCounterPinPage.counter + "\n");
+	System.out.print("The number of Read page is " + PCounter.counter
+			+ "\n");
+	System.out.print("The number of write page in DB is "
+			+ PCounterw.counter + "\n");
 	return status;
 	}
 

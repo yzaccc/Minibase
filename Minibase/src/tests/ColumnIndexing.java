@@ -17,10 +17,6 @@ import heap.Scan;
 import heap.SpaceNotAvailableException;
 import heap.Tuple;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.*;
 
 import VAIndex.VAException;
@@ -124,8 +120,6 @@ class ColumnIndexingDriver extends TestDriver
 		e2.printStackTrace();
 	}
 	
-	System.out.println("unpinned BUFFER is:"+SystemDefs.JavabaseBM.getNumUnpinnedBuffers());
-	System.out.println("Number of Buffer is:"+SystemDefs.JavabaseBM.getNumBuffers());
 	if (SystemDefs.JavabaseBM.getNumUnpinnedBuffers() == SystemDefs.JavabaseBM.getNumBuffers()) {
 		System.err.println("*** The heap-file scan has not pinned the first page\n");
 	}
@@ -462,6 +456,7 @@ class ColumnIndexingDriver extends TestDriver
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+
 	success = true;
 	return success;
 	}
@@ -481,6 +476,12 @@ public class ColumnIndexing
 	}
 	else
 	{
+		System.out.print("The number of pin page is "
+				+ PCounterPinPage.counter + "\n");
+		System.out.print("The number of Read page is " + PCounter.counter
+				+ "\n");
+		System.out.print("The number of write page in DB is "
+				+ PCounterw.counter + "\n");
 		System.out.print("Column indexing Success.\n");
 	}
 	}

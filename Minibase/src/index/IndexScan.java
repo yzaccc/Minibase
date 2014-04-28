@@ -539,7 +539,6 @@ public class IndexScan extends Iterator {
 			if (indScan instanceof BTFileScan) {
 				try {
 					btreeFile.close();
-					System.out.println("Btree Index close");
 					((BTFileScan) indScan).DestroyBTreeFileScan();
 				} catch (Exception e) {
 					throw new IndexException(e,
