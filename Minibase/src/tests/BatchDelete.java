@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import diskmgr.PCounter;
+import diskmgr.PCounterPinPage;
+import diskmgr.PCounterw;
 import VAIndex.VAFile;
 import VAIndex.Vector100Key;
 import btree.AddFileEntryException;
@@ -69,12 +72,15 @@ class BatchDeleteDriver extends TestDriver {
 	}
 
 	public boolean runTest(String updatefilename, String relname) {
+	PCounter.setZero();
+	PCounterw.setZero();
+	PCounterPinPage.setZero();
 		SystemDefs sysdef = new SystemDefs(dbpath, 0, GlobalConst.NUMBUF,
 				"Clock");
 		System.out.print("Open DB done.\n");
 		boolean success = false;
-		System.out.println(updatefilename);
-		System.out.println(relname);
+		System.out.println("Delete File Name is "+ updatefilename);
+		System.out.println("Relation to delte is " +relname);
 		PrintWriter specfile = null;
 		boolean FileCreated = new File(dbpath + relname + ".spec").exists();
 		if (!FileCreated) {
@@ -349,7 +355,8 @@ aaa:		while (brStr != null) {
 		if (haveindex) {
 			for (int i = 0; i < BTreeFileList.size(); i++) {
 				try {
-					BTreeFileList.get(i).close();
+					if(BTreeFileList.get(i) != null)
+						BTreeFileList.get(i).close();
 				} catch (PageUnpinnedException | InvalidFrameNumberException
 						| HashEntryNotFoundException | ReplacerException e) {
 					// TODO Auto-generated catch block
@@ -358,14 +365,21 @@ aaa:		while (brStr != null) {
 			}
 		}
 		try {
-			System.out.println("before flush all ");
 			SystemDefs.JavabaseBM.flushAllPages();
 		} catch (HashOperationException | PageUnpinnedException
 				| PagePinnedException | PageNotFoundException | BufMgrException
 				| IOException e) {
 			e.printStackTrace();
 		}
-
+		try
+		{
+			System.out.println("After delete, Heapfile have "+f.getRecCnt()+" Tuples");
+		} catch (InvalidSlotNumberException | InvalidTupleSizeException
+				| HFDiskMgrException | HFBufMgrException | IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return true;
 	}
 
@@ -405,7 +419,8 @@ aaa:		while (brStr != null) {
 			if (this.compare(t2, colnum) == true) {
 				System.out.println("find rid " + rid1.pageNo.pid + " "
 						+ rid1.slotNo);
-				ridlist.add(rid1);
+				RID rid4 = new RID(new PageId(rid1.pageNo.pid),rid1.slotNo);
+				ridlist.add(rid4);
 			}
 			// get next tuple
 			try {
@@ -522,10 +537,16 @@ public class BatchDelete {
 		boolean deleteStatus = false;
 		BatchDeleteDriver batchDelete = new BatchDeleteDriver();
 		deleteStatus = batchDelete.runTest(argv[0], argv[1]);
-		batchDelete.printFile(argv[1]);
+		//batchDelete.printFile(argv[1]);
 		if (deleteStatus == false) {
 			System.out.print("Batch Delete Failed.\n");
 		} else {
+			System.out.print("The number of write page (key insertion) is "
+					+ PCounterPinPage.counter + "\n");
+			System.out.print("The number of Read page is " + PCounter.counter
+					+ "\n");
+			System.out.print("The number of write page in DB is "
+					+ PCounterw.counter + "\n");
 			System.out.print("Bathch Delete Success.\n");
 		}
 	}
