@@ -19,6 +19,7 @@ import heap.InvalidTypeException;
 import heap.Tuple;
 import index.IndexException;
 import index.IndexScan;
+import index.RSBTIndexScan;
 import index.RangeScan;
 import index.UnknownIndexTypeException;
 import iterator.CondExpr;
@@ -839,108 +840,122 @@ public class Query extends TestDriver
 			{
 				projlist[i] = new FldSpec(new RelSpec(RelSpec.innerRel), i + 1-attrArray.length);
 			}
-			
-			INLJoins inlj = new INLJoins(attrArray, attrArray.length, t1_str_sizes,
-					attrArray2, attrArray2.length, t2_str_sizes, NUMBUF,
-					rscan, RELNAME2, indextype,
-					indexName2, expr1,
-					expr, projlist, 5);
-			Tuple t=new Tuple();
-			t = inlj.get_next();
-			
-			int RangeOuterSize = DJOINoutRangeSequenceOfNum.size();
-			int RangeinnerSize = DJOINinRangeSequenceOfNum.size();
-			int ResultTupleSize = RangeOuterSize+RangeinnerSize;
-			FldSpec[] Resultprojlist = new FldSpec[ResultTupleSize];
-			for (int i = 0; i < RangeOuterSize ; i++)
-			{
-				Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer), DJOINoutRangeSequenceOfNum.get(i));
-			}
-			for (int i = RangeOuterSize; i < ResultTupleSize ; i++)
-			{
-				Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer), attrArray.length+DJOINinRangeSequenceOfNum.get(i-RangeOuterSize));
-			}
-			AttrType [] ResultAttr = new AttrType[ResultTupleSize];
-			int columnId=0;
-			AttrType tmpAttr = null;
-			for(int i=0;i<RangeOuterSize;i++){
-				columnId = DJOINoutRangeSequenceOfNum.get(i);
-				tmpAttr = attrArray[columnId-1];
-				ResultAttr[i] = new AttrType(tmpAttr.attrType);
-			}
-			for(int i=RangeOuterSize;i<ResultTupleSize;i++)
-			{
-				columnId = DJOINinRangeSequenceOfNum.get(i-RangeOuterSize);
-				tmpAttr = attrArray2[columnId-1];
-				ResultAttr[i] = new AttrType(tmpAttr.attrType);
-			}
-			
-			Tuple JTuple = new Tuple();
-			JTuple.setHdr((short)ResultAttr.length, ResultAttr, null);
-			int tSize = attrArray.length+attrArray2.length;
-			AttrType [] AttrArrayAfterNLJ = new AttrType[tSize]; 
-			for(int i=0;i<attrArray.length;i++)
-			{
-				AttrArrayAfterNLJ[i] = new AttrType(attrArray[i].attrType);
-			}
-			for(int i=attrArray.length;i<tSize;i++)
-			{
-				AttrArrayAfterNLJ[i] = new AttrType(attrArray2[i-attrArray.length].attrType);
-			}
-			TupleCount = 0;
-			while(t!=null)
-			{
-				Projection.Project(t, AttrArrayAfterNLJ, JTuple, Resultprojlist, Resultprojlist.length);
-					System.out.print("Tuple" + TupleCount+":\n{");
-					TupleCount ++;
-				for(int i=0;i<Resultprojlist.length;i++)
-				{
-					switch(ResultAttr[i].attrType){
-					case 1:
-					try
-					{
-						System.out.print("\t"+JTuple.getIntFld(i + 1));
-					} catch (NumberFormatException
-							| FieldNumberOutOfBoundException
-							| IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					System.out.print(",\n");
-					break;
-					case 2:
-					try
-					{
-						System.out.print("\t"+JTuple.getFloFld(i + 1));
-						System.out.print(",\n");
-					} catch (NumberFormatException
-							| FieldNumberOutOfBoundException
-							| IOException e1)
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					break;
-					case 5:
-					System.out.print("\t");
-					try
-					{
-						JTuple.get100DVectFld(i + 1).printVector();
-					} catch (NumberFormatException
-							| FieldNumberOutOfBoundException
-							| IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					break;
-					}
-				}
-				System.out.println("}");
-				t = inlj.get_next();
+			Tuple tmp = rscan.get_next();
+			while(tmp !=null){
+				Vector100Dtype outervector = tmp.get100DVectFld(QA1);
+				RSBTIndexScan rsbtscan = new RSBTIndexScan(new IndexType(IndexType.B_Index),
+						RELNAME2, indexName2, attrArray2, null, attrArray2.length, attrArray2.length,
+						projlist, null, QA2, outervector, D2, bitNumIndex2);
+				RID rid = new RID();
 				
-			}
+				Tuple tt2 = rsbtscan.get_next(rid);
+				tt2.setHdr((short)attrArray2.length, attrArray2, null);
+				
+				tt2.get100DVectFld(QA2).printVector();
+				
+				}
+//			INLJoins inlj = new INLJoins(attrArray, attrArray.length, t1_str_sizes,
+//					attrArray2, attrArray2.length, t2_str_sizes, NUMBUF,
+//					rscan, RELNAME2, indextype,
+//					indexName2, expr1,
+//					expr, projlist, 5);
+//			Tuple t=new Tuple();
+//			t = inlj.get_next();
+//			
+//			int RangeOuterSize = DJOINoutRangeSequenceOfNum.size();
+//			int RangeinnerSize = DJOINinRangeSequenceOfNum.size();
+//			int ResultTupleSize = RangeOuterSize+RangeinnerSize;
+//			FldSpec[] Resultprojlist = new FldSpec[ResultTupleSize];
+//			for (int i = 0; i < RangeOuterSize ; i++)
+//			{
+//				Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer), DJOINoutRangeSequenceOfNum.get(i));
+//			}
+//			for (int i = RangeOuterSize; i < ResultTupleSize ; i++)
+//			{
+//				Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer), attrArray.length+DJOINinRangeSequenceOfNum.get(i-RangeOuterSize));
+//			}
+//			AttrType [] ResultAttr = new AttrType[ResultTupleSize];
+//			int columnId=0;
+//			AttrType tmpAttr = null;
+//			for(int i=0;i<RangeOuterSize;i++){
+//				columnId = DJOINoutRangeSequenceOfNum.get(i);
+//				tmpAttr = attrArray[columnId-1];
+//				ResultAttr[i] = new AttrType(tmpAttr.attrType);
+//			}
+//			for(int i=RangeOuterSize;i<ResultTupleSize;i++)
+//			{
+//				columnId = DJOINinRangeSequenceOfNum.get(i-RangeOuterSize);
+//				tmpAttr = attrArray2[columnId-1];
+//				ResultAttr[i] = new AttrType(tmpAttr.attrType);
+//			}
+//			
+//			Tuple JTuple = new Tuple();
+//			JTuple.setHdr((short)ResultAttr.length, ResultAttr, null);
+//			int tSize = attrArray.length+attrArray2.length;
+//			AttrType [] AttrArrayAfterNLJ = new AttrType[tSize]; 
+//			for(int i=0;i<attrArray.length;i++)
+//			{
+//				AttrArrayAfterNLJ[i] = new AttrType(attrArray[i].attrType);
+//			}
+//			for(int i=attrArray.length;i<tSize;i++)
+//			{
+//				AttrArrayAfterNLJ[i] = new AttrType(attrArray2[i-attrArray.length].attrType);
+//			}
+//			TupleCount = 0;
+//			while(t!=null)
+//			{
+//				Projection.Project(t, AttrArrayAfterNLJ, JTuple, Resultprojlist, Resultprojlist.length);
+//					System.out.print("Tuple" + TupleCount+":\n{");
+//					TupleCount ++;
+//				for(int i=0;i<Resultprojlist.length;i++)
+//				{
+//					switch(ResultAttr[i].attrType){
+//					case 1:
+//					try
+//					{
+//						System.out.print("\t"+JTuple.getIntFld(i + 1));
+//					} catch (NumberFormatException
+//							| FieldNumberOutOfBoundException
+//							| IOException e)
+//					{
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					System.out.print(",\n");
+//					break;
+//					case 2:
+//					try
+//					{
+//						System.out.print("\t"+JTuple.getFloFld(i + 1));
+//						System.out.print(",\n");
+//					} catch (NumberFormatException
+//							| FieldNumberOutOfBoundException
+//							| IOException e1)
+//					{
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//					break;
+//					case 5:
+//					System.out.print("\t");
+//					try
+//					{
+//						JTuple.get100DVectFld(i + 1).printVector();
+//					} catch (NumberFormatException
+//							| FieldNumberOutOfBoundException
+//							| IOException e)
+//					{
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					break;
+//					}
+//				}
+//				System.out.println("}");
+//				t = inlj.get_next();
+//				
+//			}
+			
 			try
 			{
 				SystemDefs.JavabaseBM.flushAllPages();

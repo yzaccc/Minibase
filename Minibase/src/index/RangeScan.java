@@ -53,6 +53,7 @@ public class RangeScan extends Iterator
 	private int _fldnum;
 	private VAFile vaf;
 	private RSIndexScan rscan;
+	private RSBTIndexScan rsbtscan;
 	private int _bitnum;
 	private Tuple _tmp = null;
 	private AttrType [] _attr;
@@ -162,34 +163,45 @@ public class RangeScan extends Iterator
 	if (_indexType.equals("B"))
 	{
 		RID rid = new RID();
-		KeyClass key1 = null;
-		Vector100Key vkey2 = null;
-		int indexApproximateDistance = 0;
-		int realDistance = 0;
-		//System.out.println("Range scan begin");
-		while ((key1 = iscan.get_nextKey(rid)) != null)
+		rsbtscan = new RSBTIndexScan(new IndexType(IndexType.B_Index),
+				_hfName, _indexname, _attr, null, _attr.length, _attr.length,
+				projlist, null, Integer.parseInt(_indexname.split("_")[3]), _TargetVector, _distance, _bitnum);
+		_tmp = rsbtscan.get_next(rid);
+		while (_tmp != null)
 		{
-			if (key1 instanceof Vector100Key)
-			{
-				vkey2 = (Vector100Key) key1;
-			}
-			indexApproximateDistance = vkey2
-					.getLowerBoundDistance(_TargetVector);
-			if (indexApproximateDistance <= _distance)
-			{
-				_tmp = _hf.getRecord(rid);
-				t.tupleCopy(_tmp);
-				realDistance = Vector100Dtype.distance(
-						t.get100DVectFld(_fldnum), _TargetVector);
-				if (realDistance <= _distance)
-				{
-					return t;
-				}
-			}
+			t.tupleCopy(_tmp);
+			_tmp = rscan.get_next();
+			return t;
 		}
-		//System.out.println("Range scan finished");
-		iscan.close();
 		return null;
+//		KeyClass key1 = null;
+//		Vector100Key vkey2 = null;
+//		int indexApproximateDistance = 0;
+//		int realDistance = 0;
+//		//System.out.println("Range scan begin");
+//		while ((key1 = iscan.get_nextKey(rid)) != null)
+//		{
+//			if (key1 instanceof Vector100Key)
+//			{
+//				vkey2 = (Vector100Key) key1;
+//			}
+//			indexApproximateDistance = vkey2
+//					.getLowerBoundDistance(_TargetVector);
+//			if (indexApproximateDistance <= _distance)
+//			{
+//				_tmp = _hf.getRecord(rid);
+//				t.tupleCopy(_tmp);
+//				realDistance = Vector100Dtype.distance(
+//						t.get100DVectFld(_fldnum), _TargetVector);
+//				if (realDistance <= _distance)
+//				{
+//					return t;
+//				}
+//			}
+//		}
+//		//System.out.println("Range scan finished");
+//		iscan.close();
+//		return null;
 	}
 	else if (_indexType.equals("H"))
 	{
