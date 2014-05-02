@@ -554,6 +554,7 @@ public class IndexScan extends Iterator {
 	public IndexFile indFile;
 	private BTreeFile btreeFile;
 	private IndexFileScan indScan;
+	private BTFileScan btfscan;
 	private AttrType[] _types;
 	private short[] _s_sizes;
 	private CondExpr[] _selects;

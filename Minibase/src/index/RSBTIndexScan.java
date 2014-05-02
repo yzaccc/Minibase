@@ -1,5 +1,7 @@
 package index;
 
+import java.io.IOException;
+
 import VAIndex.Vector100Key;
 import heap.Tuple;
 import iterator.CondExpr;
@@ -86,11 +88,6 @@ public class RSBTIndexScan {
 		// low_vec.printVector();
 
 		// high_vec.printVector();
-		System.out.println("lowkey in rs");
-		lowkey.printAllRegionNumber();
-		System.out.println("highkey in rs");
-		highkey.printAllRegionNumber();
-
 		CondExpr[] expr = new CondExpr[3];
 		expr[0] = new CondExpr();
 		expr[0].op = new AttrOperator(AttrOperator.aopGE);
@@ -142,7 +139,7 @@ public class RSBTIndexScan {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (Vector100Dtype.distance(tmpVec, this._query) < this._distance)
+			if (Vector100Dtype.distance(tmpVec, this._query) <= this._distance)
 				return tmp;
 			// current one is out of range, get next tuple
 			try {
@@ -151,7 +148,14 @@ public class RSBTIndexScan {
 				e.printStackTrace();
 			}
 		}
-
+		try
+		{
+			iscan.close();
+		} catch (IndexException | IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 
 	}

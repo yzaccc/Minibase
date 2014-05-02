@@ -103,19 +103,16 @@ public class RangeScan extends Iterator
 			attrIndexType[0] = new AttrType(AttrType.attrVector100D);
 			_distance = distance;
 			_TargetVector = TargetVector;
-
-			try
-			{
-				iscan = new IndexScan(new IndexType(IndexType.B_Index),
-						_hfName, _indexname, attrIndexType, attrSize, 1, 1,
-						projlist, null, 1, true);
-			} catch (IndexException | InvalidTypeException
-					| InvalidTupleSizeException | UnknownIndexTypeException
-					| IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			_bitnum = bitnum;
+			
+			
+			projlist = new FldSpec[_attr.length];
+			for(int i=0;i<_attr.length;i++){
+				projlist[i] = new FldSpec(new RelSpec(RelSpec.outer), i + 1);
 			}
+			rsbtscan = new RSBTIndexScan(new IndexType(IndexType.B_Index),
+					_hfName, _indexname, _attr, null, _attr.length, _attr.length,
+					projlist, null, _fldnum, _TargetVector, _distance, _bitnum);
 		}
 		else if (_indexType.equals("H"))
 		{
@@ -163,14 +160,11 @@ public class RangeScan extends Iterator
 	if (_indexType.equals("B"))
 	{
 		RID rid = new RID();
-		rsbtscan = new RSBTIndexScan(new IndexType(IndexType.B_Index),
-				_hfName, _indexname, _attr, null, _attr.length, _attr.length,
-				projlist, null, Integer.parseInt(_indexname.split("_")[3]), _TargetVector, _distance, _bitnum);
 		_tmp = rsbtscan.get_next(rid);
 		while (_tmp != null)
 		{
 			t.tupleCopy(_tmp);
-			_tmp = rscan.get_next();
+			_tmp = rsbtscan.get_next(rid);
 			return t;
 		}
 		return null;
@@ -225,7 +219,7 @@ public class RangeScan extends Iterator
 	public void close() throws IOException, JoinsException, SortException,
 			IndexException
 	{
-
+		
 	}
 
 }

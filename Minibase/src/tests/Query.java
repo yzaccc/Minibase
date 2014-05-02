@@ -73,24 +73,26 @@ public class Query extends TestDriver
 	private Tuple t;
 	private int TupleCount;
 	private Heapfile hf;
+
 	public Query()
 		{
 		super("");
 		}
+
 	public Sort sortIndex(int QA, String T, ArrayList<Integer> sequenceOfNum)
 	{
 	System.out.print("In Sort\n");
 	Vector100Dtype TargetforSort;
 	BufferedReader Targetbr = null;
-	BufferedReader relInfoReader=null;
+	BufferedReader relInfoReader = null;
 
 	PCounter.setZero();
 	PCounterw.setZero();
 	PCounterPinPage.setZero();
 	try
 	{
-		relInfoReader = new BufferedReader(new FileReader(
-				dbpath + RELNAME1 + ".spec"));
+		relInfoReader = new BufferedReader(new FileReader(dbpath + RELNAME1
+				+ ".spec"));
 	} catch (FileNotFoundException e1)
 	{
 		// TODO Auto-generated catch block
@@ -184,8 +186,8 @@ public class Query extends TestDriver
 	}
 	try
 	{
-		fscan = new FileScan(RELNAME1, attrArray, null, (short) attrArray.length,
-				attrArray.length, projlist, null);
+		fscan = new FileScan(RELNAME1, attrArray, null,
+				(short) attrArray.length, attrArray.length, projlist, null);
 	} catch (FileScanException | TupleUtilsException | InvalidRelation
 			| IOException e)
 	{
@@ -200,8 +202,7 @@ public class Query extends TestDriver
 	try
 	{
 		sort = new Sort(attrArray, (short) attrArray.length, null, fscan, QA,
-				order[0], Vector100Dtype.Max * 2, NUMBUF/2,
-				TargetforSort, 0);
+				order[0], Vector100Dtype.Max * 2, NUMBUF / 2, TargetforSort, 0);
 	} catch (SortException | IOException e)
 	{
 		// TODO Auto-generated catch block
@@ -209,8 +210,10 @@ public class Query extends TestDriver
 	}
 	return sort;
 	}
+
 	@SuppressWarnings("resource")
-	public boolean run() throws InvalidSlotNumberException, HFException, HFDiskMgrException, HFBufMgrException, Exception
+	public boolean run() throws InvalidSlotNumberException, HFException,
+			HFDiskMgrException, HFBufMgrException, Exception
 	{
 	SystemDefs sysdef = new SystemDefs(dbpath, 0, NUMBUF, "Clock");
 	boolean status = true;
@@ -245,7 +248,7 @@ public class Query extends TestDriver
 			int QA = Integer.parseInt(paraList[0].trim());
 			String T = paraList[1].trim();
 			ArrayList<Integer> sequenceOfNum = new ArrayList<Integer>();
-			
+
 			BufferedReader relInfoReader = new BufferedReader(new FileReader(
 					dbpath + RELNAME1 + ".spec"));
 			numColumns = Short.parseShort(relInfoReader.readLine());
@@ -288,92 +291,99 @@ public class Query extends TestDriver
 			}
 			t = new Tuple();
 			t.setHdr(numColumns, attrArray, null);
-			
+
 			for (int i = 2; i < paraList.length; i++)
 			{
 				sequenceOfNum.add(Integer.parseInt(paraList[i]));
 			}
-			Sort s = sortIndex(QA,T,sequenceOfNum);
-			
-			Tuple tmp=null;
-			
-				try {
-					tmp = s.get_next();
-				} catch (SortException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (UnknowAttrType e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (LowMemException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (JoinsException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			TupleCount = 0; 
-			while(tmp!=null){
+			Sort s = sortIndex(QA, T, sequenceOfNum);
+
+			Tuple tmp = null;
+
+			try
+			{
+				tmp = s.get_next();
+			} catch (SortException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (UnknowAttrType e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (LowMemException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (JoinsException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (Exception e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			TupleCount = 0;
+			while (tmp != null)
+			{
 				TupleCount++;
-				System.out.print("Tuple" + TupleCount+":\n{");
+				System.out.print("Tuple" + TupleCount + ":\n{");
 				t.tupleCopy(tmp);
-				
-				for(int i=0;i<sequenceOfNum.size();i++)
+
+				for (int i = 0; i < sequenceOfNum.size(); i++)
 				{
-					switch(attrArray[sequenceOfNum.get(i)-1].attrType){
-					case 1:
-					try
-					{
-						System.out.print("\t"+t.getIntFld(sequenceOfNum.get(i)));
-					} catch (NumberFormatException
-							| FieldNumberOutOfBoundException
-							| IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					System.out.print(",\n");
-					break;
-					case 2:
-					try
-					{
-						System.out.print("\t"+t.getFloFld(sequenceOfNum.get(i)));
+					switch (attrArray[sequenceOfNum.get(i) - 1].attrType)
+						{
+						case 1:
+						try
+						{
+							System.out.print("\t"
+									+ t.getIntFld(sequenceOfNum.get(i)));
+						} catch (NumberFormatException
+								| FieldNumberOutOfBoundException | IOException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						System.out.print(",\n");
-					} catch (NumberFormatException
-							| FieldNumberOutOfBoundException
-							| IOException e1)
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					break;
-					case 5:
-					System.out.print("\t");
-					try
-					{
-						t.get100DVectFld(sequenceOfNum.get(i)).printVector();
-					} catch (NumberFormatException
-							| FieldNumberOutOfBoundException
-							| IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					break;
-					}
+						break;
+						case 2:
+						try
+						{
+							System.out.print("\t"
+									+ t.getFloFld(sequenceOfNum.get(i)));
+							System.out.print(",\n");
+						} catch (NumberFormatException
+								| FieldNumberOutOfBoundException | IOException e1)
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						break;
+						case 5:
+						System.out.print("\t");
+						try
+						{
+							t.get100DVectFld(sequenceOfNum.get(i))
+									.printVector();
+						} catch (NumberFormatException
+								| FieldNumberOutOfBoundException | IOException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						break;
+						}
 				}
 				System.out.println("}");
 				tmp = s.get_next();
 			}
-			
-		
-		
+
 			s.close();
 			SystemDefs.JavabaseBM.flushAllPages();
 		}
@@ -386,14 +396,14 @@ public class Query extends TestDriver
 			String T = paraList[1].trim();
 			String bitnumstr = paraList[2].trim();
 			int bitnum = Integer.parseInt(bitnumstr);
-			
+
 			int D = Integer.parseInt(paraList[3].trim());
 			String I = paraList[4].trim();
 			if (D < 0)
 			{
 				System.out.println("Non negative integer D!!!!");
 			}
-			
+
 			ArrayList<Integer> sequenceOfNum = new ArrayList<Integer>();
 			for (int i = 5; i < paraList.length; i++)
 			{
@@ -483,8 +493,8 @@ public class Query extends TestDriver
 			{
 				String indexName = "vaindexfile" + RELNAME1 + "_" + QA + "_"
 						+ "H" + "_" + bitnumstr;
-				if(indexName.equals("vaindexfilerel1_2_H_16"))
-						System.out.println("Indexfile name is correct");
+				if (indexName.equals("vaindexfilerel1_2_H_16"))
+					System.out.println("Indexfile name is correct");
 				short[] strsize = null;
 				CondExpr[] selects = null;
 				FldSpec[] projlist = new FldSpec[sequenceOfNum.size()];
@@ -500,146 +510,129 @@ public class Query extends TestDriver
 						selects, QA, TargetVector, D, bitnum);
 				Tuple tmp = rscan.get_next();
 				TupleCount = 0;
-				while(tmp !=null)
+				while (tmp != null)
 				{
 					t.tupleCopy(tmp);
-					System.out.print("Tuple" + TupleCount+":\n{");
-					for(int i=0;i<sequenceOfNum.size();i++)
+					System.out.print("Tuple" + TupleCount + ":\n{");
+					for (int i = 0; i < sequenceOfNum.size(); i++)
 					{
-						switch(attrArray[sequenceOfNum.get(i)-1].attrType){
-						case 1:
-						try
-						{
-							System.out.print("\t"+t.getIntFld(sequenceOfNum.get(i)));
-						} catch (NumberFormatException
-								| FieldNumberOutOfBoundException
-								| IOException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						System.out.print(",\n");
-						break;
-						case 2:
-						try
-						{
-							System.out.print("\t"+t.getFloFld(sequenceOfNum.get(i)));
+						switch (attrArray[sequenceOfNum.get(i) - 1].attrType)
+							{
+							case 1:
+							try
+							{
+								System.out.print("\t"
+										+ t.getIntFld(sequenceOfNum.get(i)));
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							System.out.print(",\n");
-						} catch (NumberFormatException
-								| FieldNumberOutOfBoundException
-								| IOException e1)
-						{
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						break;
-						case 5:
-						System.out.print("\t");
-						try
-						{
-							t.get100DVectFld(sequenceOfNum.get(i)).printVector();
-						} catch (NumberFormatException
-								| FieldNumberOutOfBoundException
-								| IOException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						break;
-						}
+							break;
+							case 2:
+							try
+							{
+								System.out.print("\t"
+										+ t.getFloFld(sequenceOfNum.get(i)));
+								System.out.print(",\n");
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e1)
+							{
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							break;
+							case 5:
+							System.out.print("\t");
+							try
+							{
+								t.get100DVectFld(sequenceOfNum.get(i))
+										.printVector();
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							break;
+							}
 					}
 					System.out.println("}");
 					tmp = rscan.get_next();
 				}
-				
+
 			}
 			//
 			else if (I.equals("B"))
 			{
-				//VABTreeIndexrel1_2_B_16
+				// VABTreeIndexrel1_2_B_16
 				TupleCount = 0;
-				String _indexname = "VABTreeIndex"+ RELNAME1 + "_" + QA + "_"
+				String _indexname = "VABTreeIndex" + RELNAME1 + "_" + QA + "_"
 						+ "B" + "_" + bitnumstr;
-				short[] attrSize = new short[1];
-				attrSize[0] = 200;
-				FldSpec[] projlist = new FldSpec[1];
-				projlist[0] = new FldSpec(new RelSpec(RelSpec.outer), 1);
-				hf = new Heapfile(RELNAME1);
-				AttrType[] attrIndexType = new AttrType[1];
-				attrIndexType[0] = new AttrType(AttrType.attrVector100D);
-				IndexScan iscan = new IndexScan(new IndexType(IndexType.B_Index),
-						RELNAME1,_indexname, attrIndexType, attrSize, 1, 1, projlist,
-						null, 1, true);
-				RID rid = new RID();
-				KeyClass key1 = null;
-				Vector100Key vkey2 = null;
-				int indexApproximateDistance = 0;
-				int realDistance = 0;
-				while ((key1 = iscan.get_nextKey(rid)) != null)
+				RangeScan rscan = new RangeScan(_indexname, QA, "B", RELNAME1,
+						attrArray, D, TargetVector, bitnum);
+				Tuple tmp = rscan.get_next();
+
+				while (tmp != null)
 				{
-					if (key1 instanceof Vector100Key)
+					t.tupleCopy(tmp);
+					System.out.print("Tuple" + TupleCount + ":\n{");
+					TupleCount++;
+					for (int i = 0; i < sequenceOfNum.size(); i++)
 					{
-						vkey2 = (Vector100Key) key1;
-					}
-					indexApproximateDistance = vkey2
-							.getLowerBoundDistance(TargetVector);
-					if(indexApproximateDistance <= D)
-					{
-						Tuple tmp = hf.getRecord(rid);
-						t.tupleCopy(tmp);
-						realDistance = Vector100Dtype.distance(t.get100DVectFld(QA),
-								TargetVector);
-						if (realDistance <= D)
-						{
-							System.out.print("Tuple" + TupleCount+":\n{");
-							TupleCount ++;
-							for(int i=0;i<sequenceOfNum.size();i++)
+						switch (attrArray[sequenceOfNum.get(i) - 1].attrType)
 							{
-								switch(attrArray[sequenceOfNum.get(i)-1].attrType){
-								case 1:
-								try
-								{
-									System.out.print("\t"+t.getIntFld(sequenceOfNum.get(i)));
-								} catch (NumberFormatException
-										| FieldNumberOutOfBoundException
-										| IOException e)
-								{
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								System.out.print(",\n");
-								break;
-								case 2:
-								try
-								{
-									System.out.print("\t"+t.getFloFld(sequenceOfNum.get(i)));
-									System.out.print(",\n");
-								} catch (NumberFormatException
-										| FieldNumberOutOfBoundException
-										| IOException e1)
-								{
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-								break;
-								case 5:
-								System.out.print("\t");
-								try
-								{
-									t.get100DVectFld(sequenceOfNum.get(i)).printVector();
-								} catch (NumberFormatException
-										| FieldNumberOutOfBoundException
-										| IOException e)
-								{
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								break;
-								}
+							case 1:
+							try
+							{
+								System.out.print("\t"
+										+ t.getIntFld(sequenceOfNum.get(i)));
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-							System.out.println("}");
-						}
+							System.out.print(",\n");
+							break;
+							case 2:
+							try
+							{
+								System.out.print("\t"
+										+ t.getFloFld(sequenceOfNum.get(i)));
+								System.out.print(",\n");
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e1)
+							{
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							break;
+							case 5:
+							System.out.print("\t");
+							try
+							{
+								t.get100DVectFld(sequenceOfNum.get(i))
+										.printVector();
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							break;
+							}
 					}
+					System.out.println("}");
+					tmp = rscan.get_next();
 				}
 			}
 		}
@@ -649,7 +642,8 @@ public class Query extends TestDriver
 					0, queryCommandSplit[2].length() - 1);
 			String[] temp2 = parameterStringTmp.split("\\)");
 			String[] rangeParaList = temp2[0].trim().split(",");
-			String[] paraList = temp2[1].substring(1, temp2[1].length()).split(",");
+			String[] paraList = temp2[1].substring(1, temp2[1].length()).split(
+					",");
 
 			int QA1 = Integer.parseInt(rangeParaList[0].trim());
 			String T1 = rangeParaList[1].trim();
@@ -678,17 +672,17 @@ public class Query extends TestDriver
 				DJOINinRangeSequenceOfNum.add(Integer.parseInt(paraList[i]));
 			}
 			String indexName = null;
-			if(I1.equals("H"))
+			if (I1.equals("H"))
 			{
-				indexName = "vaindexfile" + RELNAME1 + "_" + QA1 + "_"
-						+ "H" + "_" + bitNumIndex1;
+				indexName = "vaindexfile" + RELNAME1 + "_" + QA1 + "_" + "H"
+						+ "_" + bitNumIndex1;
 			}
-			else if(I1.equals("B")){
-				indexName = "VABTreeIndex"+ RELNAME1 + "_" + QA1 + "_"
-						+ "B" + "_" + bitNumIndex1;	
+			else if (I1.equals("B"))
+			{
+				indexName = "VABTreeIndex" + RELNAME1 + "_" + QA1 + "_" + "B"
+						+ "_" + bitNumIndex1;
 			}
-			
-			
+
 			BufferedReader Targetbr = null;
 			try
 			{
@@ -754,8 +748,7 @@ public class Query extends TestDriver
 					break;
 					}
 			}
-			
-			
+
 			BufferedReader relInfoReader2 = new BufferedReader(new FileReader(
 					dbpath + RELNAME2 + ".spec"));
 			int numColumns2 = Short.parseShort(relInfoReader2.readLine());
@@ -768,9 +761,9 @@ public class Query extends TestDriver
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
-			String [] brStrArray2 = brStr2.split(" ");
+			String[] brStrArray2 = brStr2.split(" ");
 			int[] columnsType2 = new int[numColumns2];
-			AttrType [] attrArray2 = new AttrType[numColumns2];
+			AttrType[] attrArray2 = new AttrType[numColumns2];
 			for (int i = 0; i < numColumns2; i++)
 			{
 				columnsType2[i] = Integer.parseInt(brStrArray2[i]);
@@ -796,40 +789,41 @@ public class Query extends TestDriver
 					break;
 					}
 			}
-			//Create a rscan
-			RangeScan rscan = new RangeScan(indexName, QA1, I1,
-					RELNAME1, attrArray, D1,
-					TargetVector, bitNumIndex1);
+			// Create a rscan
+			RangeScan rscan = new RangeScan(indexName, QA1, I1, RELNAME1,
+					attrArray, D1, TargetVector, bitNumIndex1);
 			String indexName2 = null;
 			IndexType indextype = null;
-			if(I2.equals("H"))
+			if (I2.equals("H"))
 			{
-				indexName2 = "vaindexfile" + RELNAME2 + "_" + QA2 + "_"
-						+ "H" + "_" + bitNumIndex2;
+				indexName2 = "vaindexfile" + RELNAME2 + "_" + QA2 + "_" + "H"
+						+ "_" + bitNumIndex2;
 				indextype = new IndexType(3);
 			}
-			else if(I2.equals("B")){
-				indexName2 = "VABTreeIndex"+ RELNAME2 + "_" + QA2 + "_"
-						+ "B" + "_" + bitNumIndex2;
+			else if (I2.equals("B"))
+			{
+				indexName2 = "VABTreeIndex" + RELNAME2 + "_" + QA2 + "_" + "B"
+						+ "_" + bitNumIndex2;
 				indextype = new IndexType(1);
 			}
-			short t1_str_sizes[]=null;
-			short t2_str_sizes[]=null;
-			
-			//Create expression
+			short t1_str_sizes[] = null;
+			short t2_str_sizes[] = null;
+
+			// Create expression
 			CondExpr[] expr = new CondExpr[3];
 			expr[0] = new CondExpr();
 			expr[0].op = new AttrOperator(AttrOperator.aopLE);
 			expr[0].type1 = new AttrType(AttrType.attrSymbol);
 			expr[0].type2 = new AttrType(AttrType.attrSymbol);
 			expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 4);
-			expr[0].operand2.symbol = new FldSpec(new RelSpec(RelSpec.innerRel),1);
+			expr[0].operand2.symbol = new FldSpec(
+					new RelSpec(RelSpec.innerRel), 1);
 			expr[0].distance = D2;
 			expr[0].next = null;
 			expr[1] = null;
 			CondExpr[] expr1 = null;
-			
-			//create projlist
+
+			// create projlist
 			int JoinTupleColumnNum = attrArray.length + attrArray2.length;
 			FldSpec[] projlist = new FldSpec[JoinTupleColumnNum];
 			for (int i = 0; i < attrArray.length; i++)
@@ -838,142 +832,207 @@ public class Query extends TestDriver
 			}
 			for (int i = attrArray.length; i < JoinTupleColumnNum; i++)
 			{
-				projlist[i] = new FldSpec(new RelSpec(RelSpec.innerRel), i + 1-attrArray.length);
+				projlist[i] = new FldSpec(new RelSpec(RelSpec.innerRel), i + 1
+						- attrArray.length);
 			}
-			Tuple tmp = rscan.get_next();
-			while(tmp !=null){
+			int tSize = attrArray.length + attrArray2.length;
+			AttrType[] AttrArrayAfterNLJ = new AttrType[tSize];
+			for (int i = 0; i < attrArray.length; i++)
+			{
+				AttrArrayAfterNLJ[i] = new AttrType(attrArray[i].attrType);
+			}
+			for (int i = attrArray.length; i < tSize; i++)
+			{
+				AttrArrayAfterNLJ[i] = new AttrType(attrArray2[i
+						- attrArray.length].attrType);
+			}
+
+			Tuple tmp = new Tuple();
+			tmp = rscan.get_next();
+			RSBTIndexScan rsbtscan = null;
+			int tuplecount = 0;
+			while (tmp != null)
+			{
 				Vector100Dtype outervector = tmp.get100DVectFld(QA1);
-				RSBTIndexScan rsbtscan = new RSBTIndexScan(new IndexType(IndexType.B_Index),
-						RELNAME2, indexName2, attrArray2, null, attrArray2.length, attrArray2.length,
-						projlist, null, QA2, outervector, D2, bitNumIndex2);
+				rsbtscan = new RSBTIndexScan(new IndexType(IndexType.B_Index),
+						RELNAME2, indexName2, attrArray2, null,
+						attrArray2.length, attrArray2.length, projlist, null,
+						QA2, outervector, D2, bitNumIndex2);
 				RID rid = new RID();
-				
 				Tuple tt2 = rsbtscan.get_next(rid);
-				tt2.setHdr((short)attrArray2.length, attrArray2, null);
-				
-				tt2.get100DVectFld(QA2).printVector();
-				
+				while (tt2 != null)
+				{
+
+					System.out.println("Tuple" + tuplecount + ":");
+					tuplecount++;
+					tt2.setHdr((short) attrArray2.length, attrArray2, null);
+					for (int i = 0; i < attrArray.length; i++)
+					{
+						switch (attrArray[i].attrType)
+							{
+							case 1:
+							try
+							{
+								System.out.print("\t" + tmp.getIntFld(i + 1));
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							System.out.print(",\n");
+							break;
+							case 2:
+							try
+							{
+								System.out.print("\t" + tmp.getFloFld(i + 1));
+								System.out.print(",\n");
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e1)
+							{
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							break;
+							case 5:
+							System.out.print("\t");
+							try
+							{
+								tmp.get100DVectFld(i + 1).printVector();
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							break;
+							}
+					}
+					for (int i1 = 0; i1 < attrArray2.length; i1++)
+					{
+
+						switch (attrArray2[i1].attrType)
+							{
+							case 1:
+							try
+							{
+								System.out.print("\t" + tt2.getIntFld(i1 + 1));
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							System.out.print(",\n");
+							break;
+							case 2:
+							try
+							{
+								System.out.print("\t" + tt2.getFloFld(i1 + 1));
+								System.out.print(",\n");
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e1)
+							{
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							break;
+							case 5:
+							System.out.print("\t");
+							try
+							{
+								tt2.get100DVectFld(i1 + 1).printVector();
+							} catch (NumberFormatException
+									| FieldNumberOutOfBoundException
+									| IOException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							break;
+							}
+					}
+					tt2 = rsbtscan.get_next(rid);
 				}
-//			INLJoins inlj = new INLJoins(attrArray, attrArray.length, t1_str_sizes,
-//					attrArray2, attrArray2.length, t2_str_sizes, NUMBUF,
-//					rscan, RELNAME2, indextype,
-//					indexName2, expr1,
-//					expr, projlist, 5);
-//			Tuple t=new Tuple();
-//			t = inlj.get_next();
-//			
-//			int RangeOuterSize = DJOINoutRangeSequenceOfNum.size();
-//			int RangeinnerSize = DJOINinRangeSequenceOfNum.size();
-//			int ResultTupleSize = RangeOuterSize+RangeinnerSize;
-//			FldSpec[] Resultprojlist = new FldSpec[ResultTupleSize];
-//			for (int i = 0; i < RangeOuterSize ; i++)
-//			{
-//				Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer), DJOINoutRangeSequenceOfNum.get(i));
-//			}
-//			for (int i = RangeOuterSize; i < ResultTupleSize ; i++)
-//			{
-//				Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer), attrArray.length+DJOINinRangeSequenceOfNum.get(i-RangeOuterSize));
-//			}
-//			AttrType [] ResultAttr = new AttrType[ResultTupleSize];
-//			int columnId=0;
-//			AttrType tmpAttr = null;
-//			for(int i=0;i<RangeOuterSize;i++){
-//				columnId = DJOINoutRangeSequenceOfNum.get(i);
-//				tmpAttr = attrArray[columnId-1];
-//				ResultAttr[i] = new AttrType(tmpAttr.attrType);
-//			}
-//			for(int i=RangeOuterSize;i<ResultTupleSize;i++)
-//			{
-//				columnId = DJOINinRangeSequenceOfNum.get(i-RangeOuterSize);
-//				tmpAttr = attrArray2[columnId-1];
-//				ResultAttr[i] = new AttrType(tmpAttr.attrType);
-//			}
-//			
-//			Tuple JTuple = new Tuple();
-//			JTuple.setHdr((short)ResultAttr.length, ResultAttr, null);
-//			int tSize = attrArray.length+attrArray2.length;
-//			AttrType [] AttrArrayAfterNLJ = new AttrType[tSize]; 
-//			for(int i=0;i<attrArray.length;i++)
-//			{
-//				AttrArrayAfterNLJ[i] = new AttrType(attrArray[i].attrType);
-//			}
-//			for(int i=attrArray.length;i<tSize;i++)
-//			{
-//				AttrArrayAfterNLJ[i] = new AttrType(attrArray2[i-attrArray.length].attrType);
-//			}
-//			TupleCount = 0;
-//			while(t!=null)
-//			{
-//				Projection.Project(t, AttrArrayAfterNLJ, JTuple, Resultprojlist, Resultprojlist.length);
-//					System.out.print("Tuple" + TupleCount+":\n{");
-//					TupleCount ++;
-//				for(int i=0;i<Resultprojlist.length;i++)
-//				{
-//					switch(ResultAttr[i].attrType){
-//					case 1:
-//					try
-//					{
-//						System.out.print("\t"+JTuple.getIntFld(i + 1));
-//					} catch (NumberFormatException
-//							| FieldNumberOutOfBoundException
-//							| IOException e)
-//					{
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					System.out.print(",\n");
-//					break;
-//					case 2:
-//					try
-//					{
-//						System.out.print("\t"+JTuple.getFloFld(i + 1));
-//						System.out.print(",\n");
-//					} catch (NumberFormatException
-//							| FieldNumberOutOfBoundException
-//							| IOException e1)
-//					{
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
-//					break;
-//					case 5:
-//					System.out.print("\t");
-//					try
-//					{
-//						JTuple.get100DVectFld(i + 1).printVector();
-//					} catch (NumberFormatException
-//							| FieldNumberOutOfBoundException
-//							| IOException e)
-//					{
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					break;
-//					}
-//				}
-//				System.out.println("}");
-//				t = inlj.get_next();
-//				
-//			}
-			
+
+				tmp = rscan.get_next();
+				System.out.println("");
+			}
+			// INLJoins inlj = new INLJoins(attrArray, attrArray.length,
+			// t1_str_sizes,
+			// attrArray2, attrArray2.length, t2_str_sizes, NUMBUF,
+			// rscan, RELNAME2, indextype,
+			// indexName2, expr1,
+			// expr, projlist, 5);
+			// Tuple t=new Tuple();
+			// t = inlj.get_next();
+			//
+			// int RangeOuterSize = DJOINoutRangeSequenceOfNum.size();
+			// int RangeinnerSize = DJOINinRangeSequenceOfNum.size();
+			// int ResultTupleSize = RangeOuterSize+RangeinnerSize;
+			// FldSpec[] Resultprojlist = new FldSpec[ResultTupleSize];
+			// for (int i = 0; i < RangeOuterSize ; i++)
+			// {
+			// Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer),
+			// DJOINoutRangeSequenceOfNum.get(i));
+			// }
+			// for (int i = RangeOuterSize; i < ResultTupleSize ; i++)
+			// {
+			// Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer),
+			// attrArray.length+DJOINinRangeSequenceOfNum.get(i-RangeOuterSize));
+			// }
+			// AttrType [] ResultAttr = new AttrType[ResultTupleSize];
+			// int columnId=0;
+			// AttrType tmpAttr = null;
+			// for(int i=0;i<RangeOuterSize;i++){
+			// columnId = DJOINoutRangeSequenceOfNum.get(i);
+			// tmpAttr = attrArray[columnId-1];
+			// ResultAttr[i] = new AttrType(tmpAttr.attrType);
+			// }
+			// for(int i=RangeOuterSize;i<ResultTupleSize;i++)
+			// {
+			// columnId = DJOINinRangeSequenceOfNum.get(i-RangeOuterSize);
+			// tmpAttr = attrArray2[columnId-1];
+			// ResultAttr[i] = new AttrType(tmpAttr.attrType);
+			// }
+			//
+			// Tuple JTuple = new Tuple();
+			// JTuple.setHdr((short)ResultAttr.length, ResultAttr, null);
+			// TupleCount = 0;
+			// while(t!=null)
+			// {
+			// Projection.Project(t, AttrArrayAfterNLJ, JTuple, Resultprojlist,
+			// Resultprojlist.length);
+			// System.out.print("Tuple" + TupleCount+":\n{");
+			// TupleCount ++;
+
+			// System.out.println("}");
+			// t = inlj.get_next();
+			//
+			// }
+
 			try
 			{
 				SystemDefs.JavabaseBM.flushAllPages();
 			} catch (HashOperationException | PageUnpinnedException
-					| PagePinnedException | PageNotFoundException | BufMgrException
-					| IOException e)
+					| PagePinnedException | PageNotFoundException
+					| BufMgrException | IOException e)
 			{
 				e.printStackTrace();
 			}
 		}
 	}
 
-	System.out.print("The number of pin page is "
-			+ PCounterPinPage.counter + "\n");
-	System.out.print("The number of Read page is " + PCounter.counter
+	System.out.print("The number of pin page is " + PCounterPinPage.counter
 			+ "\n");
-	System.out.print("The number of write page in DB is "
-			+ PCounterw.counter + "\n");
+	System.out.print("The number of Read page is " + PCounter.counter + "\n");
+	System.out.print("The number of write page in DB is " + PCounterw.counter
+			+ "\n");
 	return status;
 	}
 
