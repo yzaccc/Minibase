@@ -1,4 +1,4 @@
 #!/bin/sh
-cd /home/jinxuanw/Minibase/Minibase/src/tests
-javac -classpath .:.. TestDriver.java phase2test.java
-java -classpath .:.. tests.phase2test $1 $2 
+cd /home/steve/git/Minibase91/Minibase/src/tests
+javac -classpath .:.. TestDriver.java BatchInsert.java
+java -classpath .:.. tests.BatchInsert $1 $2 
