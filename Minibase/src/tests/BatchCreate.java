@@ -49,7 +49,7 @@ class BatchCreateDriver extends TestDriver {
 		PCounter.setZero();
 		PCounterw.setZero();
 		PCounterPinPage.setZero();
-		SystemDefs sysdef = new SystemDefs(dbpath, 300, GlobalConst.NUMBUF,
+		SystemDefs sysdef = new SystemDefs(dbpath, 3000, GlobalConst.NUMBUF,
 				"Clock");
 		System.out.print("Batch Create Begin.\n");
 		boolean success = false;

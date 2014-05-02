@@ -336,7 +336,7 @@ class ColumnIndexingDriver extends TestDriver
 		try
 		{
 			br = new BufferedReader(new FileReader(dbpath + relName + ".spec"));
-			numColumns = Short.parseShort(br.readLine());
+			numColumns = Short.parseShort(br.readLine().trim());
 		} catch (FileNotFoundException e2)
 		{
 			// TODO Auto-generated catch block

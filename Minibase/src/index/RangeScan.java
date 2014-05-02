@@ -133,7 +133,7 @@ public class RangeScan extends Iterator
 			{
 				projlist[i] = new FldSpec(new RelSpec(RelSpec.outer), i+1);
 			}
-
+			this._distance = distance;
 			try
 			{
 				rscan = new RSIndexScan(new IndexType(IndexType.VAIndex),
