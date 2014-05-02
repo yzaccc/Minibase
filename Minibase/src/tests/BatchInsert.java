@@ -463,7 +463,8 @@ aaa:	while (brStr != null)
 	{
 		e.printStackTrace();
 	}
-	specfile.close();
+	if (specfile != null)
+		specfile.close();
 	success = true;
 	return success;
 	}
