@@ -201,7 +201,10 @@ public class DB implements GlobalConst {
 		try {
 			fp.write(apage.getpage());
 			PCounterw.increment();
-			//System.out.println("in DB write page pid="+pageno.pid+" "+PCounterw.counter);
+//			System.out.println("in DB write page pid="+pageno.pid+" "+PCounterw.counter);
+//			for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+//			    System.out.println(ste);
+//			}
 		} catch (IOException e) {
 			throw new FileIOException(e, "DB file I/O error");
 		}

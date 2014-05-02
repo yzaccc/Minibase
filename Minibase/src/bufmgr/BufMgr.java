@@ -525,7 +525,7 @@ public class BufMgr implements GlobalConst {
 //				}
 //			if (emptyPage)  
 				PCounterPinPage.increment();
-			//System.out.println("in BufMgr pinpagege  out "+frmeTable[frameNo].pageNo.pid+" in "+pin_pgid+" "+PCounterPinPage.counter);
+//			System.out.println("in BufMgr pinpagege  out "+frmeTable[frameNo].pageNo.pid+" in "+pin_pgid+" ");
 			
 			if ((frmeTable[frameNo].pageNo.pid != INVALID_PAGE)
 					&& (frmeTable[frameNo].dirty == true)) {
@@ -649,7 +649,13 @@ public class BufMgr implements GlobalConst {
 		}
 
 		if (dirty == true)
+		{
 			frmeTable[frameNo].dirty = dirty;
+//			for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+//			    System.out.println("in unpin pid "+frmeTable[frameNo].pageNo.pid+" "+ste);
+//			}
+		}
+			
 
 	}
 

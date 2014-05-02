@@ -307,7 +307,7 @@ public class RSIndexScan{
 	   Tuple nexttuple = null;//vac[nextidx].getTuple();
 	   
 		try{
-			System.out.println("get data pid="+nextrid.pageNo.pid);
+//			System.out.println("get data pid="+nextrid.pageNo.pid);
 			nexttuple = hf.getRecord(nextrid);
 			tuplein.tupleCopy(nexttuple);
 			

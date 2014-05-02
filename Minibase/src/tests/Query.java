@@ -493,8 +493,6 @@ public class Query extends TestDriver
 			{
 				String indexName = "vaindexfile" + RELNAME1 + "_" + QA + "_"
 						+ "H" + "_" + bitnumstr;
-				if (indexName.equals("vaindexfilerel1_2_H_16"))
-					System.out.println("Indexfile name is correct");
 				short[] strsize = null;
 				CondExpr[] selects = null;
 				FldSpec[] projlist = new FldSpec[sequenceOfNum.size()];
@@ -826,195 +824,274 @@ public class Query extends TestDriver
 			// create projlist
 			int JoinTupleColumnNum = attrArray.length + attrArray2.length;
 			FldSpec[] projlist = new FldSpec[JoinTupleColumnNum];
-			for (int i = 0; i < attrArray.length; i++)
+			for (int i = 0; i < attrArray2.length; i++)
 			{
 				projlist[i] = new FldSpec(new RelSpec(RelSpec.outer), i + 1);
-			}
-			for (int i = attrArray.length; i < JoinTupleColumnNum; i++)
-			{
-				projlist[i] = new FldSpec(new RelSpec(RelSpec.innerRel), i + 1
-						- attrArray.length);
-			}
-			int tSize = attrArray.length + attrArray2.length;
-			AttrType[] AttrArrayAfterNLJ = new AttrType[tSize];
-			for (int i = 0; i < attrArray.length; i++)
-			{
-				AttrArrayAfterNLJ[i] = new AttrType(attrArray[i].attrType);
-			}
-			for (int i = attrArray.length; i < tSize; i++)
-			{
-				AttrArrayAfterNLJ[i] = new AttrType(attrArray2[i
-						- attrArray.length].attrType);
 			}
 
 			Tuple tmp = new Tuple();
 			tmp = rscan.get_next();
 			RSBTIndexScan rsbtscan = null;
 			int tuplecount = 0;
+			RID rid = new RID();
 			while (tmp != null)
 			{
 				Vector100Dtype outervector = tmp.get100DVectFld(QA1);
-				rsbtscan = new RSBTIndexScan(new IndexType(IndexType.B_Index),
-						RELNAME2, indexName2, attrArray2, null,
-						attrArray2.length, attrArray2.length, projlist, null,
-						QA2, outervector, D2, bitNumIndex2);
-				RID rid = new RID();
-				Tuple tt2 = rsbtscan.get_next(rid);
-				while (tt2 != null)
+				if (I2.equals("H"))
 				{
-
-					System.out.println("Tuple" + tuplecount + ":");
-					tuplecount++;
-					tt2.setHdr((short) attrArray2.length, attrArray2, null);
-					for (int i = 0; i < attrArray.length; i++)
+					RSIndexScan Innerscan = new RSIndexScan(new IndexType(
+							IndexType.VAIndex), RELNAME2, indexName2,
+							attrArray2, null, attrArray2.length,
+							attrArray2.length, projlist, null, QA2,
+							outervector, D2, bitNumIndex2);
+					Tuple tt2 = Innerscan.get_next();
+					TupleCount = 0;
+					while (tt2 != null)
 					{
-						switch (attrArray[i].attrType)
-							{
-							case 1:
-							try
-							{
-								System.out.print("\t" + tmp.getIntFld(i + 1));
-							} catch (NumberFormatException
-									| FieldNumberOutOfBoundException
-									| IOException e)
-							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							System.out.print(",\n");
-							break;
-							case 2:
-							try
-							{
-								System.out.print("\t" + tmp.getFloFld(i + 1));
+						System.out.println("Tuple" + tuplecount + ":");
+						tuplecount++;
+						tt2.setHdr((short) attrArray2.length, attrArray2, null);
+						for (int i = 0; i < DJOINoutRangeSequenceOfNum.size(); i++)
+						{
+							switch (attrArray[DJOINoutRangeSequenceOfNum.get(i)-1].attrType)
+								{
+								case 1:
+								try
+								{
+									System.out
+											.print("\t"
+													+ tmp.getIntFld(DJOINoutRangeSequenceOfNum
+															.get(i)));
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 								System.out.print(",\n");
-							} catch (NumberFormatException
-									| FieldNumberOutOfBoundException
-									| IOException e1)
-							{
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							break;
-							case 5:
-							System.out.print("\t");
-							try
-							{
-								tmp.get100DVectFld(i + 1).printVector();
-							} catch (NumberFormatException
-									| FieldNumberOutOfBoundException
-									| IOException e)
-							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							break;
-							}
-					}
-					for (int i1 = 0; i1 < attrArray2.length; i1++)
-					{
+								break;
+								case 2:
+								try
+								{
+									System.out
+											.print("\t"
+													+ tmp.getFloFld(DJOINoutRangeSequenceOfNum
+															.get(i)));
+									System.out.print(",\n");
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e1)
+								{
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								break;
+								case 5:
+								System.out.print("\t");
+								try
+								{
+									tmp.get100DVectFld(
+											DJOINoutRangeSequenceOfNum.get(i))
+											.printVector();
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								break;
+								}
+						}
+						for (int i1 = 0; i1 < DJOINinRangeSequenceOfNum.size(); i1++)
+						{
 
-						switch (attrArray2[i1].attrType)
-							{
-							case 1:
-							try
-							{
-								System.out.print("\t" + tt2.getIntFld(i1 + 1));
-							} catch (NumberFormatException
-									| FieldNumberOutOfBoundException
-									| IOException e)
-							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							System.out.print(",\n");
-							break;
-							case 2:
-							try
-							{
-								System.out.print("\t" + tt2.getFloFld(i1 + 1));
+							switch (attrArray2[DJOINinRangeSequenceOfNum.get(i1)-1].attrType)
+								{
+								case 1:
+								try
+								{
+									System.out
+											.print("\t"
+													+ tt2.getIntFld(DJOINinRangeSequenceOfNum
+															.get(i1)));
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 								System.out.print(",\n");
-							} catch (NumberFormatException
-									| FieldNumberOutOfBoundException
-									| IOException e1)
-							{
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							break;
-							case 5:
-							System.out.print("\t");
-							try
-							{
-								tt2.get100DVectFld(i1 + 1).printVector();
-							} catch (NumberFormatException
-									| FieldNumberOutOfBoundException
-									| IOException e)
-							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							break;
-							}
+								break;
+								case 2:
+								try
+								{
+									System.out
+											.print("\t"
+													+ tt2.getFloFld(DJOINinRangeSequenceOfNum
+															.get(i1)));
+									System.out.print(",\n");
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e1)
+								{
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								break;
+								case 5:
+								System.out.print("\t");
+								try
+								{
+									tt2.get100DVectFld(
+											DJOINinRangeSequenceOfNum.get(i1))
+											.printVector();
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								break;
+								}
+						}
+						tt2=Innerscan.get_next();
 					}
-					tt2 = rsbtscan.get_next(rid);
+					tmp = rscan.get_next();
 				}
+				else if (I2.equals("B"))
+				{
+					rsbtscan = new RSBTIndexScan(new IndexType(
+							IndexType.B_Index), RELNAME2, indexName2,
+							attrArray2, null, attrArray2.length,
+							attrArray2.length, projlist, null, QA2,
+							outervector, D2, bitNumIndex2);
 
-				tmp = rscan.get_next();
-				System.out.println("");
+					Tuple tt2 = rsbtscan.get_next(rid);
+					while (tt2 != null)
+					{
+
+						System.out.println("Tuple" + tuplecount + ":");
+						tuplecount++;
+						tt2.setHdr((short) attrArray2.length, attrArray2, null);
+						tmp.setHdr((short)attrArray.length, attrArray, null);
+						for (int i = 0; i < DJOINoutRangeSequenceOfNum.size(); i++)
+						{
+							switch (attrArray[DJOINoutRangeSequenceOfNum.get(i)-1].attrType)
+								{
+								case 1:
+								try
+								{
+									System.out
+											.print("\t"
+													+ tmp.getIntFld(DJOINoutRangeSequenceOfNum
+															.get(i)));
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								System.out.print(",\n");
+								break;
+								case 2:
+								try
+								{
+									System.out
+											.print("\t"
+													+ tmp.getFloFld(DJOINoutRangeSequenceOfNum
+															.get(i)));
+									System.out.print(",\n");
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e1)
+								{
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								break;
+								case 5:
+								System.out.print("\t");
+								try
+								{
+									tmp.get100DVectFld(
+											DJOINoutRangeSequenceOfNum.get(i))
+											.printVector();
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								break;
+								}
+						}
+						for (int i1 = 0; i1 < DJOINinRangeSequenceOfNum.size(); i1++)
+						{
+
+							switch (attrArray2[DJOINinRangeSequenceOfNum.get(i1)-1].attrType)
+								{
+								case 1:
+								try
+								{
+									System.out
+											.print("\t"
+													+ tt2.getIntFld(DJOINinRangeSequenceOfNum
+															.get(i1)));
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								System.out.print(",\n");
+								break;
+								case 2:
+								try
+								{
+									System.out
+											.print("\t"
+													+ tt2.getFloFld(DJOINinRangeSequenceOfNum
+															.get(i1)));
+									System.out.print(",\n");
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e1)
+								{
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								break;
+								case 5:
+								System.out.print("\t");
+								try
+								{
+									tt2.get100DVectFld(
+											DJOINinRangeSequenceOfNum.get(i1))
+											.printVector();
+								} catch (NumberFormatException
+										| FieldNumberOutOfBoundException
+										| IOException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								break;
+								}
+						}
+						tt2 = rsbtscan.get_next(rid);
+					}
+
+					tmp = rscan.get_next();
+					System.out.println("");
+				}
 			}
-			// INLJoins inlj = new INLJoins(attrArray, attrArray.length,
-			// t1_str_sizes,
-			// attrArray2, attrArray2.length, t2_str_sizes, NUMBUF,
-			// rscan, RELNAME2, indextype,
-			// indexName2, expr1,
-			// expr, projlist, 5);
-			// Tuple t=new Tuple();
-			// t = inlj.get_next();
-			//
-			// int RangeOuterSize = DJOINoutRangeSequenceOfNum.size();
-			// int RangeinnerSize = DJOINinRangeSequenceOfNum.size();
-			// int ResultTupleSize = RangeOuterSize+RangeinnerSize;
-			// FldSpec[] Resultprojlist = new FldSpec[ResultTupleSize];
-			// for (int i = 0; i < RangeOuterSize ; i++)
-			// {
-			// Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer),
-			// DJOINoutRangeSequenceOfNum.get(i));
-			// }
-			// for (int i = RangeOuterSize; i < ResultTupleSize ; i++)
-			// {
-			// Resultprojlist[i] = new FldSpec(new RelSpec(RelSpec.outer),
-			// attrArray.length+DJOINinRangeSequenceOfNum.get(i-RangeOuterSize));
-			// }
-			// AttrType [] ResultAttr = new AttrType[ResultTupleSize];
-			// int columnId=0;
-			// AttrType tmpAttr = null;
-			// for(int i=0;i<RangeOuterSize;i++){
-			// columnId = DJOINoutRangeSequenceOfNum.get(i);
-			// tmpAttr = attrArray[columnId-1];
-			// ResultAttr[i] = new AttrType(tmpAttr.attrType);
-			// }
-			// for(int i=RangeOuterSize;i<ResultTupleSize;i++)
-			// {
-			// columnId = DJOINinRangeSequenceOfNum.get(i-RangeOuterSize);
-			// tmpAttr = attrArray2[columnId-1];
-			// ResultAttr[i] = new AttrType(tmpAttr.attrType);
-			// }
-			//
-			// Tuple JTuple = new Tuple();
-			// JTuple.setHdr((short)ResultAttr.length, ResultAttr, null);
-			// TupleCount = 0;
-			// while(t!=null)
-			// {
-			// Projection.Project(t, AttrArrayAfterNLJ, JTuple, Resultprojlist,
-			// Resultprojlist.length);
-			// System.out.print("Tuple" + TupleCount+":\n{");
-			// TupleCount ++;
-
-			// System.out.println("}");
-			// t = inlj.get_next();
-			//
-			// }
 
 			try
 			{

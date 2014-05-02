@@ -1623,6 +1623,7 @@ public class BTreeFile extends IndexFile implements GlobalConst {
 
 		// this sets up scan at the starting position, ready for iteration
 		scan.leafPage = findRunStart(lo_key, scan.curRid);
+		//System.out.println("find run start rid "+scan.leafPage.getCurPage().pid);
 		return scan;
 	}
 
