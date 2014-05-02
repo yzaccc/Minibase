@@ -749,7 +749,7 @@ public class Query extends TestDriver
 
 			BufferedReader relInfoReader2 = new BufferedReader(new FileReader(
 					dbpath + RELNAME2 + ".spec"));
-			int numColumns2 = Short.parseShort(relInfoReader2.readLine());
+			int numColumns2 = Short.parseShort(relInfoReader2.readLine().trim());
 			String brStr2 = null;
 			try
 			{
