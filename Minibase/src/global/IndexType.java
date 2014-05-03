@@ -11,6 +11,7 @@ public class IndexType {
   public static final int B_Index = 1;
   public static final int Hash    = 2;
   public static final int VAIndex = 3;// for attrVector100   Meng Yang
+  public static final int VABtreeIndex =4;
 
   public int indexType;
 

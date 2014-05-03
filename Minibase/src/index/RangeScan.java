@@ -110,7 +110,7 @@ public class RangeScan extends Iterator
 			for(int i=0;i<_attr.length;i++){
 				projlist[i] = new FldSpec(new RelSpec(RelSpec.outer), i + 1);
 			}
-			rsbtscan = new RSBTIndexScan(new IndexType(IndexType.B_Index),
+			rsbtscan = new RSBTIndexScan(new IndexType(IndexType.VABtreeIndex),
 					_hfName, _indexname, _attr, null, _attr.length, _attr.length,
 					projlist, null, _fldnum, _TargetVector, _distance, _bitnum);
 		}

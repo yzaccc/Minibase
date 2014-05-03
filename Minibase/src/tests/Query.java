@@ -965,7 +965,7 @@ public class Query extends TestDriver
 				else if (I2.equals("B"))
 				{
 					rsbtscan = new RSBTIndexScan(new IndexType(
-							IndexType.B_Index), RELNAME2, indexName2,
+							IndexType.VABtreeIndex), RELNAME2, indexName2,
 							attrArray2, null, attrArray2.length,
 							attrArray2.length, projlist, null, QA2,
 							outervector, D2, bitNumIndex2);

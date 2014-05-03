@@ -2,6 +2,8 @@ package index;
 
 import java.io.IOException;
 
+import btree.KeyClass;
+import VAIndex.VAFile;
 import VAIndex.Vector100Key;
 import heap.Tuple;
 import iterator.CondExpr;
@@ -41,6 +43,17 @@ public class RSBTIndexScan {
 	 * @param query
 	 * @param distance
 	 */
+	public void VABTreeFileScan(){
+		this._distance = VAFile.UPPERBOUND - VAFile.LOWERBOUND;
+	}
+	public void VABTreeFileRangeScan(KeyClass key, int distance){
+		if (key instanceof Vector100Key){
+			this._distance = distance;
+		}
+		else {
+			System.out.println("key type do not support");
+		}
+	}
 	public RSBTIndexScan(IndexType index, String relName, String indName,
 			AttrType[] types, short[] str_sizes, int noInFlds, int noOutFlds,
 			FldSpec[] outFlds, CondExpr[] selects, int fldNum,
