@@ -1,7 +1,14 @@
 package index;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
+import tests.Query;
+import diskmgr.PCounter;
+import diskmgr.PCounterPinPage;
+import diskmgr.PCounterw;
 import VAIndex.RSIndexScan;
 import VAIndex.VAException;
 import VAIndex.VAFile;
@@ -17,6 +24,7 @@ import global.AttrType;
 import global.IndexType;
 import global.RID;
 import global.SystemDefs;
+import global.TupleOrder;
 import global.Vector100Dtype;
 import heap.FieldNumberOutOfBoundException;
 import heap.HFBufMgrException;
@@ -27,12 +35,16 @@ import heap.InvalidTupleSizeException;
 import heap.InvalidTypeException;
 import heap.Tuple;
 import iterator.CondExpr;
+import iterator.FileScan;
+import iterator.FileScanException;
 import iterator.FldSpec;
+import iterator.InvalidRelation;
 import iterator.Iterator;
 import iterator.JoinsException;
 import iterator.LowMemException;
 import iterator.PredEvalException;
 import iterator.RelSpec;
+import iterator.Sort;
 import iterator.SortException;
 import iterator.TupleUtilsException;
 import iterator.UnknowAttrType;
@@ -57,6 +69,8 @@ public class RangeScan extends Iterator
 	private int _bitnum;
 	private Tuple _tmp = null;
 	private AttrType [] _attr;
+	private Sort s;
+	private boolean first = true;
 	public RangeScan(String indexFileName, int Fldnum, String indexType,
 			String HeapfileName, AttrType[] attr, int distance,
 			Vector100Dtype TargetVector, int bitnum)
@@ -82,6 +96,9 @@ public class RangeScan extends Iterator
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		_distance = distance;
+		_TargetVector = TargetVector;
+		_bitnum = bitnum;
 		if (_indexType.equals("B"))
 		{
 			short[] attrSize = new short[1];
@@ -101,9 +118,7 @@ public class RangeScan extends Iterator
 			
 			AttrType[] attrIndexType = new AttrType[1];
 			attrIndexType[0] = new AttrType(AttrType.attrVector100D);
-			_distance = distance;
-			_TargetVector = TargetVector;
-			_bitnum = bitnum;
+
 			
 			
 			projlist = new FldSpec[_attr.length];
@@ -147,8 +162,46 @@ public class RangeScan extends Iterator
 				e.printStackTrace();
 			}
 		}
-		}
+		else if(_indexType.equals("N")){
+			System.out.print("RangeScan.java In Sort\n");
 
+			BufferedReader relInfoReader = null;
+			int numColumns = 0;
+			String [] brStrArray = null;
+			int [] columnsType;
+			AttrType [] attrArray = attr;
+			FldSpec[] projlist = new FldSpec[attrArray.length];
+			FileScan fscan = null;
+			for (int i = 0; i < attrArray.length; i++)
+			{
+				projlist[i] = new FldSpec(new RelSpec(RelSpec.outer), i + 1);
+			}
+			try
+			{
+				fscan = new FileScan(HeapfileName, attrArray, null,
+						(short) attrArray.length, attrArray.length, projlist, null);
+			} catch (FileScanException | TupleUtilsException | InvalidRelation
+					| IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			TupleOrder[] order = new TupleOrder[2];
+			order[0] = new TupleOrder(TupleOrder.Ascending);
+			order[1] = new TupleOrder(TupleOrder.Descending);
+
+			try
+			{
+				s = new Sort(attrArray, (short) attrArray.length, null, fscan, Fldnum,
+						order[0], Vector100Dtype.Max * 2, Query.NUMBUF / 4, TargetVector, 0);
+			} catch (SortException | IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		}
 	@Override
 	public Tuple get_next() throws IOException, JoinsException, IndexException,
 			InvalidTupleSizeException, InvalidTypeException,
@@ -160,12 +213,24 @@ public class RangeScan extends Iterator
 	if (_indexType.equals("B"))
 	{
 		RID rid = new RID();
+		if(first){
 		_tmp = rsbtscan.get_next(rid);
+		first = false;
+		}
 		while (_tmp != null)
 		{
 			t.tupleCopy(_tmp);
-			_tmp = rsbtscan.get_next(rid);
-			return t;
+			if(Vector100Dtype.distance(t.get100DVectFld(_fldnum), _TargetVector)<=_distance){
+				_tmp = rsbtscan.get_next(rid);
+				return t;
+			}
+			else{
+				_tmp = rsbtscan.get_next(rid);
+				continue;
+			}
+//			t.tupleCopy(_tmp);
+//			_tmp = rsbtscan.get_next(rid);
+//			return t;
 		}
 		return null;
 //		KeyClass key1 = null;
@@ -199,13 +264,35 @@ public class RangeScan extends Iterator
 	}
 	else if (_indexType.equals("H"))
 	{
+		if(first){
 		_tmp = rscan.get_next();
+		first = false;
+		}
 		while (_tmp != null)
 		{
 			t.tupleCopy(_tmp);
 			_tmp = rscan.get_next();
 			return t;
 		}
+		return null;
+	}
+	else if(_indexType.equals("N")){
+		if(first){
+		_tmp = s.get_next();
+		first = false;
+		}
+		while (_tmp != null)
+		{
+			t.tupleCopy(_tmp);
+			if(Vector100Dtype.distance(t.get100DVectFld(_fldnum), _TargetVector)<=_distance){
+				_tmp = s.get_next();
+				return t;
+			}
+			else{
+				_tmp = null;
+			}
+		}
+		s.close();
 		return null;
 	}
 	else

@@ -2,6 +2,8 @@ package index;
 
 import java.io.IOException;
 
+import btree.KeyClass;
+import VAIndex.VAFile;
 import VAIndex.Vector100Key;
 import heap.Tuple;
 import iterator.CondExpr;
@@ -41,6 +43,17 @@ public class RSBTIndexScan {
 	 * @param query
 	 * @param distance
 	 */
+	public void VABTreeFileScan(){
+		this._distance = VAFile.UPPERBOUND - VAFile.LOWERBOUND;
+	}
+	public void VABTreeFileRangeScan(KeyClass key, int distance){
+		if (key instanceof Vector100Key){
+			this._distance = distance;
+		}
+		else {
+			System.out.println("key type do not support");
+		}
+	}
 	public RSBTIndexScan(IndexType index, String relName, String indName,
 			AttrType[] types, short[] str_sizes, int noInFlds, int noOutFlds,
 			FldSpec[] outFlds, CondExpr[] selects, int fldNum,
@@ -90,24 +103,25 @@ public class RSBTIndexScan {
 		// high_vec.printVector();
 		CondExpr[] expr = new CondExpr[3];
 		expr[0] = new CondExpr();
-		expr[0].op = new AttrOperator(AttrOperator.aopGE);
-		expr[0].type1 = new AttrType(AttrType.attrSymbol);
-		expr[0].type2 = new AttrType(AttrType.attrVector100Dkey);
-		expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer),
-				fldNum);
-		expr[0].operand2.vectorkey = lowkey;// lower bound
-		expr[0].next = null;
-		 expr[1] = new CondExpr();
-		 expr[1].op = new AttrOperator(AttrOperator.aopLE);
-		 expr[1].type1 = new AttrType(AttrType.attrSymbol);
-		 expr[1].type2 = new AttrType(AttrType.attrVector100Dkey);
-		 expr[1].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer),
-		 fldNum);
-		 expr[1].operand2.vectorkey=highkey;// upper bound
-		 expr[1].next = null;
-		 expr[2] = null;
+//		expr[0].op = new AttrOperator(AttrOperator.aopGE);
+//		expr[0].type1 = new AttrType(AttrType.attrSymbol);
+//		expr[0].type2 = new AttrType(AttrType.attrVector100Dkey);
+//		expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer),
+//				fldNum);
+//		expr[0].operand2.vectorkey = lowkey;// lower bound
+//		expr[0].next = null;
+//		 expr[1] = new CondExpr();
+//		 expr[1].op = new AttrOperator(AttrOperator.aopLE);
+//		 expr[1].type1 = new AttrType(AttrType.attrSymbol);
+//		 expr[1].type2 = new AttrType(AttrType.attrVector100Dkey);
+//		 expr[1].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer),
+//		 fldNum);
+//		 expr[1].operand2.vectorkey=highkey;// upper bound
+//		 expr[1].next = null;
+//		 expr[2] = null;
 //		expr[1] = null;
-
+		expr[0] = null;
+		expr[1] = null;
 		try {
 			iscan = new IndexScan(new IndexType(IndexType.B_Index), relName,
 					indName, types, str_sizes, noInFlds, noOutFlds, outFlds,
@@ -118,6 +132,47 @@ public class RSBTIndexScan {
 
 	}
 
+//	public Tuple get_next(RID rid) {
+//		Tuple tmp = null;
+//		try {
+//			tmp = iscan.get_next(rid);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		while (tmp != null) {
+//			try {
+//				Jtuple.tupleCopy(tmp);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			Vector100Dtype tmpVec = null;
+//			try {
+//				tmpVec = Jtuple.get100DVectFld(profld);
+////				System.out.println("in RSBT scan getNext ");
+////				tmpVec.printVector();// debug
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			if (Vector100Dtype.distance(tmpVec, this._query) <= this._distance)
+//				return tmp;
+//			// current one is out of range, get next tuple
+//			try {
+//				tmp = iscan.get_next(rid);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		try
+//		{
+//			iscan.close();
+//		} catch (IndexException | IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return null;
+//
+//	}
 	public Tuple get_next(RID rid) {
 		Tuple tmp = null;
 		try {
@@ -125,29 +180,8 @@ public class RSBTIndexScan {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		while (tmp != null) {
-			try {
-				Jtuple.tupleCopy(tmp);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			Vector100Dtype tmpVec = null;
-			try {
-				tmpVec = Jtuple.get100DVectFld(profld);
-//				System.out.println("in RSBT scan getNext ");
-//				tmpVec.printVector();// debug
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if (Vector100Dtype.distance(tmpVec, this._query) <= this._distance)
-				return tmp;
-			// current one is out of range, get next tuple
-			try {
-				tmp = iscan.get_next(rid);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		if (tmp!= null)
+			return tmp;
 		try
 		{
 			iscan.close();
@@ -157,7 +191,8 @@ public class RSBTIndexScan {
 			e.printStackTrace();
 		}
 		return null;
-
+		
 	}
 
 }
+

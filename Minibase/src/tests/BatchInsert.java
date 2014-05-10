@@ -84,9 +84,7 @@ class BatchInsertDriver extends TestDriver
 	public boolean runTest(String updatefilename, String relname)
 	{
 	SystemDefs sysdef = new SystemDefs(dbpath, 0, GlobalConst.NUMBUF, "Clock");
-	PCounter.setZero();
-	PCounterw.setZero();
-	PCounterPinPage.setZero();
+
 	System.out.print("Open DB done.\n");
 	boolean success = false;
 	PrintWriter specfile = null;
@@ -274,6 +272,9 @@ class BatchInsertDriver extends TestDriver
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+	PCounter.setZero();
+	PCounterw.setZero();
+	PCounterPinPage.setZero();
 	short[] vectorData = new short[100];
 	Vector100Dtype vector = new Vector100Dtype((short) 0);
 	RID rid = new RID();
@@ -394,10 +395,12 @@ aaa:	while (brStr != null)
 			e.printStackTrace();
 		}
 	}
+
 	if (haveindex)
 	{
 		for (int i = 0; i < BTreeFileList.size(); i++)
 		{
+			System.out.println("In Btree close");
 			try
 			{
 				BTreeFileList.get(i).close();
@@ -453,7 +456,7 @@ aaa:	while (brStr != null)
 	// }
 	// success = true;
 	// scan.closescan();
-	
+
 	try
 	{
 		SystemDefs.JavabaseBM.flushAllPages();
@@ -526,7 +529,7 @@ public class BatchInsert
 	}
 	else
 	{
-		System.out.print("The number of write page (key insertion) is "
+		System.out.print("The number of pin page is "
 				+ PCounterPinPage.counter + "\n");
 		System.out.print("The number of Read page is " + PCounter.counter
 				+ "\n");

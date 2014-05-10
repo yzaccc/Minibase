@@ -2,6 +2,7 @@ package tests;
 
 import global.AttrType;
 import global.GlobalConst;
+import global.IndexType;
 import global.RID;
 import global.SystemDefs;
 import global.Vector100Dtype;
@@ -16,6 +17,13 @@ import heap.InvalidTypeException;
 import heap.Scan;
 import heap.SpaceNotAvailableException;
 import heap.Tuple;
+import index.IndexException;
+import index.IndexScan;
+import index.UnknownIndexTypeException;
+import iterator.CondExpr;
+import iterator.FldSpec;
+import iterator.RelSpec;
+import iterator.UnknownKeyTypeException;
 
 import java.io.*;
 
@@ -131,9 +139,10 @@ class ColumnIndexingDriver extends TestDriver
 	{
 
 		// Create Btree file index
+		String btreefilename = null;
 		try
 		{
-			String btreefilename = "VABTreeIndex"+relName+"_"+columnIdString+"_"+indexType+"_"+bitnum;
+			btreefilename = "VABTreeIndex"+relName+"_"+columnIdString+"_"+indexType+"_"+bitnum;
 			btf = new BTreeFile(btreefilename, AttrType.attrVector100Dkey,
 					Vector100Key.getVAKeyLength(bitnum), 1/* delete */);
 			System.out.println("BTreeIndex created successfully.\n");
@@ -143,7 +152,7 @@ class ColumnIndexingDriver extends TestDriver
 			e.printStackTrace();
 			Runtime.getRuntime().exit(1);
 		}
-
+		int insertcount = 0;
 		AttrType[] attrtype = new AttrType[1];
 		attrtype[0] = new AttrType(AttrType.attrVector100Dkey);
 		short[] keylength = new short[1];
@@ -214,12 +223,15 @@ class ColumnIndexingDriver extends TestDriver
 		RID rid = new RID();
 		Vector100Key key = null;
 		Vector100Dtype[] vectorforIndex = new Vector100Dtype[1];
+		RID rid2 = new RID();
 		try
 		{
 			Tuple tmp = scan.getNext(rid);
 			while (tmp != null)
 			{
 				t.tupleCopy(tmp);
+//				System.out.println("Insert tuple "+ insertcount);
+//				insertcount++;
 				for (int i = 0; i < 1; i++)
 				{
 					vectorforIndex[i] = t.get100DVectFld(columnId);
@@ -312,6 +324,45 @@ class ColumnIndexingDriver extends TestDriver
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		//Test
+//		FldSpec[] projlist = new FldSpec[attrArray.length];
+//		RelSpec rel = new RelSpec(RelSpec.outer);
+//		for (int i = 0; i < attrArray.length; i++)
+//		{
+//			projlist[i] = new FldSpec(rel, i+1);
+//		}
+//		short[] str_sizes = null;
+//		CondExpr[] expr = new CondExpr[3];
+//		IndexScan iscan = null;
+//		try {
+//		 iscan = new IndexScan(new IndexType(IndexType.B_Index), relName,
+//					btreefilename, attrArray, str_sizes, (short)4, 4,
+//					projlist,expr, 2, false);
+//		} catch (IndexException | InvalidTypeException
+//				| InvalidTupleSizeException | UnknownIndexTypeException
+//				| IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		Tuple t = new Tuple();
+//		try {
+//			t = iscan.get_next();
+//		} catch (IndexException | UnknownKeyTypeException | IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		int count = 0;
+//		while(t!=null){
+//			System.out.println("Count is " +count);
+//			count++;
+//			try {
+//				t = iscan.get_next();
+//			} catch (IndexException | UnknownKeyTypeException | IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
 	}
 	else if (indexType == "H" || indexType.equals("H"))
 	{

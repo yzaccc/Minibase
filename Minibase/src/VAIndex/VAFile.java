@@ -24,6 +24,7 @@ import bufmgr.PageNotFoundException;
 import bufmgr.PagePinnedException;
 import bufmgr.PageUnpinnedException;
 import global.AttrType;
+import global.PageId;
 import global.RID;
 import global.SystemDefs;
 import heap.FieldNumberOutOfBoundException;
@@ -148,7 +149,8 @@ public class VAFile extends Heapfile {
 //					e.printStackTrace();
 //				}
 //				break;
-				ridlist.add(rid2);
+				RID rid4 = new RID(new PageId(rid2.pageNo.pid),rid2.slotNo);
+				ridlist.add(rid4);
 			}
 
 			try {
@@ -166,16 +168,6 @@ public class VAFile extends Heapfile {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-		try
-		{
-			System.out.println("flush all pages in VAFile");
-			SystemDefs.JavabaseBM.flushAllPages();
-		} catch (HashOperationException | PageUnpinnedException
-				| PagePinnedException | PageNotFoundException | BufMgrException
-				| IOException e)
-		{
-			e.printStackTrace();
 		}
 
 	}

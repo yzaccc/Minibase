@@ -113,7 +113,17 @@ public class Vector100Dtype {
 		return distance;
 	}
 	
-	
+	public static double distance2(Vector100Dtype d1,Vector100Dtype d2){
+		short[] d1short = d1.getVectorValue();
+		short[] d2short = d2.getVectorValue();
+		double s = 0;
+		double distance = 0;
+		for(int i = 0;i< 100;i++){
+			s += Math.pow(d1short[i]-d2short[i],2);
+		}
+		distance = Math.sqrt(s);
+		return distance;
+	}
 	/**
 	 *  for phase 3
 	 *  return the lower bound vector from a distance

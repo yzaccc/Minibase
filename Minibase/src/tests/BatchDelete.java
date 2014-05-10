@@ -384,6 +384,7 @@ aaa:		while (brStr != null) {
 	}
 
 	public void findRID(int colnum) {
+		ridlist.clear();
 		RID rid0 = new RID(new PageId(-1), -1);
 		Scan scan = null;
 		Tuple temp = null;
@@ -541,7 +542,7 @@ public class BatchDelete {
 		if (deleteStatus == false) {
 			System.out.print("Batch Delete Failed.\n");
 		} else {
-			System.out.print("The number of write page (key insertion) is "
+			System.out.print("The number of pin page is "
 					+ PCounterPinPage.counter + "\n");
 			System.out.print("The number of Read page is " + PCounter.counter
 					+ "\n");
